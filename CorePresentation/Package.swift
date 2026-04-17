@@ -6,9 +6,16 @@ let package = Package(
     name: "CorePresentation",
     platforms: [.iOS(.v26)],
     products: [
-        .library(name: "CoreUI", targets: ["CoreUI"]),
+        .library(name: "CoreUI", targets: ["CoreUI"])
     ],
     targets: [
-        .target(name: "CoreUI"),
+        .target(
+            name: "CoreUI",
+            swiftSettings: [
+                .defaultIsolation(MainActor.self),
+                .treatAllWarnings(as: .error),
+                .treatWarning("DeprecatedDeclaration", as: .warning)
+            ]
+        )
     ]
 )

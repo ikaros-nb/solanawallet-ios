@@ -6,9 +6,16 @@ let package = Package(
     name: "FeatureDashboard",
     platforms: [.iOS(.v26)],
     products: [
-        .library(name: "FeatureDashboard", targets: ["FeatureDashboard"]),
+        .library(name: "FeatureDashboard", targets: ["FeatureDashboard"])
     ],
     targets: [
-        .target(name: "FeatureDashboard"),
+        .target(
+            name: "FeatureDashboard",
+            swiftSettings: [
+                .defaultIsolation(MainActor.self),
+                .treatAllWarnings(as: .error),
+                .treatWarning("DeprecatedDeclaration", as: .warning)
+            ]
+        )
     ]
 )

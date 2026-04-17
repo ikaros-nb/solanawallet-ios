@@ -2,15 +2,28 @@
 
 import PackageDescription
 
+let swiftSettings: [SwiftSetting] = [
+    .enableUpcomingFeature("MemberImportVisibility"),
+    .treatAllWarnings(as: .error),
+    .treatWarning("DeprecatedDeclaration", as: .warning)
+]
+
 let package = Package(
     name: "CoreDomain",
     platforms: [.iOS(.v26)],
     products: [
-        .library(name: "CoreEntities", targets: ["CoreEntities"]),
         .library(name: "CoreDomain", targets: ["CoreDomain"]),
+        .library(name: "CoreEntities", targets: ["CoreEntities"])
     ],
     targets: [
-        .target(name: "CoreEntities"),
-        .target(name: "CoreDomain"),
+        .target(
+            name: "CoreDomain",
+            dependencies: ["CoreEntities"],
+            swiftSettings: swiftSettings
+        ),
+        .target(
+            name: "CoreEntities",
+            swiftSettings: swiftSettings
+        )
     ]
 )

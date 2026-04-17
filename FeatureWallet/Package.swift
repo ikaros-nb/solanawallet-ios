@@ -6,9 +6,16 @@ let package = Package(
     name: "FeatureWallet",
     platforms: [.iOS(.v26)],
     products: [
-        .library(name: "FeatureWallet", targets: ["FeatureWallet"]),
+        .library(name: "FeatureWallet", targets: ["FeatureWallet"])
     ],
     targets: [
-        .target(name: "FeatureWallet"),
+        .target(
+            name: "FeatureWallet",
+            swiftSettings: [
+                .defaultIsolation(MainActor.self),
+                .treatAllWarnings(as: .error),
+                .treatWarning("DeprecatedDeclaration", as: .warning)
+            ]
+        )
     ]
 )
