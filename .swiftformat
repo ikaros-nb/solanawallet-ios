@@ -1,0 +1,41 @@
+--swift-version 6.2
+
+--indent 4
+--maxwidth 120
+--linebreaks lf
+--semicolons never
+--commas inline
+--trimwhitespace always
+--allman false
+--empty-braces no-space
+
+--wraparguments before-first
+--wrapparameters before-first
+--wrapcollections before-first
+--wrapconditions before-first
+--wrapreturntype if-multiline
+--closing-paren balanced
+
+--operatorfunc spaced
+--nospaceoperators ...,..<
+--ranges spaced
+--decimal-grouping 3,6
+--binary-grouping 4,8
+--octal-grouping 4,8
+--hex-grouping 4,8
+--hex-literal-case uppercase
+--exponent-case lowercase
+
+--func-attributes prev-line
+--type-attributes prev-line
+--stored-var-attributes same-line
+--patternlet hoist
+--stripunusedargs closure-only
+--self remove
+--import-grouping testable-bottom
+--header ignore
+--ifdef no-indent
+--marktypes never
+--extension-acl on-declarations
+
+--exclude **/.build,**/DerivedData,**/.swiftpm,**/Build,**/Pods
