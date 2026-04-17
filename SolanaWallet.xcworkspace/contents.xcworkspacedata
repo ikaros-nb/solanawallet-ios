@@ -4,4 +4,22 @@
    <FileRef
       location = "group:SolanaWallet.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:CoreDomain">
+   </FileRef>
+   <FileRef
+      location = "group:CoreInfrastructure">
+   </FileRef>
+   <FileRef
+      location = "group:CorePresentation">
+   </FileRef>
+   <FileRef
+      location = "group:FeatureDashboard">
+   </FileRef>
+   <FileRef
+      location = "group:FeatureVault">
+   </FileRef>
+   <FileRef
+      location = "group:FeatureWallet">
+   </FileRef>
 </Workspace>

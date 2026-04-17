@@ -6,6 +6,16 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E5EC18072F92A5DF00D58D08 /* CoreDomain in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC18062F92A5DF00D58D08 /* CoreDomain */; };
+		E5EC18092F92A5DF00D58D08 /* CoreEntities in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC18082F92A5DF00D58D08 /* CoreEntities */; };
+		E5EC180B2F92A5DF00D58D08 /* CoreInfrastructure in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC180A2F92A5DF00D58D08 /* CoreInfrastructure */; };
+		E5EC180D2F92A5DF00D58D08 /* CoreUI in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC180C2F92A5DF00D58D08 /* CoreUI */; };
+		E5EC180F2F92A5DF00D58D08 /* FeatureDashboard in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC180E2F92A5DF00D58D08 /* FeatureDashboard */; };
+		E5EC18112F92A5DF00D58D08 /* FeatureVault in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC18102F92A5DF00D58D08 /* FeatureVault */; };
+		E5EC18132F92A5DF00D58D08 /* FeatureWallet in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC18122F92A5DF00D58D08 /* FeatureWallet */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		E5F88A572F928384004B90D0 /* SolanaWallet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SolanaWallet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -43,17 +53,32 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E5EC180B2F92A5DF00D58D08 /* CoreInfrastructure in Frameworks */,
+				E5EC180F2F92A5DF00D58D08 /* FeatureDashboard in Frameworks */,
+				E5EC180D2F92A5DF00D58D08 /* CoreUI in Frameworks */,
+				E5EC18092F92A5DF00D58D08 /* CoreEntities in Frameworks */,
+				E5EC18112F92A5DF00D58D08 /* FeatureVault in Frameworks */,
+				E5EC18132F92A5DF00D58D08 /* FeatureWallet in Frameworks */,
+				E5EC18072F92A5DF00D58D08 /* CoreDomain in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E5EC18052F92A5DF00D58D08 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		E5F88A4E2F928384004B90D0 = {
 			isa = PBXGroup;
 			children = (
 				E5F88A6B2F928751004B90D0 /* Config */,
 				E5F88A592F928384004B90D0 /* SolanaWallet */,
+				E5EC18052F92A5DF00D58D08 /* Frameworks */,
 				E5F88A582F928384004B90D0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -87,6 +112,13 @@
 			);
 			name = SolanaWallet;
 			packageProductDependencies = (
+				E5EC18062F92A5DF00D58D08 /* CoreDomain */,
+				E5EC18082F92A5DF00D58D08 /* CoreEntities */,
+				E5EC180A2F92A5DF00D58D08 /* CoreInfrastructure */,
+				E5EC180C2F92A5DF00D58D08 /* CoreUI */,
+				E5EC180E2F92A5DF00D58D08 /* FeatureDashboard */,
+				E5EC18102F92A5DF00D58D08 /* FeatureVault */,
+				E5EC18122F92A5DF00D58D08 /* FeatureWallet */,
 			);
 			productName = SolanaWallet;
 			productReference = E5F88A572F928384004B90D0 /* SolanaWallet.app */;
@@ -330,6 +362,37 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E5EC18062F92A5DF00D58D08 /* CoreDomain */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CoreDomain;
+		};
+		E5EC18082F92A5DF00D58D08 /* CoreEntities */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CoreEntities;
+		};
+		E5EC180A2F92A5DF00D58D08 /* CoreInfrastructure */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CoreInfrastructure;
+		};
+		E5EC180C2F92A5DF00D58D08 /* CoreUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CoreUI;
+		};
+		E5EC180E2F92A5DF00D58D08 /* FeatureDashboard */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FeatureDashboard;
+		};
+		E5EC18102F92A5DF00D58D08 /* FeatureVault */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FeatureVault;
+		};
+		E5EC18122F92A5DF00D58D08 /* FeatureWallet */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FeatureWallet;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E5F88A4F2F928384004B90D0 /* Project object */;
 }
