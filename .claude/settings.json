@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(git status)",
+      "Bash(git status *)",
+      "Bash(git diff)",
+      "Bash(git diff *)",
+      "Bash(git log)",
+      "Bash(git log *)",
+      "Bash(git show)",
+      "Bash(git show *)",
+      "Bash(git branch)",
+      "Bash(git branch --list *)",
+      "Bash(git branch -a)",
+      "Bash(git branch -v)",
+      "Bash(git branch -vv)",
+      "Bash(git remote -v)",
+      "Bash(git remote show *)",
+      "Bash(git tag)",
+      "Bash(git tag --list *)",
+      "Bash(git stash list)",
+      "Bash(git rev-parse *)",
+      "Bash(git describe *)",
+      "Bash(git config --get *)",
+      "Bash(git blame *)",
+      "Bash(git ls-files *)",
+
+      "Bash(xcodebuild -list)",
+      "Bash(xcodebuild -list *)",
+      "Bash(xcodebuild -showBuildSettings *)",
+      "Bash(xcodebuild -showdestinations *)",
+      "Bash(xcodebuild -version)",
+      "Bash(xcodebuild -version *)",
+
+      "Bash(xcrun --find *)",
+      "Bash(xcrun --show-sdk-path *)",
+      "Bash(xcrun --show-sdk-version *)",
+      "Bash(xcrun simctl list *)",
+      "Bash(xcrun simctl listdevicetypes *)",
+
+      "Bash(swift --version)",
+      "Bash(swift build)",
+      "Bash(swift build *)",
+      "Bash(swift test)",
+      "Bash(swift test *)",
+      "Bash(swift package describe *)",
+      "Bash(swift package show-dependencies *)",
+      "Bash(swift package resolve *)",
+      "Bash(swift package dump-package *)",
+      "Bash(swiftc --version)",
+
+      "Bash(plutil -lint *)",
+      "Bash(plutil -p *)",
+
+      "Bash(ls)",
+      "Bash(ls *)",
+      "Bash(file *)",
+      "Bash(wc *)"
+    ]
+  }
+}
