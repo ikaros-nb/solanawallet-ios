@@ -5,6 +5,12 @@
 //  Created by Nicolas Bouème on 18/04/2026.
 //
 
+// MARK: - Versioning
+
+MARKETING_VERSION = 1.0
+CURRENT_PROJECT_VERSION = 1 // Build number
+
+
 // MARK: - Platform
 
 IPHONEOS_DEPLOYMENT_TARGET = 26.0
@@ -61,3 +67,12 @@ SWIFT_EMIT_LOC_STRINGS = YES
 // MARK: - Hardening
 
 ENABLE_USER_SCRIPT_SANDBOXING = YES
+
+
+// MARK: - Info.plist (shared keys)
+
+INFOPLIST_KEY_LSApplicationCategoryType = public.app-category.finance
+INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES
+INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES
+INFOPLIST_KEY_UILaunchScreen_Generation = YES
+INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait
