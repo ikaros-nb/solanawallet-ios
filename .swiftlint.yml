@@ -1,12 +1,3 @@
-included:
-  - SolanaWallet
-  - CoreDomain/Sources
-  - CoreInfrastructure/Sources
-  - CorePresentation/Sources
-  - FeatureDashboard/Sources
-  - FeatureVault/Sources
-  - FeatureWallet/Sources
-
 excluded:
   - "**/.build"
   - "**/.swiftpm"

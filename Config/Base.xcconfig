@@ -66,9 +66,7 @@ SWIFT_EMIT_LOC_STRINGS = YES
 
 // MARK: - Hardening
 
-// Disabled because SwiftLint/SwiftFormat build phases scan the whole
-// source tree and cannot declare every file as a sandbox input.
-ENABLE_USER_SCRIPT_SANDBOXING = NO
+ENABLE_USER_SCRIPT_SANDBOXING = YES
 
 
 // MARK: - Info.plist (shared keys)

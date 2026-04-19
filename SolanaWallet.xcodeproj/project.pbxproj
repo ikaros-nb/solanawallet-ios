@@ -104,8 +104,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E5F88A622F928385004B90D0 /* Build configuration list for PBXNativeTarget "SolanaWallet" */;
 			buildPhases = (
-				E5EC18202F92BBBB00D58D08 /* SwiftFormat */,
-				E5EC18212F92BBBB00D58D08 /* SwiftLint */,
 				E5F88A532F928384004B90D0 /* Sources */,
 				E5F88A542F928384004B90D0 /* Frameworks */,
 				E5F88A552F928384004B90D0 /* Resources */,
@@ -175,47 +173,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		E5EC18202F92BBBB00D58D08 /* SwiftFormat */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = SwiftFormat;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "export PATH=\"$PATH:/opt/homebrew/bin\"\nif which swiftformat > /dev/null; then\n    swiftformat --lint \"${SRCROOT}\"\nelse\n    echo \"warning: SwiftFormat not installed, run: brew install swiftformat\"\nfi\n";
-		};
-		E5EC18212F92BBBB00D58D08 /* SwiftLint */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = SwiftLint;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "export PATH=\"$PATH:/opt/homebrew/bin\"\nif which swiftlint > /dev/null; then\n    swiftlint --config \"${SRCROOT}/.swiftlint.yml\"\nelse\n    echo \"warning: SwiftLint not installed, run: brew install swiftlint\"\nfi\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E5F88A532F928384004B90D0 /* Sources */ = {
