@@ -35,7 +35,7 @@ Optional footer
 2. **Atomic** — one commit = one logical change. Never mix `feat` + `fix` in the same commit.
 3. **Scope** optional, in parentheses, names the module/area: `feat(vault): add withdraw instruction`.
 4. **Subject line** — imperative mood, lowercase after the prefix, **≤ 72 characters**, no trailing period.
-5. **Body** optional; use it only when the "why" isn't obvious from the diff.
+5. **Body defaults to empty.** Only add one if a reviewer reading just the subject line would miss load-bearing context (workaround, hidden constraint, surprising decision). If you write a body, keep it to **1–2 short sentences about WHY**, never WHAT. If the body paraphrases the diff or restates the subject, delete it.
 6. **Never** use `--no-verify`, `--amend`, or any flag that bypasses hooks/signing unless the user explicitly asks.
 7. **Never** add a `Co-Authored-By: Claude …` trailer (or any other AI attribution) to commit messages. Keep commits authored solely by the human user.
 
@@ -105,19 +105,25 @@ After the last commit, run `git status` and `git log --oneline -<N>` (where N = 
 
 ## Examples
 
-**Single feature with tests** (one commit):
+**Single feature with tests** (one commit, no body — subject is self-contained):
 
 ```
 feat(wallet): add SOL balance polling
-
-Poll the connected wallet every 15s and expose the balance
-through BalanceStore so views can subscribe without manual refresh.
 ```
 
 **Bug fix that stands alone** (one commit):
 
 ```
 fix(rpc): handle 429 by backing off before retrying
+```
+
+**Commit where a body IS justified** (non-obvious workaround):
+
+```
+refactor(build): disable script sandboxing for SwiftLint phase
+
+Xcode sandbox forbids scripts from scanning $SRCROOT without
+declaring every file as input, which is impractical for linters.
 ```
 
 **Mixed diff split into three atomic commits**:
@@ -149,6 +155,8 @@ refactor(transactions): extract fee estimation into FeeService
 - ✗ `git add -A && git commit -m "wip"` — bulk staging and non-conventional message.
 - ✗ `git commit --no-verify` — bypasses hooks; only if the user explicitly asks.
 - ✗ Adding `Co-Authored-By: Claude …` or any AI-attribution trailer — forbidden in this repo.
+- ✗ Body that paraphrases the diff or restates the subject — the reader can see the diff. Delete the body.
+- ✗ Body longer than 2 short sentences — if it's that long, it belongs in a PR description, not a commit message.
 
 ## Boundary conditions
 
