@@ -24,6 +24,11 @@ let package = Package(
                 .product(name: "CoreEntities", package: "CoreDomain")
             ],
             swiftSettings: swiftSettings
+        ),
+        .testTarget(
+            name: "CoreInfrastructureTests",
+            dependencies: ["CoreInfrastructure"],
+            swiftSettings: swiftSettings
         )
     ]
 )
