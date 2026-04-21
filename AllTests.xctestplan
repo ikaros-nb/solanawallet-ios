@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "39351023-AA48-4D44-BAFD-B7DD7946B7C9",
+      "name" : "Default",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:SolanaWallet.xcodeproj",
+      "identifier" : "E5F88A562F928384004B90D0",
+      "name" : "SolanaWallet"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:CoreInfrastructure",
+        "identifier" : "CoreInfrastructureTests",
+        "name" : "CoreInfrastructureTests"
+      }
+    }
+  ],
+  "version" : 1
+}
