@@ -11,10 +11,15 @@ import Foundation
 public struct SecureEnclaveManager: Sendable {
     public enum Failure: Error, Sendable {
         case keychainError(OSStatus)
+        case secureEnclaveUnavailable
         case unknown
     }
 
-    public init() {}
+    public init() throws {
+        guard SecureEnclave.isAvailable else {
+            throw Failure.secureEnclaveUnavailable
+        }
+    }
 
     public func encrypt(_ plaintext: Data) throws -> Data {
         throw Failure.unknown

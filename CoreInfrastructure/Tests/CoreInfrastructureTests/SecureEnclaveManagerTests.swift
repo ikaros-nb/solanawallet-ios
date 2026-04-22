@@ -12,7 +12,7 @@ import Testing
 struct SecureEnclaveManagerTests {
     @Test
     func `encrypt and decrypt`() throws {
-        let manager = SecureEnclaveManager()
+        let manager = try SecureEnclaveManager()
         let plaintext = Data("hello secure enclave".utf8)
 
         let blob = try manager.encrypt(plaintext)
