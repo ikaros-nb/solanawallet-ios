@@ -22,7 +22,30 @@ public struct SecureEnclaveManager: Sendable {
     }
 
     public func encrypt(_ plaintext: Data) throws -> Data {
-        throw Failure.unknown
+        let seKey = try loadOrCreateEncryptionKey()
+
+        // On-memory key (Outside SecureEnclave)
+        let ephemeral = P256.KeyAgreement.PrivateKey()
+
+        // ECDH
+        let shared = try ephemeral.sharedSecretFromKeyAgreement(with: seKey.publicKey)
+
+        // HKDF
+        let symKey = shared.hkdfDerivedSymmetricKey(
+            using: SHA256.self,
+            salt: Data(),
+            sharedInfo: Self.hkdfInfo,
+            outputByteCount: 32
+        )
+
+        // AES-GCM seal
+        let sealed = try AES.GCM.seal(plaintext, using: symKey)
+        guard let combined = sealed.combined else {
+            throw Failure.unknown
+        }
+
+        // blob = public ephemeral ∥ (nonce ∥ ciphertext ∥ tag)
+        return ephemeral.publicKey.rawRepresentation + combined
     }
 
     public func decrypt(_ ciphertext: Data) throws -> Data {
@@ -35,6 +58,7 @@ public struct SecureEnclaveManager: Sendable {
 
     // MARK: Private
 
+    private static let hkdfInfo = Data("SolanaWallet.se-encryption.v1".utf8)
     private static let keychainService = "com.ikaros.SolanaWallet"
     private static let keychainAccount = "se-encryption-key"
     private static var baseQuery: [String: Any] {
