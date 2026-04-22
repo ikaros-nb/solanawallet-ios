@@ -75,4 +75,14 @@ public struct SecureEnclaveManager: Sendable {
             throw Failure.keychainError(status)
         }
     }
+
+    private func deleteEncryptionKey() throws {
+        let status = SecItemDelete(Self.baseQuery as CFDictionary)
+        switch status {
+        case errSecSuccess, errSecItemNotFound:
+            return
+        default:
+            throw Failure.keychainError(status)
+        }
+    }
 }
