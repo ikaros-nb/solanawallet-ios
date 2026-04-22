@@ -65,5 +65,14 @@ public struct SecureEnclaveManager: Sendable {
         }
     }
 
-    private func storeEncryptionKey(_ representation: Data) throws {}
+    private func storeEncryptionKey(_ representation: Data) throws {
+        var attributes = Self.baseQuery
+        attributes[kSecValueData as String] = representation
+        attributes[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+
+        let status = SecItemAdd(attributes as CFDictionary, nil)
+        guard status == errSecSuccess else {
+            throw Failure.keychainError(status)
+        }
+    }
 }
