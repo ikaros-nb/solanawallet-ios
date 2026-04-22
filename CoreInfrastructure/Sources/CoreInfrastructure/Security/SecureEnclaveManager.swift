@@ -29,6 +29,10 @@ public struct SecureEnclaveManager: Sendable {
         throw Failure.unknown
     }
 
+    public func reset() throws {
+        try deleteEncryptionKey()
+    }
+
     // MARK: Private
 
     private static let keychainService = "com.ikaros.SolanaWallet"
