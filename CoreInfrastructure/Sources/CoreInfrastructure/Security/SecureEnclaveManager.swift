@@ -10,6 +10,7 @@ import Foundation
 
 public struct SecureEnclaveManager: Sendable {
     public enum Failure: Error, Sendable {
+        case corruptedCiphertext
         case keychainError(OSStatus)
         case secureEnclaveUnavailable
         case unknown
@@ -49,7 +50,32 @@ public struct SecureEnclaveManager: Sendable {
     }
 
     public func decrypt(_ ciphertext: Data) throws -> Data {
-        throw Failure.unknown
+        let seKey = try loadOrCreateEncryptionKey()
+
+        guard ciphertext.count > Self.minimumCiphertextSize else {
+            throw Failure.corruptedCiphertext
+        }
+        let ephemeralPubBytes = ciphertext.prefix(Self.ephemeralPublicKeySize)
+        let sealedCombined = ciphertext.dropFirst(Self.ephemeralPublicKeySize)
+
+        let ephemeralPub = try P256.KeyAgreement.PublicKey(
+            rawRepresentation: ephemeralPubBytes
+        )
+
+        // ECDH
+        let shared = try seKey.sharedSecretFromKeyAgreement(with: ephemeralPub)
+
+        // HKDF
+        let symKey = shared.hkdfDerivedSymmetricKey(
+            using: SHA256.self,
+            salt: Data(),
+            sharedInfo: Self.hkdfInfo,
+            outputByteCount: 32
+        )
+
+        // AES-GCM open
+        let sealed = try AES.GCM.SealedBox(combined: sealedCombined)
+        return try AES.GCM.open(sealed, using: symKey)
     }
 
     public func reset() throws {
@@ -59,6 +85,8 @@ public struct SecureEnclaveManager: Sendable {
     // MARK: Private
 
     private static let hkdfInfo = Data("SolanaWallet.se-encryption.v1".utf8)
+    private static let ephemeralPublicKeySize = 64
+    private static let minimumCiphertextSize = ephemeralPublicKeySize + 12 + 16 // = 92
     private static let keychainService = "com.ikaros.SolanaWallet"
     private static let keychainAccount = "se-encryption-key"
     private static var baseQuery: [String: Any] {
