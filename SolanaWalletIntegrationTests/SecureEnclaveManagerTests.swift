@@ -14,8 +14,7 @@ struct SecureEnclaveManagerTests {
     @Test(.enabled(if: SecureEnclave.isAvailable))
     func `encrypt and decrypt`() throws {
         let manager = try SecureEnclaveManager(
-            keychainService: "com.ikaros.SolanaWallet.tests",
-            keychainAccount: "se-encryption-key"
+            keychainService: "com.ikaros.SolanaWallet.tests"
         )
         try manager.reset()
         defer { try? manager.reset() }

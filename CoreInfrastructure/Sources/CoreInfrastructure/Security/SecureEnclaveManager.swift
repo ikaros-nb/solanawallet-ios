@@ -17,17 +17,15 @@ public struct SecureEnclaveManager: Sendable {
     }
 
     private let keychainService: String
-    private let keychainAccount: String
+    private static let keychainAccount = "se-encryption-key"
 
     public init(
-        keychainService: String = "com.ikaros.SolanaWallet",
-        keychainAccount: String = "se-encryption-key"
+        keychainService: String = "com.ikaros.SolanaWallet"
     ) throws {
         guard SecureEnclave.isAvailable else {
             throw Failure.secureEnclaveUnavailable
         }
         self.keychainService = keychainService
-        self.keychainAccount = keychainAccount
     }
 
     public func encrypt(_ plaintext: Data) throws -> Data {
@@ -99,7 +97,7 @@ public struct SecureEnclaveManager: Sendable {
         [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
-            kSecAttrAccount as String: keychainAccount
+            kSecAttrAccount as String: Self.keychainAccount
         ]
     }
 
