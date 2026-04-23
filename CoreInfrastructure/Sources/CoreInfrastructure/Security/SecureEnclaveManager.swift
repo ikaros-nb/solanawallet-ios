@@ -16,10 +16,18 @@ public struct SecureEnclaveManager: Sendable {
         case unknown
     }
 
-    public init() throws {
+    private let keychainService: String
+    private let keychainAccount: String
+
+    public init(
+        keychainService: String = "com.ikaros.SolanaWallet",
+        keychainAccount: String = "se-encryption-key"
+    ) throws {
         guard SecureEnclave.isAvailable else {
             throw Failure.secureEnclaveUnavailable
         }
+        self.keychainService = keychainService
+        self.keychainAccount = keychainAccount
     }
 
     public func encrypt(_ plaintext: Data) throws -> Data {
@@ -87,9 +95,7 @@ public struct SecureEnclaveManager: Sendable {
     private static let hkdfInfo = Data("SolanaWallet.se-encryption.v1".utf8)
     private static let ephemeralPublicKeySize = 64
     private static let minimumCiphertextSize = ephemeralPublicKeySize + 12 + 16 // = 92
-    private static let keychainService = "com.ikaros.SolanaWallet"
-    private static let keychainAccount = "se-encryption-key"
-    private static var baseQuery: [String: Any] {
+    private var baseQuery: [String: Any] {
         [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
@@ -107,7 +113,7 @@ public struct SecureEnclaveManager: Sendable {
     }
 
     private func lookupEncryptionKey() throws -> SecureEnclave.P256.KeyAgreement.PrivateKey? {
-        var query = Self.baseQuery
+        var query = baseQuery
         query[kSecReturnData as String] = true
 
         var result: CFTypeRef?
@@ -127,7 +133,7 @@ public struct SecureEnclaveManager: Sendable {
     }
 
     private func storeEncryptionKey(_ representation: Data) throws {
-        var attributes = Self.baseQuery
+        var attributes = baseQuery
         attributes[kSecValueData as String] = representation
         attributes[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
 
@@ -138,7 +144,7 @@ public struct SecureEnclaveManager: Sendable {
     }
 
     private func deleteEncryptionKey() throws {
-        let status = SecItemDelete(Self.baseQuery as CFDictionary)
+        let status = SecItemDelete(baseQuery as CFDictionary)
         switch status {
         case errSecSuccess, errSecItemNotFound:
             return
