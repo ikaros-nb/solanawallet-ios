@@ -25,7 +25,7 @@ struct SecureEnclaveManagerTests {
         let manager = try makeSUT()
         defer { try? manager.reset() }
 
-        let plaintext = Data((0..<64).map { UInt8($0) }) // 64 octets = keypair size
+        let plaintext = Data((0..<64).map { UInt8($0) }) // 64 bytes = Ed25519 keypair size
         let blob = try manager.encrypt(plaintext)
         #expect(try manager.decrypt(blob) == plaintext)
     }
@@ -47,7 +47,7 @@ struct SecureEnclaveManagerTests {
         defer { try? manager.reset() }
 
         var blob = try manager.encrypt(Data("secret".utf8))
-        blob[blob.count - 1] ^= 0xFF // flip le dernier octet (dans le tag GCM)
+        blob[blob.count - 1] ^= 0xFF // flip the last byte (inside the GCM tag)
 
         #expect(throws: (any Error).self) {
             try manager.decrypt(blob)
