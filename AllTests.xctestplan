@@ -23,6 +23,13 @@
         "identifier" : "CoreInfrastructureTests",
         "name" : "CoreInfrastructureTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:SolanaWallet.xcodeproj",
+        "identifier" : "E5DC51692F99EAE600A85DA4",
+        "name" : "SolanaWalletIntegrationTests"
+      }
     }
   ],
   "version" : 1

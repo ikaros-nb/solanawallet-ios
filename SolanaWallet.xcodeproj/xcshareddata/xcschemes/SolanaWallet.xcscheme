@@ -34,6 +34,19 @@
             default = "YES">
          </TestPlanReference>
       </TestPlans>
+      <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E5DC51692F99EAE600A85DA4"
+               BuildableName = "SolanaWalletIntegrationTests.xctest"
+               BlueprintName = "SolanaWalletIntegrationTests"
+               ReferencedContainer = "container:SolanaWallet.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"

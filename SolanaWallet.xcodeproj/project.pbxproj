@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E5DC51742F99EBA900A85DA4 /* CoreInfrastructure in Frameworks */ = {isa = PBXBuildFile; productRef = E5DC51732F99EBA900A85DA4 /* CoreInfrastructure */; };
 		E5EC18072F92A5DF00D58D08 /* CoreDomain in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC18062F92A5DF00D58D08 /* CoreDomain */; };
 		E5EC18092F92A5DF00D58D08 /* CoreEntities in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC18082F92A5DF00D58D08 /* CoreEntities */; };
 		E5EC180B2F92A5DF00D58D08 /* CoreInfrastructure in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC180A2F92A5DF00D58D08 /* CoreInfrastructure */; };
@@ -16,10 +17,21 @@
 		E5EC18132F92A5DF00D58D08 /* FeatureWallet in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC18122F92A5DF00D58D08 /* FeatureWallet */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		E5DC516E2F99EAE600A85DA4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E5F88A4F2F928384004B90D0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E5F88A562F928384004B90D0;
+			remoteInfo = SolanaWallet;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		E5DC516A2F99EAE600A85DA4 /* SolanaWalletIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SolanaWalletIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5EC18152F92AAAA00D58D08 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		E5EC18162F92AAAA00D58D08 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
-		E5EC18172F92AAAA00D58D08 /* .swift-version */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swift-version; sourceTree = "<group>"; };
+		E5EC18172F92AAAA00D58D08 /* .swift-version */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".swift-version"; sourceTree = "<group>"; };
 		E5EC18202F92AAAA00D58D08 /* AllTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = file.xctestplan; path = AllTests.xctestplan; sourceTree = "<group>"; };
 		E5F88A572F928384004B90D0 /* SolanaWallet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SolanaWallet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -37,6 +49,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		E5DC516B2F99EAE600A85DA4 /* SolanaWalletIntegrationTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SolanaWalletIntegrationTests;
+			sourceTree = "<group>";
+		};
 		E5F88A592F928384004B90D0 /* SolanaWallet */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = SolanaWallet;
@@ -53,6 +70,14 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		E5DC51672F99EAE600A85DA4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E5DC51742F99EBA900A85DA4 /* CoreInfrastructure in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E5F88A542F928384004B90D0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -86,6 +111,7 @@
 				E5EC18202F92AAAA00D58D08 /* AllTests.xctestplan */,
 				E5F88A6B2F928751004B90D0 /* Config */,
 				E5F88A592F928384004B90D0 /* SolanaWallet */,
+				E5DC516B2F99EAE600A85DA4 /* SolanaWalletIntegrationTests */,
 				E5EC18052F92A5DF00D58D08 /* Frameworks */,
 				E5F88A582F928384004B90D0 /* Products */,
 			);
@@ -95,6 +121,7 @@
 			isa = PBXGroup;
 			children = (
 				E5F88A572F928384004B90D0 /* SolanaWallet.app */,
+				E5DC516A2F99EAE600A85DA4 /* SolanaWalletIntegrationTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -102,6 +129,30 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		E5DC51692F99EAE600A85DA4 /* SolanaWalletIntegrationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E5DC51722F99EAE600A85DA4 /* Build configuration list for PBXNativeTarget "SolanaWalletIntegrationTests" */;
+			buildPhases = (
+				E5DC51662F99EAE600A85DA4 /* Sources */,
+				E5DC51672F99EAE600A85DA4 /* Frameworks */,
+				E5DC51682F99EAE600A85DA4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E5DC516F2F99EAE600A85DA4 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				E5DC516B2F99EAE600A85DA4 /* SolanaWalletIntegrationTests */,
+			);
+			name = SolanaWalletIntegrationTests;
+			packageProductDependencies = (
+				E5DC51732F99EBA900A85DA4 /* CoreInfrastructure */,
+			);
+			productName = SolanaWalletIntegrationTests;
+			productReference = E5DC516A2F99EAE600A85DA4 /* SolanaWalletIntegrationTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		E5F88A562F928384004B90D0 /* SolanaWallet */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E5F88A622F928385004B90D0 /* Build configuration list for PBXNativeTarget "SolanaWallet" */;
@@ -142,6 +193,11 @@
 				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
+					E5DC51692F99EAE600A85DA4 = {
+						CreatedOnToolsVersion = 26.3;
+						LastSwiftMigration = 2630;
+						TestTargetID = E5F88A562F928384004B90D0;
+					};
 					E5F88A562F928384004B90D0 = {
 						CreatedOnToolsVersion = 26.3;
 					};
@@ -162,11 +218,19 @@
 			projectRoot = "";
 			targets = (
 				E5F88A562F928384004B90D0 /* SolanaWallet */,
+				E5DC51692F99EAE600A85DA4 /* SolanaWalletIntegrationTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		E5DC51682F99EAE600A85DA4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E5F88A552F928384004B90D0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -177,6 +241,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		E5DC51662F99EAE600A85DA4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E5F88A532F928384004B90D0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -186,7 +257,60 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		E5DC516F2F99EAE600A85DA4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E5F88A562F928384004B90D0 /* SolanaWallet */;
+			targetProxy = E5DC516E2F99EAE600A85DA4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		E5DC51702F99EAE600A85DA4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = E5F88A6B2F928751004B90D0 /* Config */;
+			baseConfigurationReferenceRelativePath = Debug.xcconfig;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = B96N5PJKRG;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ikaros.SolanaWalletIntegrationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SolanaWallet.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SolanaWallet";
+			};
+			name = Debug;
+		};
+		E5DC51712F99EAE600A85DA4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = E5F88A6B2F928751004B90D0 /* Config */;
+			baseConfigurationReferenceRelativePath = Release.xcconfig;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = B96N5PJKRG;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ikaros.SolanaWalletIntegrationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SolanaWallet.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SolanaWallet";
+			};
+			name = Release;
+		};
 		E5F88A602F928385004B90D0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = E5F88A6B2F928751004B90D0 /* Config */;
@@ -351,6 +475,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		E5DC51722F99EAE600A85DA4 /* Build configuration list for PBXNativeTarget "SolanaWalletIntegrationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E5DC51702F99EAE600A85DA4 /* Debug */,
+				E5DC51712F99EAE600A85DA4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E5F88A522F928384004B90D0 /* Build configuration list for PBXProject "SolanaWallet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -372,6 +505,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E5DC51732F99EBA900A85DA4 /* CoreInfrastructure */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CoreInfrastructure;
+		};
 		E5EC18062F92A5DF00D58D08 /* CoreDomain */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CoreDomain;

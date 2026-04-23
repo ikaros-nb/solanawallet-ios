@@ -6,15 +6,21 @@
 //
 
 import CoreInfrastructure
+import CryptoKit
 import Foundation
 import Testing
 
 struct SecureEnclaveManagerTests {
-    @Test
+    @Test(.enabled(if: SecureEnclave.isAvailable))
     func `encrypt and decrypt`() throws {
-        let manager = try SecureEnclaveManager()
-        let plaintext = Data("hello secure enclave".utf8)
+        let manager = try SecureEnclaveManager(
+            keychainService: "com.ikaros.SolanaWallet.tests",
+            keychainAccount: "se-encryption-key"
+        )
+        try manager.reset()
+        defer { try? manager.reset() }
 
+        let plaintext = Data("hello secure enclave".utf8)
         let blob = try manager.encrypt(plaintext)
         let recovered = try manager.decrypt(blob)
 
