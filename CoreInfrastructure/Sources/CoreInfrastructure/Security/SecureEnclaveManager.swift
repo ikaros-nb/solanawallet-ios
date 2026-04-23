@@ -9,7 +9,7 @@ import CryptoKit
 import Foundation
 
 public struct SecureEnclaveManager: Sendable {
-    public enum Failure: Error, Sendable {
+    public enum Failure: Error, Equatable, Sendable {
         case corruptedCiphertext
         case keychainError(OSStatus)
         case secureEnclaveUnavailable
