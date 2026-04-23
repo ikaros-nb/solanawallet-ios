@@ -58,7 +58,7 @@ public struct SecureEnclaveManager: Sendable {
     public func decrypt(_ ciphertext: Data) throws -> Data {
         let seKey = try loadOrCreateEncryptionKey()
 
-        guard ciphertext.count > Self.minimumCiphertextSize else {
+        guard ciphertext.count >= Self.minimumCiphertextSize else {
             throw Failure.corruptedCiphertext
         }
         let ephemeralPubBytes = ciphertext.prefix(Self.ephemeralPublicKeySize)
