@@ -10,8 +10,9 @@ import Foundation
 
 public struct SecureEnclaveManager: Sendable {
     public enum Failure: Error, Equatable, Sendable {
-        case corruptedCiphertext
         case keychainError(OSStatus)
+        case corruptedCiphertext
+        case handleAlreadyExists
         case secureEnclaveUnavailable
         case unknown
     }
@@ -106,8 +107,16 @@ public struct SecureEnclaveManager: Sendable {
             return existing
         }
         let fresh = try SecureEnclave.P256.KeyAgreement.PrivateKey()
-        try storeEncryptionKey(fresh.dataRepresentation)
-        return fresh
+        do {
+            try storeEncryptionKey(fresh.dataRepresentation)
+            return fresh
+        } catch Failure.handleAlreadyExists {
+            // race: someone wrote inside lookup and store
+            guard let winner = try lookupEncryptionKey() else {
+                throw Failure.unknown
+            }
+            return winner
+        }
     }
 
     private func lookupEncryptionKey() throws -> SecureEnclave.P256.KeyAgreement.PrivateKey? {
@@ -136,7 +145,12 @@ public struct SecureEnclaveManager: Sendable {
         attributes[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
 
         let status = SecItemAdd(attributes as CFDictionary, nil)
-        guard status == errSecSuccess else {
+        switch status {
+        case errSecSuccess:
+            return
+        case errSecDuplicateItem:
+            throw Failure.handleAlreadyExists
+        default:
             throw Failure.keychainError(status)
         }
     }
