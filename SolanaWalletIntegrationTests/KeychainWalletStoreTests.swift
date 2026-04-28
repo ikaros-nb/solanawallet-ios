@@ -9,7 +9,7 @@ import CoreInfrastructure
 import Foundation
 import Testing
 
-@Suite("KeychainWalletStore")
+@Suite("KeychainWalletStore", .serialized)
 struct KeychainWalletStoreTests {
     let store: KeychainWalletStore
 
@@ -53,9 +53,28 @@ struct KeychainWalletStoreTests {
     }
 
     @Test
+    func `saveKeypair throws keypairAlreadyExists when called twice`() throws {
+        try store.saveKeypair(Data([0x01]))
+        #expect(throws: KeychainWalletStore.Failure.keypairAlreadyExists) {
+            try store.saveKeypair(Data([0x02]))
+        }
+    }
+
+    @Test
     func `withSigningSession throws .walletNotFound when no keypair is stored`() {
         #expect(throws: KeychainWalletStore.Failure.walletNotFound) {
             try store.withSigningSession(reason: "test") { _ in }
+        }
+    }
+
+    @Test
+    func `withSigningSession does not invoke block when no keypair is stored`() async {
+        await confirmation("block must not be invoked", expectedCount: 0) { blockCalled in
+            #expect(throws: KeychainWalletStore.Failure.walletNotFound) {
+                try store.withSigningSession(reason: "test") { _ in
+                    blockCalled()
+                }
+            }
         }
     }
 
@@ -69,13 +88,6 @@ struct KeychainWalletStoreTests {
         #expect(try store.loadPublicKey() == nil)
         #expect(throws: KeychainWalletStore.Failure.walletNotFound) {
             try store.withSigningSession(reason: "test") { _ in }
-        }
-    }
-
-    @Test
-    func `withSigningSession throws .biometryInvalidated when enrolment changes`() {
-        withKnownIssue("Not easily reproducible on simulator — validation deferred to device") {
-            Issue.record("biometry invalidation cannot be triggered on the simulator")
         }
     }
 }
