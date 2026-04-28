@@ -8,8 +8,13 @@
 import Foundation
 
 public struct KeychainWalletStore: Sendable {
+    /// Errors raised by the store itself. `SecureEnclaveManager` errors
+    /// propagate as-is from `saveKeypair` and `withSigningSession` — they are
+    /// not wrapped in `Failure`.
     public enum Failure: Error, Equatable, Sendable {
+        case accessControlCreationFailed
         case keychainError(OSStatus)
+        case keypairAlreadyExists
         case unknown
     }
 
@@ -68,8 +73,39 @@ public struct KeychainWalletStore: Sendable {
         }
     }
 
+    /// Stores the encrypted keypair. Intentionally non-idempotent: an existing
+    /// wallet must be explicitly destroyed via `reset()` before a new one is
+    /// stored, to prevent accidental overwrites.
     public func saveKeypair(_ keypair: Data) throws {
-        fatalError("TODO")
+        var error: Unmanaged<CFError>?
+        guard
+            let access = SecAccessControlCreateWithFlags(
+                nil,
+                kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly,
+                [.biometryCurrentSet, .or, .devicePasscode],
+                &error
+            )
+        else {
+            error?.release()
+            throw Failure.accessControlCreationFailed
+        }
+
+        var attributes = keypairQuery
+        attributes[kSecAttrAccessControl as String] = access
+
+        var blob = try secureEnclave.encrypt(keypair)
+        attributes[kSecValueData as String] = blob
+        defer { blob.resetBytes(in: 0..<blob.count) }
+
+        let status = SecItemAdd(attributes as CFDictionary, nil)
+        switch status {
+        case errSecSuccess:
+            return
+        case errSecDuplicateItem:
+            throw Failure.keypairAlreadyExists
+        default:
+            throw Failure.keychainError(status)
+        }
     }
 
     public func withSigningSession<T: Sendable>(reason: String, block: @Sendable (Data) throws -> T) async throws -> T {
@@ -87,6 +123,14 @@ public struct KeychainWalletStore: Sendable {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
             kSecAttrAccount as String: Self.pubkeyAccount
+        ]
+    }
+
+    private var keypairQuery: [String: Any] {
+        [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
+            kSecAttrAccount as String: Self.keypairAccount
         ]
     }
 }
