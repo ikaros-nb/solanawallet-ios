@@ -79,7 +79,7 @@ struct SecureEnclaveManagerTests {
 
     private func makeSUT() throws -> SecureEnclaveManager {
         let manager = try SecureEnclaveManager(
-            keychainService: "com.ikaros.SolanaWallet.tests"
+            keychainService: "com.ikaros.SolanaWallet.secure-enclave.tests"
         )
         try manager.reset()
         return manager

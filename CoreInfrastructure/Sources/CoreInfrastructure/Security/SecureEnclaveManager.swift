@@ -37,7 +37,7 @@ public struct SecureEnclaveManager: Sendable {
     /// - Throws: ``Failure/secureEnclaveUnavailable`` if no Secure Enclave
     ///   is available on the host.
     public init(
-        keychainService: String = "com.ikaros.SolanaWallet"
+        keychainService: String = "com.ikaros.SolanaWallet.secure-enclave"
     ) throws {
         guard SecureEnclave.isAvailable else {
             throw Failure.secureEnclaveUnavailable
