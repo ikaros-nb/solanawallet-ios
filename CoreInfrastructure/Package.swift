@@ -15,13 +15,15 @@ let package = Package(
         .library(name: "CoreInfrastructure", targets: ["CoreInfrastructure"])
     ],
     dependencies: [
-        .package(path: "../CoreDomain")
+        .package(path: "../CoreDomain"),
+        .package(url: "https://github.com/p2p-org/solana-swift", from: "5.0.0")
     ],
     targets: [
         .target(
             name: "CoreInfrastructure",
             dependencies: [
-                .product(name: "CoreEntities", package: "CoreDomain")
+                .product(name: "CoreEntities", package: "CoreDomain"),
+                .product(name: "SolanaSwift", package: "solana-swift")
             ],
             swiftSettings: swiftSettings
         ),
