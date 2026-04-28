@@ -40,7 +40,7 @@ public struct KeychainWalletStore: Sendable {
         case errSecDuplicateItem:
             let updateStatus = SecItemUpdate(pubkeyQuery as CFDictionary, mutableAttributes as CFDictionary)
             guard updateStatus == errSecSuccess else {
-                throw Failure.keychainError(status)
+                throw Failure.keychainError(updateStatus)
             }
         default:
             throw Failure.keychainError(status)
