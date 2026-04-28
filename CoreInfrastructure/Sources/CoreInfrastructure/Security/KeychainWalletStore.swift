@@ -9,6 +9,7 @@ import Foundation
 
 public struct KeychainWalletStore: Sendable {
     public enum Failure: Error, Equatable, Sendable {
+        case keychainError(OSStatus)
         case unknown
     }
 
@@ -26,7 +27,24 @@ public struct KeychainWalletStore: Sendable {
     }
 
     func savePublicKey(_ data: Data) throws {
-        fatalError("TODO")
+        let mutableAttributes: [String: Any] = [
+            kSecValueData as String: data,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        let addAttributes = pubkeyQuery.merging(mutableAttributes) { _, new in new }
+
+        let status = SecItemAdd(addAttributes as CFDictionary, nil)
+        switch status {
+        case errSecSuccess:
+            return
+        case errSecDuplicateItem:
+            let updateStatus = SecItemUpdate(pubkeyQuery as CFDictionary, mutableAttributes as CFDictionary)
+            guard updateStatus == errSecSuccess else {
+                throw Failure.keychainError(status)
+            }
+        default:
+            throw Failure.keychainError(status)
+        }
     }
 
     func loadPublicKey() throws -> Data? {
@@ -43,5 +61,15 @@ public struct KeychainWalletStore: Sendable {
 
     func reset() throws {
         fatalError("TODO")
+    }
+
+    // MARK: Private
+
+    private var pubkeyQuery: [String: Any] {
+        [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
+            kSecAttrAccount as String: Self.pubkeyAccount
+        ]
     }
 }
