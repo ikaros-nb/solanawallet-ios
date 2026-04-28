@@ -69,7 +69,7 @@ struct KeychainWalletStoreTests {
 
     @Test
     func `withSigningSession does not invoke block when no keypair is stored`() async {
-        await confirmation("block must not be invoked", expectedCount: 0) { blockCalled in
+        _ = await confirmation("block must not be invoked", expectedCount: 0) { blockCalled in
             #expect(throws: KeychainWalletStore.Failure.walletNotFound) {
                 try store.withSigningSession(reason: "test") { _ in
                     blockCalled()
