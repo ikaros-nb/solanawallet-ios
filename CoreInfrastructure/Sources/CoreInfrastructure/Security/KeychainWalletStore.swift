@@ -108,7 +108,10 @@ public struct KeychainWalletStore: Sendable {
         }
     }
 
-    public func withSigningSession<T: Sendable>(reason: String, block: @Sendable (Data) throws -> T) async throws -> T {
+    public func withSigningSession<T: Sendable>(
+        reason: String,
+        _ block: @Sendable (Data) throws -> T
+    ) async throws -> T {
         fatalError("TODO")
     }
 
