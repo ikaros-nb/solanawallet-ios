@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import LocalAuthentication
 
 public struct KeychainWalletStore: Sendable {
     /// Errors raised by the store itself. `SecureEnclaveManager` errors
@@ -13,8 +14,11 @@ public struct KeychainWalletStore: Sendable {
     /// not wrapped in `Failure`.
     public enum Failure: Error, Equatable, Sendable {
         case accessControlCreationFailed
+        case biometryFailed
         case keychainError(OSStatus)
         case keypairAlreadyExists
+        case userCancelled
+        case walletNotFound
         case unknown
     }
 
@@ -111,8 +115,35 @@ public struct KeychainWalletStore: Sendable {
     public func withSigningSession<T: Sendable>(
         reason: String,
         _ block: @Sendable (Data) throws -> T
-    ) async throws -> T {
-        fatalError("TODO")
+    ) throws -> T {
+        let context = LAContext()
+        context.localizedReason = reason
+
+        var query = keypairQuery
+        query[kSecReturnData as String] = true
+        query[kSecUseAuthenticationContext as String] = context
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+
+        switch status {
+        case errSecSuccess:
+            guard let blob = result as? Data else {
+                throw Failure.unknown
+            }
+            var keypair = try secureEnclave.decrypt(blob)
+            defer { keypair.resetBytes(in: 0..<keypair.count) }
+            return try block(keypair)
+        case errSecUserCanceled:
+            throw Failure.userCancelled
+        case errSecItemNotFound:
+            throw Failure.walletNotFound
+        case errSecAuthFailed:
+            throw Failure.biometryFailed
+        default:
+            throw Failure.keychainError(status)
+        }
     }
 
     public func reset() throws {
