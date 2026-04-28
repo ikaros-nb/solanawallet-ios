@@ -26,7 +26,7 @@ public struct KeychainWalletStore: Sendable {
         self.secureEnclave = secureEnclave
     }
 
-    func savePublicKey(_ data: Data) throws {
+    public func savePublicKey(_ data: Data) throws {
         let mutableAttributes: [String: Any] = [
             kSecValueData as String: data,
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
@@ -47,7 +47,7 @@ public struct KeychainWalletStore: Sendable {
         }
     }
 
-    func loadPublicKey() throws -> Data? {
+    public func loadPublicKey() throws -> Data? {
         var query = pubkeyQuery
         query[kSecReturnData as String] = true
         query[kSecMatchLimit as String] = kSecMatchLimitOne
@@ -68,15 +68,15 @@ public struct KeychainWalletStore: Sendable {
         }
     }
 
-    func saveKeypair(_ keypair: Data) throws {
+    public func saveKeypair(_ keypair: Data) throws {
         fatalError("TODO")
     }
 
-    func withSigningSession<T: Sendable>(reason: String, _ block: @Sendable (Data) throws -> T) async throws -> T {
+    public func withSigningSession<T: Sendable>(reason: String, block: @Sendable (Data) throws -> T) async throws -> T {
         fatalError("TODO")
     }
 
-    func reset() throws {
+    public func reset() throws {
         fatalError("TODO")
     }
 
