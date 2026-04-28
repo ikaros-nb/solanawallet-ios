@@ -146,8 +146,17 @@ public struct KeychainWalletStore: Sendable {
         }
     }
 
+    /// Best-effort delete of both Keychain entries. Both deletes are attempted
+    /// even if the first fails; the first encountered error is reported, the
+    /// caller should consider the store state as undefined on throw.
     public func reset() throws {
-        fatalError("TODO")
+        let statuses = [
+            SecItemDelete(pubkeyQuery as CFDictionary),
+            SecItemDelete(keypairQuery as CFDictionary)
+        ]
+        for status in statuses where status != errSecSuccess && status != errSecItemNotFound {
+            throw Failure.keychainError(status)
+        }
     }
 
     // MARK: Private
