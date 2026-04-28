@@ -8,16 +8,26 @@
 import Foundation
 import LocalAuthentication
 
+/// Persists a Solana wallet across two Keychain items under the same service:
+///
+/// - **Public key** (`solana-pubkey`): plaintext, accessible when unlocked.
+///   No user prompt on read or write.
+/// - **Encrypted keypair** (`solana-keypair`): sealed by ``SecureEnclaveManager``
+///   and gated by current biometry **or** device passcode. Reads trigger a
+///   system authentication prompt; writes and deletes do not.
 public struct KeychainWalletStore: Sendable {
     /// Errors raised by the store itself. `SecureEnclaveManager` errors
-    /// propagate as-is from `saveKeypair` and `withSigningSession` — they are
-    /// not wrapped in `Failure`.
+    /// propagate as-is from `saveKeypair` and `withSigningSession`.
     public enum Failure: Error, Equatable, Sendable {
         case accessControlCreationFailed
+        /// `errSecAuthFailed`: biometry / passcode attempt rejected.
         case biometryFailed
         case keychainError(OSStatus)
+        /// A keypair is already stored; clear it via ``reset()`` first.
         case keypairAlreadyExists
+        /// `errSecUserCanceled`: user dismissed the authentication prompt.
         case userCancelled
+        /// `errSecItemNotFound`: no keypair stored under this service.
         case walletNotFound
         case unknown
     }
@@ -27,6 +37,8 @@ public struct KeychainWalletStore: Sendable {
     private static let pubkeyAccount = "solana-pubkey"
     private static let keypairAccount = "solana-keypair"
 
+    /// Both items live under the same `keychainService`; use distinct values
+    /// to isolate wallets between environments or tests.
     public init(
         keychainService: String = "com.ikaros.SolanaWallet.wallet",
         secureEnclave: SecureEnclaveManager
@@ -35,6 +47,7 @@ public struct KeychainWalletStore: Sendable {
         self.secureEnclave = secureEnclave
     }
 
+    /// Stores or replaces the public key. Idempotent.
     public func savePublicKey(_ data: Data) throws {
         let mutableAttributes: [String: Any] = [
             kSecValueData as String: data,
@@ -56,6 +69,7 @@ public struct KeychainWalletStore: Sendable {
         }
     }
 
+    /// Returns the stored public key, or `nil` if none exists.
     public func loadPublicKey() throws -> Data? {
         var query = pubkeyQuery
         query[kSecReturnData as String] = true
@@ -77,9 +91,11 @@ public struct KeychainWalletStore: Sendable {
         }
     }
 
-    /// Stores the encrypted keypair. Intentionally non-idempotent: an existing
-    /// wallet must be explicitly destroyed via `reset()` before a new one is
-    /// stored, to prevent accidental overwrites.
+    /// Encrypts and stores the keypair. Non-idempotent: clear via ``reset()``
+    /// first, to avoid overwriting an active wallet.
+    ///
+    /// Re-enrolling biometry after this call invalidates the item; only the
+    /// device passcode fallback remains usable.
     public func saveKeypair(_ keypair: Data) throws {
         var error: Unmanaged<CFError>?
         guard
@@ -112,6 +128,13 @@ public struct KeychainWalletStore: Sendable {
         }
     }
 
+    /// Prompts the user (Face ID / Touch ID, passcode fallback), decrypts the
+    /// keypair, and hands the plaintext to `block`. `reason` is shown in the
+    /// prompt.
+    ///
+    /// The plaintext is zeroed when `block` returns or throws — callers must
+    /// not let it escape the closure (capture, return, async hop) or the
+    /// zeroization is moot.
     public func withSigningSession<T: Sendable>(
         reason: String,
         _ block: @Sendable (Data) throws -> T
@@ -146,9 +169,11 @@ public struct KeychainWalletStore: Sendable {
         }
     }
 
-    /// Best-effort delete of both Keychain entries. Both deletes are attempted
-    /// even if the first fails; the first encountered error is reported, the
-    /// caller should consider the store state as undefined on throw.
+    /// Removes both Keychain items. Best-effort: both deletes are attempted
+    /// even if the first fails, and on throw the store state is undefined.
+    ///
+    /// Does not destroy the Secure Enclave encryption key — see
+    /// ``SecureEnclaveManager/reset()`` for that.
     public func reset() throws {
         let statuses = [
             SecItemDelete(pubkeyQuery as CFDictionary),
