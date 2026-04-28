@@ -48,7 +48,24 @@ public struct KeychainWalletStore: Sendable {
     }
 
     func loadPublicKey() throws -> Data? {
-        fatalError("TODO")
+        var query = pubkeyQuery
+        query[kSecReturnData as String] = true
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+
+        switch status {
+        case errSecSuccess:
+            guard let data = result as? Data else {
+                throw Failure.unknown
+            }
+            return data
+        case errSecItemNotFound:
+            return nil
+        default:
+            throw Failure.keychainError(status)
+        }
     }
 
     func saveKeypair(_ keypair: Data) throws {
