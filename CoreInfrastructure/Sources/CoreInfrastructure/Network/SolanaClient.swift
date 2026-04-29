@@ -6,6 +6,7 @@
 //
 
 import CoreDomain
+import CoreEntities
 import SolanaSwift
 
 actor SolanaClient {

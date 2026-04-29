@@ -23,6 +23,7 @@ let package = Package(
             name: "CoreInfrastructure",
             dependencies: [
                 .product(name: "CoreDomain", package: "CoreDomain"),
+                .product(name: "CoreEntities", package: "CoreDomain"),
                 .product(name: "SolanaSwift", package: "solana-swift")
             ],
             swiftSettings: swiftSettings
