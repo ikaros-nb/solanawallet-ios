@@ -16,10 +16,17 @@ public struct SystemFilesystemProbe: FilesystemProbe {
     public init() {}
 
     public func fileExists(atPath path: String) -> Bool {
-        FileManager.default.fileExists(atPath: path)
+        guard !isSimulator else {
+            return false
+        }
+        return FileManager.default.fileExists(atPath: path)
     }
 
     public func canWrite(toPath path: String) -> Bool {
+        guard !isSimulator else {
+            return false
+        }
+
         do {
             try "x".write(toFile: path, atomically: true, encoding: .utf8)
             try? FileManager.default.removeItem(atPath: path)
@@ -27,5 +34,13 @@ public struct SystemFilesystemProbe: FilesystemProbe {
         } catch {
             return false
         }
+    }
+
+    private var isSimulator: Bool {
+        #if targetEnvironment(simulator)
+        true
+        #else
+        false
+        #endif
     }
 }
