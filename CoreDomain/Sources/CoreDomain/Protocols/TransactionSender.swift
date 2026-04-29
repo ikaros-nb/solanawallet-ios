@@ -6,6 +6,6 @@
 //
 
 public protocol TransactionSender: Sendable {
-    func sendSOL(to recipient: PublicKey, amount: Lamports) async throws -> TransactionSignature
-    func sendSPL(mint: PublicKey, to recipient: PublicKey, amount: UInt64) async throws -> TransactionSignature
+    func sendSOL(to recipient: Pubkey, amount: Lamports) async throws -> TransactionSignature
+    func sendSPL(mint: Pubkey, to recipient: Pubkey, amount: UInt64) async throws -> TransactionSignature
 }

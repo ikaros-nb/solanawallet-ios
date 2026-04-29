@@ -6,7 +6,7 @@
 //
 
 /// Base58-encoded Solana public key (32 bytes encoded, ~44 chars).
-public typealias PublicKey = String
+public typealias Pubkey = String
 
 /// Solana lamport (1 SOL = 1_000_000_000 lamports).
 public typealias Lamports = UInt64

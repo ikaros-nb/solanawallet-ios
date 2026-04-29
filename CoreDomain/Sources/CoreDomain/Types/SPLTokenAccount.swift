@@ -6,14 +6,14 @@
 //
 
 public struct SPLTokenAccount: Sendable, Equatable, Hashable {
-    public let mint: PublicKey
-    public let address: PublicKey
+    public let mint: Pubkey
+    public let address: Pubkey
     public let amount: UInt64
     public let decimals: UInt8
 
     public init(
-        mint: PublicKey,
-        address: PublicKey,
+        mint: Pubkey,
+        address: Pubkey,
         amount: UInt64,
         decimals: UInt8
     ) {

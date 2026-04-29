@@ -6,6 +6,6 @@
 //
 
 public protocol WalletReader: Sendable {
-    func fetchBalance(for owner: PublicKey) async throws -> Lamports
-    func fetchTokenAccounts(for owner: PublicKey) async throws -> [SPLTokenAccount]
+    func fetchBalance(for owner: Pubkey) async throws -> Lamports
+    func fetchTokenAccounts(for owner: Pubkey) async throws -> [SPLTokenAccount]
 }
