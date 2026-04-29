@@ -14,23 +14,19 @@ public struct JailbreakDetector: Sendable {
         case suspected
     }
 
-    public static let shared = JailbreakDetector()
+    private let probe: FilesystemProbe
 
-    private init() {}
+    public init(probe: FilesystemProbe) {
+        self.probe = probe
+    }
 
     @MainActor
     public func detect() -> JailbreakRisk {
-        if isSimulator {
-            .none
-        } else if isContainsSuspiciousApps() || isSuspiciousSystemPathsExists() {
-            .suspected
-        } else if hasSandboxViolation() {
-            .suspected
-        } else if hasCydiaInstalled() {
-            .suspected
-        } else {
-            .none
-        }
+        if isSimulator { return .none }
+        if hasSuspiciousApps() || hasSuspiciousSystemPaths() { return .suspected }
+        if hasSandboxViolation() { return .suspected }
+        if hasCydiaInstalled() { return .suspected }
+        return .none
     }
 
     private var isSimulator: Bool {
@@ -41,28 +37,18 @@ public struct JailbreakDetector: Sendable {
         #endif
     }
 
-    private func isContainsSuspiciousApps() -> Bool {
-        for path in suspiciousAppsPathToCheck where FileManager.default.fileExists(atPath: path) {
-            return true
-        }
-        return false
+    private func hasSuspiciousApps() -> Bool {
+        suspiciousAppsPathToCheck
+            .contains { probe.fileExists(atPath: $0) }
     }
 
-    private func isSuspiciousSystemPathsExists() -> Bool {
-        for path in suspiciousSystemPathsToCheck where FileManager.default.fileExists(atPath: path) {
-            return true
-        }
-        return false
+    private func hasSuspiciousSystemPaths() -> Bool {
+        suspiciousSystemPathsToCheck
+            .contains { probe.fileExists(atPath: $0) }
     }
 
     private func hasSandboxViolation() -> Bool {
-        do {
-            try "sandbox_test".write(toFile: "/private/sandbox_test", atomically: true, encoding: .utf8)
-            try FileManager.default.removeItem(atPath: "/private/sandbox_test")
-            return true
-        } catch {
-            return false
-        }
+        probe.canWrite(toPath: "/private/sandbox_test")
     }
 
     @MainActor
