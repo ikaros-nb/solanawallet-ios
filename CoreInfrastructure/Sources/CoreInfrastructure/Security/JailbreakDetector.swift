@@ -8,6 +8,17 @@
 import Foundation
 import UIKit
 
+public protocol URLOpener: Sendable {
+    func canOpen(_ url: URL) async -> Bool
+}
+
+public struct SystemURLOpener: URLOpener {
+    public init() {}
+    public func canOpen(_ url: URL) async -> Bool {
+        await MainActor.run { UIApplication.shared.canOpenURL(url) }
+    }
+}
+
 public struct JailbreakDetector: Sendable {
     public enum JailbreakRisk {
         case none
@@ -15,124 +26,123 @@ public struct JailbreakDetector: Sendable {
     }
 
     private let probe: FilesystemProbe
+    private let urlOpener: URLOpener
 
-    public init(probe: FilesystemProbe) {
+    public init(probe: FilesystemProbe, urlOpener: URLOpener) {
         self.probe = probe
+        self.urlOpener = urlOpener
     }
 
-    @MainActor
-    public func detect() -> JailbreakRisk {
-        if isSimulator { return .none }
+    public func detect() async -> JailbreakRisk {
         if hasSuspiciousApps() || hasSuspiciousSystemPaths() { return .suspected }
         if hasSandboxViolation() { return .suspected }
-        if hasCydiaInstalled() { return .suspected }
+        if await hasCydiaInstalled() { return .suspected }
         return .none
     }
 
-    private var isSimulator: Bool {
-        #if targetEnvironment(simulator)
-        true
-        #else
-        false
-        #endif
-    }
-
     private func hasSuspiciousApps() -> Bool {
-        suspiciousAppsPathToCheck
+        Self.suspiciousAppsPaths
             .contains { probe.fileExists(atPath: $0) }
     }
 
     private func hasSuspiciousSystemPaths() -> Bool {
-        suspiciousSystemPathsToCheck
+        Self.suspiciousSystemPaths
             .contains { probe.fileExists(atPath: $0) }
     }
 
     private func hasSandboxViolation() -> Bool {
-        probe.canWrite(toPath: "/private/sandbox_test")
+        probe.canWrite(toPath: Self.sandboxProbePath)
     }
 
     @MainActor
-    private func hasCydiaInstalled() -> Bool {
-        UIApplication.shared.canOpenURL(URL(string: "cydia://")!) ||
-            UIApplication.shared.canOpenURL(URL(string: "sileo://")!) ||
-            UIApplication.shared.canOpenURL(URL(string: "zbra://")!)
+    private func hasCydiaInstalled() async -> Bool {
+        for scheme in Self.suspiciousURLSchemes {
+            if let url = URL(string: scheme), await urlOpener.canOpen(url) {
+                return true
+            }
+        }
+        return false
     }
 
-    // MARK: - Path Lists
+    // MARK: - Known signatures (package-visible for tests)
 
-    private var suspiciousAppsPathToCheck: [String] {
-        [
-            // Traditional jailbreaks
-            "/Applications/Cydia.app",
-            "/Applications/blackra1n.app",
-            "/Applications/FakeCarrier.app",
-            "/Applications/Icy.app",
-            "/Applications/IntelliScreen.app",
-            "/Applications/MxTube.app",
-            "/Applications/RockApp.app",
-            "/Applications/SBSettings.app",
-            "/Applications/WinterBoard.app",
+    package static let sandboxProbePath = "/private/sandbox_test"
 
-            // Modern jailbreaks
-            "/Applications/Palera1n.app",
-            "/Applications/Sileo.app",
-            "/Applications/Zebra.app",
-            "/Applications/TrollStore.app",
-            "/var/containers/Bundle/Application/TrollStore.app",
+    package static let suspiciousURLSchemes: [String] = [
+        "cydia://",
+        "sileo://",
+        "zbra://"
+    ]
 
-            // Checkra1n
-            "/Applications/checkra1n.app",
+    package static let suspiciousAppsPaths: [String] = [
+        // Traditional jailbreaks
+        "/Applications/Cydia.app",
+        "/Applications/blackra1n.app",
+        "/Applications/FakeCarrier.app",
+        "/Applications/Icy.app",
+        "/Applications/IntelliScreen.app",
+        "/Applications/MxTube.app",
+        "/Applications/RockApp.app",
+        "/Applications/SBSettings.app",
+        "/Applications/WinterBoard.app",
 
-            // Rootless jailbreak paths
-            "/var/jb/Applications/Cydia.app",
-            "/var/jb/Applications/Sileo.app",
-            "/var/jb/Applications/Zebra.app"
-        ]
-    }
+        // Modern jailbreaks
+        "/Applications/Palera1n.app",
+        "/Applications/Sileo.app",
+        "/Applications/Zebra.app",
+        "/Applications/TrollStore.app",
+        "/var/containers/Bundle/Application/TrollStore.app",
 
-    private var suspiciousSystemPathsToCheck: [String] {
-        [
-            // Traditional paths
-            "/Library/MobileSubstrate/DynamicLibraries/LiveClock.plist",
-            "/Library/MobileSubstrate/DynamicLibraries/Veency.plist",
-            "/private/var/lib/apt",
-            "/private/var/lib/cydia",
-            "/private/var/mobile/Library/SBSettings/Themes",
-            "/private/var/stash",
-            "/private/var/tmp/cydia.log",
-            "/System/Library/LaunchDaemons/com.ikey.bbot.plist",
-            "/System/Library/LaunchDaemons/com.saurik.Cydia.Startup.plist",
-            "/usr/bin/sshd",
-            "/usr/libexec/sftp-server",
-            "/usr/sbin/sshd",
-            "/etc/apt",
-            "/bin/bash",
-            "/Library/MobileSubstrate/MobileSubstrate.dylib",
+        // Checkra1n
+        "/Applications/checkra1n.app",
 
-            // Modern jailbreak paths
-            "/var/jb", // Rootless jailbreak root
-            "/var/binpack", // Checkm8 jailbreak
-            "/var/containers/Bundle/tweaksupport",
-            "/var/mobile/Library/palera1n",
-            "/var/mobile/Library/xyz.willy.Zebra",
-            "/var/lib/undecimus",
+        // Rootless jailbreak paths
+        "/var/jb/Applications/Cydia.app",
+        "/var/jb/Applications/Sileo.app",
+        "/var/jb/Applications/Zebra.app"
+    ]
 
-            // Palera1n specific
-            "/var/jb/basebin",
-            "/var/jb/usr",
-            "/var/jb/etc",
-            "/var/jb/Library",
-            "/var/jb/.installed_palera1n",
-            "/var/binpack/Applications",
-            "/var/binpack/usr",
+    package static let suspiciousSystemPaths: [String] = [
+        // Traditional paths
+        "/Library/MobileSubstrate/DynamicLibraries/LiveClock.plist",
+        "/Library/MobileSubstrate/DynamicLibraries/Veency.plist",
+        "/private/var/lib/apt",
+        "/private/var/lib/cydia",
+        "/private/var/mobile/Library/SBSettings/Themes",
+        "/private/var/stash",
+        "/private/var/tmp/cydia.log",
+        "/System/Library/LaunchDaemons/com.ikey.bbot.plist",
+        "/System/Library/LaunchDaemons/com.saurik.Cydia.Startup.plist",
+        "/usr/bin/sshd",
+        "/usr/libexec/sftp-server",
+        "/usr/sbin/sshd",
+        "/etc/apt",
+        "/bin/bash",
+        "/Library/MobileSubstrate/MobileSubstrate.dylib",
 
-            // TrollStore
-            "/var/containers/Bundle/Application/trollstorehelper",
-            "/var/containers/Bundle/trollstore",
+        // Modern jailbreak paths
+        "/var/jb", // Rootless jailbreak root
+        "/var/binpack", // Checkm8 jailbreak
+        "/var/containers/Bundle/tweaksupport",
+        "/var/mobile/Library/palera1n",
+        "/var/mobile/Library/xyz.willy.Zebra",
+        "/var/lib/undecimus",
 
-            // Bootstrap files
-            "/var/jb/preboot",
-            "/var/jb/var"
-        ]
-    }
+        // Palera1n specific
+        "/var/jb/basebin",
+        "/var/jb/usr",
+        "/var/jb/etc",
+        "/var/jb/Library",
+        "/var/jb/.installed_palera1n",
+        "/var/binpack/Applications",
+        "/var/binpack/usr",
+
+        // TrollStore
+        "/var/containers/Bundle/Application/trollstorehelper",
+        "/var/containers/Bundle/trollstore",
+
+        // Bootstrap files
+        "/var/jb/preboot",
+        "/var/jb/var"
+    ]
 }
