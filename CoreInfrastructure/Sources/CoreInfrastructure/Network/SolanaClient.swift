@@ -9,7 +9,7 @@ import CoreDomain
 import CoreEntities
 import SolanaSwift
 
-actor SolanaClient {
+public actor SolanaClient {
     private let rpc: SolanaAPIClient
     private let keychain: KeychainWalletStore
     private var balanceCache: [Pubkey: Lamports] = [:]
@@ -27,24 +27,24 @@ actor SolanaClient {
 }
 
 extension SolanaClient: WalletReader {
-    func fetchBalance(for owner: Pubkey) async throws -> Lamports {
+    public func fetchBalance(for owner: Pubkey) async throws -> Lamports {
         throw WalletError.unknown(underlying: "not implemented (S19)")
     }
 
-    func fetchTokenAccounts(for owner: Pubkey) async throws -> [SPLTokenAccount] {
+    public func fetchTokenAccounts(for owner: Pubkey) async throws -> [SPLTokenAccount] {
         throw WalletError.unknown(underlying: "not implemented (S19)")
     }
 }
 
 extension SolanaClient: TransactionSender {
-    func sendSOL(
+    public func sendSOL(
         to recipient: Pubkey,
         amount: Lamports
     ) async throws -> TransactionSignature {
         throw WalletError.unknown(underlying: "not implemented (S20)")
     }
 
-    func sendSPL(
+    public func sendSPL(
         mint: Pubkey,
         to recipient: Pubkey,
         amount: UInt64

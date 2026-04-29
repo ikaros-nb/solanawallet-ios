@@ -6,9 +6,9 @@
 //
 
 import CoreDomain
-import CoreInfrastructure
 import Foundation
 import Testing
+@testable import CoreInfrastructure
 
 @Suite("WalletErrorMapping")
 struct WalletErrorMappingTests {

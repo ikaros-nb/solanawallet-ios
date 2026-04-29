@@ -1,5 +1,5 @@
 //
-//  WalletErrorMapping.Swift
+//  WalletErrorMapping.swift
 //  CoreInfrastructure
 //
 //  Created by Nicolas Bouème on 29/04/2026.
@@ -8,7 +8,7 @@
 import CoreDomain
 import Foundation
 
-public func mapToWalletError(_ error: Error) -> WalletError {
+func mapToWalletError(_ error: Error) -> WalletError {
     let nsError = error as NSError
     if nsError.domain == NSURLErrorDomain {
         switch nsError.code {
