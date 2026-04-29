@@ -11,11 +11,13 @@ import SolanaSwift
 
 actor SolanaClient {
     private let rpc: SolanaAPIClient
+    private let keychain: KeychainWalletStore
     private var balanceCache: [Pubkey: Lamports] = [:]
     private var tokensCache: [Pubkey: [SPLTokenAccount]] = [:]
 
-    init(rpc: SolanaAPIClient) {
+    init(rpc: SolanaAPIClient, keychain: KeychainWalletStore) {
         self.rpc = rpc
+        self.keychain = keychain
     }
 
     func invalidateCache() {
