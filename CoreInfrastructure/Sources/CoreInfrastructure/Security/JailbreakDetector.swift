@@ -8,7 +8,7 @@
 import Foundation
 
 public struct JailbreakDetector: Sendable {
-    public enum JailbreakRisk {
+    public enum JailbreakRisk: Equatable, Sendable {
         case none
         case suspected
     }
