@@ -5,27 +5,25 @@
 //  Created by Nicolas Bouème on 30/04/2026.
 //
 
+import CoreDomain
 import Foundation
-@preconcurrency import SolanaSwift
+import SolanaSwift
 
-/// Composition root — work in progress (S18, ADR-003 D6).
-///
-/// Current scope : wires the SolanaSwift logger + intercepted
-/// `NetworkManager` (DEBUG only) and exposes a raw `SolanaAPIClient` so the
-/// logger can be smoke-tested before `SolanaClient` has any working RPC method.
-///
-/// TODO (S18 — open):
-///  - Wire `SecureEnclaveManager` + `KeychainWalletStore`
-///  - Wire `WalletProvisioner`
-///  - Wire `SolanaClient` and stop exposing the raw `SolanaAPIClient`
+/// Wires the security stack (Secure Enclave + Keychain), the Solana RPC client,
+/// and the wallet provisioner.
 public struct AppDependencies: Sendable {
-    public let solanaAPIClient: SolanaAPIClient
+    public let keychain: KeychainWalletStore
+    public let walletCreator: any WalletCreator
+    public let solanaClient: SolanaClient
 
-    public static func make() -> AppDependencies {
+    public static func make() throws -> AppDependencies {
         configureSolanaSwiftDebugLogging()
 
+        let secureEnclave = try SecureEnclaveManager()
+        let keychain = KeychainWalletStore(secureEnclave: secureEnclave)
+
         let endpoint = APIEndPoint(
-            address: rpcEndpoint(),
+            address: solanaRpcEndpoint(),
             network: .devnet
         )
         let apiClient = JSONRPCAPIClient(
@@ -33,15 +31,26 @@ public struct AppDependencies: Sendable {
             networkManager: makeNetworkManager()
         )
 
-        return AppDependencies(solanaAPIClient: apiClient)
+        let solanaClient = SolanaClient(rpc: apiClient, keychain: keychain)
+        let walletCreator = WalletProvisioner(keychain: keychain)
+
+        return AppDependencies(
+            keychain: keychain,
+            walletCreator: walletCreator,
+            solanaClient: solanaClient
+        )
     }
 
-    private static func rpcEndpoint() -> String {
+    /// Reads `SolanaRpcEndpoint` from the host bundle's Info.plist (injected
+    /// from `Config/{Debug,Release}.xcconfig` via `SOLANA_RPC_ENDPOINT`).
+    /// Falls back to Surfpool localhost so unit tests and previews — where
+    /// `Bundle.main` is the test/preview bundle — keep a usable default.
+    private static func solanaRpcEndpoint() -> String {
         guard
             let value = Bundle.main.object(forInfoDictionaryKey: "SolanaRpcEndpoint") as? String,
             !value.isEmpty
         else {
-            fatalError("SolanaRpcEndpoint missing from Info.plist — check SOLANA_RPC_ENDPOINT in xcconfig.")
+            return "http://localhost:8899"
         }
         return value
     }
