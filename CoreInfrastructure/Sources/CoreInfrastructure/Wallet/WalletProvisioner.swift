@@ -8,9 +8,17 @@
 import CoreDomain
 import CoreEntities
 import Foundation
-@preconcurrency import SolanaSwift
+import os
+import SolanaSwift
 
 public actor WalletProvisioner: WalletCreator {
+    private static let logger = os.Logger(
+        subsystem: "com.ikaros.SolanaWallet.coreinfrastructure",
+        category: "WalletProvisioner"
+    )
+
+    private static let validMnemonicWordCounts: Set<Int> = [12, 15, 18, 21, 24]
+
     private let keychain: KeychainWalletStore
 
     init(keychain: KeychainWalletStore) {
@@ -21,7 +29,7 @@ public actor WalletProvisioner: WalletCreator {
         let mnemonic = Mnemonic(strength: 128)
         let keyPair = try await KeyPair(
             mnemonic: mnemonic,
-            network: .devnet,
+            network: .devnet, // deprecated and ignored
             derivablePath: .default
         )
         try persist(keyPair)
@@ -35,6 +43,9 @@ public actor WalletProvisioner: WalletCreator {
         let words = seedPhrase
             .split(whereSeparator: \.isWhitespace)
             .map { String($0).lowercased() }
+        guard Self.validMnemonicWordCounts.contains(words.count) else {
+            throw WalletError.invalidSeedPhrase
+        }
         let mnemonic: Mnemonic
         do {
             mnemonic = try Mnemonic(phrase: words)
@@ -45,10 +56,14 @@ public actor WalletProvisioner: WalletCreator {
         do {
             keyPair = try await KeyPair(
                 mnemonic: mnemonic,
-                network: .devnet,
+                network: .devnet, // deprecated and ignored
                 derivablePath: .default
             )
         } catch {
+            // Mnemonic(phrase:) has already validated BIP39 ; any error here is
+            // a derivation failure unrelated to the user input. Log to preserve
+            // the underlying cause, surface a generic invalidSeedPhrase.
+            Self.logger.error("KeyPair derivation failed: \(error, privacy: .public)")
             throw WalletError.invalidSeedPhrase
         }
         try persist(keyPair)
@@ -58,7 +73,13 @@ public actor WalletProvisioner: WalletCreator {
     private func persist(_ keyPair: KeyPair) throws {
         var secret = keyPair.secretKey
         defer { secret.resetBytes(in: 0..<secret.count) }
+        // saveKeypair is non-idempotent (throws if present); savePublicKey overwrites.
+        // Run the throwing one first so a failure leaves the existing pubkey untouched.
+        do {
+            try keychain.saveKeypair(secret)
+        } catch KeychainWalletStore.Failure.keypairAlreadyExists {
+            throw WalletError.walletAlreadyExists
+        }
         try keychain.savePublicKey(keyPair.publicKey.data)
-        try keychain.saveKeypair(secret)
     }
 }
