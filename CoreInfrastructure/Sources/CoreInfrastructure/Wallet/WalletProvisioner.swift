@@ -27,7 +27,7 @@ public actor WalletProvisioner: WalletCreator {
         try persist(keyPair)
         return WalletCreationResult(
             account: WalletAccount(pubkey: keyPair.publicKey.base58EncodedString),
-            seedPhrase: keyPair.phrase.joined(separator: " ")
+            seedPhrase: SecureSeedPhrase(words: keyPair.phrase)
         )
     }
 

@@ -7,9 +7,9 @@
 
 public struct WalletCreationResult: Sendable {
     public let account: WalletAccount
-    public let seedPhrase: String
+    public let seedPhrase: SecureSeedPhrase
 
-    public init(account: WalletAccount, seedPhrase: String) {
+    public init(account: WalletAccount, seedPhrase: SecureSeedPhrase) {
         self.account = account
         self.seedPhrase = seedPhrase
     }
