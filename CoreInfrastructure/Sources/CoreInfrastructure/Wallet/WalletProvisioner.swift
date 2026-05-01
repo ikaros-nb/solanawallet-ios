@@ -7,38 +7,58 @@
 
 import CoreDomain
 import CoreEntities
-import SolanaSwift
+import Foundation
+@preconcurrency import SolanaSwift
 
 public actor WalletProvisioner: WalletCreator {
     private let keychain: KeychainWalletStore
-    private let secureEnclave: SecureEnclaveManager
-    private let network: SolanaNetwork
 
-    init(
-        keychain: KeychainWalletStore,
-        secureEnclave: SecureEnclaveManager,
-        network: SolanaNetwork
-    ) {
+    init(keychain: KeychainWalletStore) {
         self.keychain = keychain
-        self.secureEnclave = secureEnclave
-        self.network = network
     }
 
     public func createWallet() async throws -> WalletCreationResult {
-        // 1. Générer Account via solana-swift (mnemonic 12 mots + Ed25519)
-        // 2. Récupérer privateKey bytes + publicKey + phrase
-        // 3. secureEnclave.encrypt(privateKey) -> blob
-        // 4. keychain.store(encryptedKeypair: blob, publicKey: ...)
-        // 5. Retourner WalletCreationResult(account, seedPhrase)
-        WalletCreationResult(account: <#T##WalletAccount#>, seedPhrase: <#T##String#>)
+        let mnemonic = Mnemonic(strength: 128)
+        let keyPair = try await KeyPair(
+            mnemonic: mnemonic,
+            network: .devnet,
+            derivablePath: .default
+        )
+        try persist(keyPair)
+        return WalletCreationResult(
+            account: WalletAccount(pubkey: keyPair.publicKey.base58EncodedString),
+            seedPhrase: keyPair.phrase.joined(separator: " ")
+        )
     }
 
     public func importWallet(seedPhrase: String) async throws -> WalletAccount {
-        // 1. Trim + lowercase
-        // 2. Tenter Account(phrase: words, network: network, derivablePath: .default)
-        //    → catch et map vers WalletError.invalidSeedPhrase
-        // 3. Encrypt + store identique à createWallet
-        // 4. Retourner WalletAccount
-        WalletAccount(pubkey: <#T##Pubkey#>)
+        let words = seedPhrase
+            .split(whereSeparator: \.isWhitespace)
+            .map { String($0).lowercased() }
+        let mnemonic: Mnemonic
+        do {
+            mnemonic = try Mnemonic(phrase: words)
+        } catch {
+            throw WalletError.invalidSeedPhrase
+        }
+        let keyPair: KeyPair
+        do {
+            keyPair = try await KeyPair(
+                mnemonic: mnemonic,
+                network: .devnet,
+                derivablePath: .default
+            )
+        } catch {
+            throw WalletError.invalidSeedPhrase
+        }
+        try persist(keyPair)
+        return WalletAccount(pubkey: keyPair.publicKey.base58EncodedString)
+    }
+
+    private func persist(_ keyPair: KeyPair) throws {
+        var secret = keyPair.secretKey
+        defer { secret.resetBytes(in: 0..<secret.count) }
+        try keychain.savePublicKey(keyPair.publicKey.data)
+        try keychain.saveKeypair(secret)
     }
 }
