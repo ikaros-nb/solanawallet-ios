@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E54FB3C92FA50225009948D7 /* SolanaSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E54FB3C82FA50225009948D7 /* SolanaSwift */; };
 		E5DC51742F99EBA900A85DA4 /* CoreInfrastructure in Frameworks */ = {isa = PBXBuildFile; productRef = E5DC51732F99EBA900A85DA4 /* CoreInfrastructure */; };
 		E5EC18072F92A5DF00D58D08 /* CoreDomain in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC18062F92A5DF00D58D08 /* CoreDomain */; };
 		E5EC18092F92A5DF00D58D08 /* CoreEntities in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC18082F92A5DF00D58D08 /* CoreEntities */; };
@@ -88,6 +89,7 @@
 				E5EC18092F92A5DF00D58D08 /* CoreEntities in Frameworks */,
 				E5EC18112F92A5DF00D58D08 /* FeatureVault in Frameworks */,
 				E5EC18132F92A5DF00D58D08 /* FeatureWallet in Frameworks */,
+				E54FB3C92FA50225009948D7 /* SolanaSwift in Frameworks */,
 				E5EC18072F92A5DF00D58D08 /* CoreDomain in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -178,6 +180,7 @@
 				E5EC180E2F92A5DF00D58D08 /* FeatureDashboard */,
 				E5EC18102F92A5DF00D58D08 /* FeatureVault */,
 				E5EC18122F92A5DF00D58D08 /* FeatureWallet */,
+				E54FB3C82FA50225009948D7 /* SolanaSwift */,
 			);
 			productName = SolanaWallet;
 			productReference = E5F88A572F928384004B90D0 /* SolanaWallet.app */;
@@ -212,6 +215,9 @@
 			);
 			mainGroup = E5F88A4E2F928384004B90D0;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E54FB3C72FA50225009948D7 /* XCRemoteSwiftPackageReference "solana-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E5F88A582F928384004B90D0 /* Products */;
 			projectDirPath = "";
@@ -504,7 +510,23 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		E54FB3C72FA50225009948D7 /* XCRemoteSwiftPackageReference "solana-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/p2p-org/solana-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		E54FB3C82FA50225009948D7 /* SolanaSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E54FB3C72FA50225009948D7 /* XCRemoteSwiftPackageReference "solana-swift" */;
+			productName = SolanaSwift;
+		};
 		E5DC51732F99EBA900A85DA4 /* CoreInfrastructure */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CoreInfrastructure;
