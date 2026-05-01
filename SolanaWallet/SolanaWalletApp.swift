@@ -10,6 +10,8 @@ import SwiftUI
 
 @main
 struct SolanaWalletApp: App {
+    @State private var appState = AppState()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
