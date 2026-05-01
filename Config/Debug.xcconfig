@@ -13,4 +13,5 @@ INFOPLIST_KEY_CFBundleDisplayName = SolanaWallet Dev
 
 // MARK: - Solana
 
-SOLANA_RPC_ENDPOINT = "http://localhost:8899" // Surfpool
+// Surfpool — `$()` breaks the `//` xcconfig comment marker.
+SOLANA_RPC_ENDPOINT = http:/$()/localhost:8899

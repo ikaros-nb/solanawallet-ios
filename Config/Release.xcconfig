@@ -13,4 +13,5 @@ INFOPLIST_KEY_CFBundleDisplayName = SolanaWallet
 
 // MARK: - Solana
 
-SOLANA_RPC_ENDPOINT = "https://api.devnet.solana.com"
+// `$()` breaks the `//` xcconfig comment marker.
+SOLANA_RPC_ENDPOINT = https:/$()/api.devnet.solana.com

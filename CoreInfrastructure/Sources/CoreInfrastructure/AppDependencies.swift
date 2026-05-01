@@ -18,7 +18,6 @@ import Foundation
 ///  - Wire `SecureEnclaveManager` + `KeychainWalletStore`
 ///  - Wire `WalletProvisioner`
 ///  - Wire `SolanaClient` and stop exposing the raw `SolanaAPIClient`
-///  - Read `SOLANA_RPC_ENDPOINT` from `Info.plist` instead of hardcoding (ADR-001 D3)
 public struct AppDependencies: Sendable {
     public let solanaAPIClient: SolanaAPIClient
 
@@ -26,7 +25,7 @@ public struct AppDependencies: Sendable {
         configureSolanaSwiftDebugLogging()
 
         let endpoint = APIEndPoint(
-            address: "http://localhost:8899",
+            address: rpcEndpoint(),
             network: .devnet
         )
         let apiClient = JSONRPCAPIClient(
@@ -35,6 +34,16 @@ public struct AppDependencies: Sendable {
         )
 
         return AppDependencies(solanaAPIClient: apiClient)
+    }
+
+    private static func rpcEndpoint() -> String {
+        guard
+            let value = Bundle.main.object(forInfoDictionaryKey: "SolanaRpcEndpoint") as? String,
+            !value.isEmpty
+        else {
+            fatalError("SolanaRpcEndpoint missing from Info.plist — check SOLANA_RPC_ENDPOINT in xcconfig.")
+        }
+        return value
     }
 
     private static func makeNetworkManager() -> NetworkManager {
