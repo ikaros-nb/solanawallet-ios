@@ -11,10 +11,7 @@ import os
 import SolanaSwift
 
 struct LoggingNetworkManager: NetworkManager {
-    private static let logger = os.Logger(
-        subsystem: "com.ikaros.SolanaWallet.coreinfrastructure",
-        category: "SolanaSwift.Network"
-    )
+    private static let logger = AppLog.logger(for: "SolanaSwift.Network")
     private static let bodyPreviewLimit = 2048
 
     let wrapped: any NetworkManager & Sendable

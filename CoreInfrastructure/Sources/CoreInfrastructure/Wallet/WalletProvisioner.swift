@@ -12,10 +12,7 @@ import os
 import SolanaSwift
 
 public actor WalletProvisioner: WalletCreator {
-    private static let logger = os.Logger(
-        subsystem: "com.ikaros.SolanaWallet.coreinfrastructure",
-        category: "WalletProvisioner"
-    )
+    private static let logger = AppLog.logger(for: "WalletProvisioner")
 
     private static let validMnemonicWordCounts: Set<Int> = [12, 15, 18, 21, 24]
 

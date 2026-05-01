@@ -10,10 +10,7 @@ import os
 import SolanaSwift
 
 struct SolanaSwiftLoggerImpl: SolanaSwiftLogger {
-    private static let logger = os.Logger(
-        subsystem: "com.ikaros.SolanaWallet.coreinfrastructure",
-        category: "SolanaSwift"
-    )
+    private static let logger = AppLog.logger(for: "SolanaSwift")
 
     func log(event: String, data: String?, logLevel: SolanaSwiftLoggerLogLevel) {
         let message = data.map { "[\(event)] \($0)" } ?? "[\(event)]"
