@@ -11,10 +11,21 @@ import SwiftUI
 @main
 struct SolanaWalletApp: App {
     @State private var appState = AppState()
+    private let deps: AppDependencies
+
+    init() {
+        do {
+            deps = try AppDependencies.make()
+        } catch {
+            fatalError("AppDependencies bootstrap failed: \(error)")
+        }
+    }
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView(deps: deps)
+                .environment(appState)
+                .task { await appState.rehydrate(from: deps.keychain) }
                 .task {
                     let detector = JailbreakDetector(
                         probe: SystemFilesystemProbe(),
