@@ -10,13 +10,17 @@ import Foundation
 import os
 import SolanaSwift
 
-struct LoggingNetworkManager: NetworkManager {
+public struct LoggingNetworkManager: NetworkManager {
     private static let logger = AppLog.logger(for: "SolanaSwift.Network")
     private static let bodyPreviewLimit = 2048
 
-    let wrapped: any NetworkManager & Sendable
+    private let wrapped: any NetworkManager & Sendable
 
-    func requestData(request: URLRequest) async throws -> Data {
+    public init(wrapped: any NetworkManager & Sendable) {
+        self.wrapped = wrapped
+    }
+
+    public func requestData(request: URLRequest) async throws -> Data {
         let method = request.httpMethod ?? "?"
         let url = request.url?.absoluteString ?? "<no-url>"
         let bodyPreview = request.httpBody.map { Self.formatBody($0) } ?? ""

@@ -18,7 +18,7 @@ public actor WalletProvisioner: WalletCreator {
 
     private let keychain: KeychainWalletStore
 
-    init(keychain: KeychainWalletStore) {
+    public init(keychain: KeychainWalletStore) {
         self.keychain = keychain
     }
 

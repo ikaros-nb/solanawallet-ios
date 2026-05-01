@@ -9,10 +9,12 @@
 import os
 import SolanaSwift
 
-struct SolanaSwiftLoggerImpl: SolanaSwiftLogger {
+public struct SolanaSwiftLoggerImpl: SolanaSwiftLogger {
     private static let logger = AppLog.logger(for: "SolanaSwift")
 
-    func log(event: String, data: String?, logLevel: SolanaSwiftLoggerLogLevel) {
+    public init() {}
+
+    public func log(event: String, data: String?, logLevel: SolanaSwiftLoggerLogLevel) {
         let message = data.map { "[\(event)] \($0)" } ?? "[\(event)]"
         switch logLevel {
         case .debug: Self.logger.debug("\(message, privacy: .public)")

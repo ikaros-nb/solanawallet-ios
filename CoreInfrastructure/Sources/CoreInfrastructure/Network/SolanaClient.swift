@@ -15,7 +15,7 @@ public actor SolanaClient {
     private var balanceCache: [Pubkey: Lamports] = [:]
     private var tokensCache: [Pubkey: [SPLTokenAccount]] = [:]
 
-    init(rpc: SolanaAPIClient, keychain: KeychainWalletStore) {
+    public init(rpc: SolanaAPIClient, keychain: KeychainWalletStore) {
         self.rpc = rpc
         self.keychain = keychain
     }
