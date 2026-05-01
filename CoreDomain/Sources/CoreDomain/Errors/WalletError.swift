@@ -12,6 +12,7 @@ public enum WalletError: Error, Equatable, Sendable {
     case insufficientSOL
     case insufficientTokens
     case invalidSeedPhrase
+    case walletAlreadyExists
     case vaultError(code: Int, message: String)
     case signingFailed
     case unknown(underlying: String)
