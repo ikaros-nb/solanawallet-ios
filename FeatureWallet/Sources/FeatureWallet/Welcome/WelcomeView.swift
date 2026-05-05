@@ -50,7 +50,7 @@ public struct WelcomeView: View {
             VStack(spacing: 16) {
                 ActionButton(
                     title: .Welcome.buttonCreateWallet,
-                    style: .primary
+                    style: .primaryPurple
                 ) {
                     print("Test")
                 }

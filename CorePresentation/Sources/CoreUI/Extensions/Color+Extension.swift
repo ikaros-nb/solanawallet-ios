@@ -12,6 +12,7 @@ public extension Color {
     static let deepIndigo = Color(.deepIndigo)
     static let footerText = Color(.footerText)
     static let negative = Color(.negative)
+    static let secondaryGreen = Color(.secondaryGreen)
     static let secondaryText = Color(.secondaryText)
     static let solanaGreen = Color(.solanaGreen)
     static let solanaPurple = Color(.solanaPurple)
