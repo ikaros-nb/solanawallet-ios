@@ -5,6 +5,7 @@
 //  Created by Nicolas Bouème on 18/04/2026.
 //
 
+import FeatureWallet
 import SwiftUI
 
 struct RootView: View {
@@ -15,7 +16,7 @@ struct RootView: View {
         if appState.isOnboarded {
             Text("MainTabView")
         } else {
-            Text("Onboarding")
+            WelcomeView()
         }
     }
 }

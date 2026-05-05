@@ -4,13 +4,21 @@ import PackageDescription
 
 let package = Package(
     name: "FeatureWallet",
+    defaultLocalization: "en",
     platforms: [.iOS(.v26)],
     products: [
         .library(name: "FeatureWallet", targets: ["FeatureWallet"])
     ],
+    dependencies: [
+        .package(path: "../CorePresentation")
+    ],
     targets: [
         .target(
             name: "FeatureWallet",
+            dependencies: [
+                .product(name: "CoreUI", package: "CorePresentation")
+            ],
+            resources: [.process("Resources")],
             swiftSettings: [
                 .defaultIsolation(MainActor.self),
                 .treatAllWarnings(as: .error),
