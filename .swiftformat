@@ -36,6 +36,6 @@
 --header ignore
 --ifdef no-indent
 --marktypes never
---extension-acl on-declarations
+--extension-acl on-extension
 
 --exclude **/.build,**/DerivedData,**/.swiftpm,**/Build,**/Pods
