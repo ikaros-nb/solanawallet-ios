@@ -33,13 +33,16 @@ public struct ActionButton: View {
     }
 
     public var body: some View {
-        Button(action: action) {
+        Button(action: {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            action()
+        }, label: {
             buttonLabel
                 .foregroundStyle(foregroundStyle)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 18)
                 .background(background)
-        }
+        })
         .buttonStyle(PressScaleButtonStyle())
     }
 
