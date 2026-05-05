@@ -14,27 +14,45 @@ public struct ActionButton: View {
     }
 
     let title: LocalizedStringResource
+    let icon: Image?
     let style: Style
     let action: () -> Void
 
     public init(
         title: LocalizedStringResource,
+        icon: Image? = nil,
         style: Style = .primary,
         action: @escaping () -> Void
     ) {
         self.title = title
+        self.icon = icon
         self.style = style
         self.action = action
     }
 
     public var body: some View {
         Button(action: action) {
-            Text(title)
-                .font(.system(size: 16, weight: .semibold))
+            if let icon {
+                Label {
+                    Text(title)
+                        .font(.system(size: 16, weight: .semibold))
+                } icon: {
+                    icon
+                        .font(.system(size: 18, weight: .semibold))
+                }
+                .labelStyle(.titleAndIcon)
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 18)
                 .background(background)
+            } else {
+                Text(title)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 18)
+                    .background(background)
+            }
         }
         .buttonStyle(PressScaleButtonStyle())
     }
