@@ -8,10 +8,10 @@
 import CoreUI
 import SwiftUI
 
-public struct WelcomeView: View {
-    public init() {}
+struct WelcomeView: View {
+    @Environment(WelcomeRouter.self) private var router
 
-    public var body: some View {
+    var body: some View {
         VStack {
             VStack(spacing: 20) {
                 Spacer()
@@ -52,14 +52,14 @@ public struct WelcomeView: View {
                     title: .Welcome.buttonCreateWallet,
                     style: .primaryPurple
                 ) {
-                    print("Test")
+                    router.navigate(to: .createWallet)
                 }
 
                 ActionButton(
                     title: .Welcome.buttonImportWallet,
                     style: .secondary
                 ) {
-                    print("Test")
+                    router.navigate(to: .importWallet)
                 }
 
                 Text(.Welcome.footer)
@@ -74,4 +74,5 @@ public struct WelcomeView: View {
 
 #Preview {
     WelcomeView()
+        .environment(WelcomeRouter())
 }

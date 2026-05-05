@@ -16,7 +16,7 @@ struct RootView: View {
         if appState.isOnboarded {
             Text("MainTabView")
         } else {
-            WelcomeView()
+            WelcomeAssembly.make()
         }
     }
 }
