@@ -4,6 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "CorePresentation",
+    defaultLocalization: "en",
     platforms: [.iOS(.v26)],
     products: [
         .library(name: "CoreUI", targets: ["CoreUI"])
@@ -11,6 +12,7 @@ let package = Package(
     targets: [
         .target(
             name: "CoreUI",
+            resources: [.process("Resources")],
             swiftSettings: [
                 .defaultIsolation(MainActor.self),
                 .treatAllWarnings(as: .error),
