@@ -48,37 +48,19 @@ public struct WelcomeView: View {
             .frame(maxWidth: .infinity)
 
             VStack(spacing: 16) {
-                Button(action: {}, label: {
-                    Text(.Welcome.buttonCreateWallet)
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 18)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .fill(
-                                    LinearGradient(
-                                        colors: [Color.violet, Color.solanaPurple],
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    )
-                                )
-                                .rotationEffect(.degrees(180))
-                        )
-                })
+                ActionButton(
+                    title: .Welcome.buttonCreateWallet,
+                    style: .primary
+                ) {
+                    print("Test")
+                }
 
-                Button(action: {}, label: {
-                    Text(.Welcome.buttonImportWallet)
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 18)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .fill(.white.opacity(0.08))
-                                .stroke(Color.white.opacity(0.1), lineWidth: 1)
-                        )
-                })
+                ActionButton(
+                    title: .Welcome.buttonImportWallet,
+                    style: .secondary
+                ) {
+                    print("Test")
+                }
 
                 Text(.Welcome.footer)
                     .font(.system(size: 12, weight: .regular))
