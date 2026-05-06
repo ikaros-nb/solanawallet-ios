@@ -9,7 +9,7 @@ import CoreUI
 import SwiftUI
 
 struct BiometryView: View {
-    @State var viewModel: BiometryViewModel
+    let viewModel: BiometryViewModel
     @Environment(BiometryRouter.self) private var router
 
     var body: some View {
@@ -34,12 +34,7 @@ struct BiometryView: View {
                     icon: Image(systemName: "faceid"),
                     style: .primaryPurple
                 ) {
-                    switch viewModel.mode {
-                    case .create:
-                        router.navigate(to: .createWallet)
-                    case .importWallet:
-                        router.navigate(to: .importWallet)
-                    }
+                    viewModel.nextScreen(router: router)
                 }
             }
         }
@@ -50,7 +45,7 @@ struct BiometryView: View {
             ToolbarItem(placement: .principal) {
                 Text(.Biometry.navigationTitle)
                     .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(Color.secondaryText)
+                    .foregroundStyle(Color.tertiaryText)
             }
         }
     }

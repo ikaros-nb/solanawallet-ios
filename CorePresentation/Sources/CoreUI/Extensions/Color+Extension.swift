@@ -16,6 +16,7 @@ public extension Color {
     static let secondaryText = Color(.secondaryText)
     static let solanaGreen = Color(.solanaGreen)
     static let solanaPurple = Color(.solanaPurple)
+    static let tertiaryText = Color(.tertiaryText)
     static let surface = Color(.surface)
     static let violet = Color(.violet)
     static let warning = Color(.warning)

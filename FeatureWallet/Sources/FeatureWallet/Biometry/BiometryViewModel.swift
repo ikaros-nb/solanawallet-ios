@@ -10,9 +10,18 @@ import SwiftUI
 @Observable
 @MainActor
 final class BiometryViewModel {
-    let mode: WalletMode
+    private let mode: WalletMode
 
     init(mode: WalletMode) {
         self.mode = mode
+    }
+
+    func nextScreen(router: BiometryRouter) {
+        switch mode {
+        case .create:
+            router.navigate(to: .createWallet)
+        case .importWallet:
+            router.navigate(to: .importWallet)
+        }
     }
 }
