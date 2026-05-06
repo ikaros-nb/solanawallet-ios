@@ -9,4 +9,10 @@ import SwiftUI
 
 @Observable
 @MainActor
-final class RecoveryPhraseViewModel {}
+final class RecoveryPhraseViewModel {
+    let words: [String] = [
+        "margin", "pioneer", "segment", "liquid",
+        "ocean", "frown", "spike", "ritual",
+        "poverty", "vivid", "purity", "atlas"
+    ]
+}
