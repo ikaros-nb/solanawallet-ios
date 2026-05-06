@@ -22,10 +22,10 @@ public enum BiometrySheetRoute: Identifiable {
 @MainActor
 @Observable
 final class BiometryRouter {
-    private let push: (BiometryRoute) -> Void
+    private let push: (any Hashable) -> Void
     var presentedSheet: BiometrySheetRoute?
 
-    init(push: @escaping (BiometryRoute) -> Void) {
+    init(push: @escaping (any Hashable) -> Void) {
         self.push = push
     }
 

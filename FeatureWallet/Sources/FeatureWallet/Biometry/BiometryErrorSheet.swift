@@ -30,7 +30,12 @@ struct BiometryErrorSheet: View {
         }
         .padding(.top, 44)
         .padding(.horizontal, 32)
-        .presentationBackground(Color.deepIndigo)
+        .presentationBackground {
+            RoundedRectangle(cornerRadius: 34)
+                .strokeBorder(.white.opacity(0.1), lineWidth: 1)
+                .background(RoundedRectangle(cornerRadius: 34)
+                    .fill(Color.card))
+        }
         .presentationDetents([.height(300)])
         .presentationDragIndicator(.visible)
         .interactiveDismissDisabled(true)
