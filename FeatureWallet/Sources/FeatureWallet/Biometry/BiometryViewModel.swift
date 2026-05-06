@@ -27,7 +27,7 @@ final class BiometryViewModel {
                 error: &error
             )
         else {
-            print("Can't evaluate policy")
+            router.present(.error)
             return
         }
 
@@ -42,7 +42,7 @@ final class BiometryViewModel {
                 nextScreen(router: router)
             }
         } catch {
-            print("Authentication failed")
+            router.present(.error)
         }
     }
 

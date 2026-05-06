@@ -18,6 +18,10 @@ public enum TypographyStyle {
     case button
     /// Button icon (18, semibold) - Note: color usually managed by button style
     case buttonIcon
+    /// Sheet title (20, semibold, white)
+    case sheetTitle
+    /// Sheet body (14, regular, secondaryText)
+    case sheetBody
 
     var font: Font {
         switch self {
@@ -26,13 +30,15 @@ public enum TypographyStyle {
         case .footer: .system(size: 12, weight: .regular)
         case .button: .system(size: 16, weight: .semibold)
         case .buttonIcon: .system(size: 18, weight: .semibold)
+        case .sheetTitle: .system(size: 20, weight: .semibold)
+        case .sheetBody: .system(size: 14, weight: .regular)
         }
     }
 
     var color: Color? {
         switch self {
-        case .title: .white
-        case .body: .secondaryText
+        case .title, .sheetTitle: .white
+        case .body, .sheetBody: .secondaryText
         case .footer: .footerText
         case .button, .buttonIcon: nil
         }
