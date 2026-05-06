@@ -8,8 +8,7 @@
 import SwiftUI
 
 enum WelcomeRoute: Hashable, Codable {
-    case createWallet
-    case importWallet
+    case biometry(WalletMode)
 }
 
 @MainActor

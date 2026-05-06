@@ -34,21 +34,21 @@ struct WelcomeView: View {
                     title: .Welcome.buttonCreateWallet,
                     style: .primaryPurple
                 ) {
-                    router.navigate(to: .createWallet)
+                    router.navigate(to: .biometry(.create))
                 }
 
                 ActionButton(
                     title: .Welcome.buttonImportWallet,
                     style: .secondary
                 ) {
-                    router.navigate(to: .importWallet)
+                    router.navigate(to: .biometry(.importWallet))
                 }
 
                 Text(.Welcome.footer)
                     .typography(.footer)
             }
-            .padding(.horizontal, 32)
         }
+        .padding(.horizontal, 32)
         .background(Color.deepIndigo)
     }
 

@@ -21,10 +21,8 @@ private struct WelcomeFlowContainer: View {
             WelcomeView()
                 .navigationDestination(for: WelcomeRoute.self) { route in
                     switch route {
-                    case .createWallet:
-                        Text("Create wallet")
-                    case .importWallet:
-                        Text("Import wallet")
+                    case let .biometry(mode):
+                        BiometryAssembly.make(mode: mode) { router.path.append($0) }
                     }
                 }
         }
