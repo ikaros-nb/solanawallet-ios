@@ -44,10 +44,10 @@ struct RecoveryPhraseView: View {
 
                 Text(.RecoveryPhrase.footer)
                     .typography(.footer)
-                    .padding(.bottom, 12)
             }
         }
         .padding(.horizontal, 32)
+        .padding(.bottom, 12)
         .background(Color.deepIndigo)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

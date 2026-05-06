@@ -49,6 +49,7 @@ struct WelcomeView: View {
             }
         }
         .padding(.horizontal, 32)
+        .padding(.bottom, 12)
         .background(Color.deepIndigo)
     }
 

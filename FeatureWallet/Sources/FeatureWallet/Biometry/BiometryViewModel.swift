@@ -23,7 +23,7 @@ final class BiometryViewModel {
 
         guard
             context.canEvaluatePolicy(
-                .deviceOwnerAuthenticationWithBiometrics,
+                .deviceOwnerAuthentication,
                 error: &error
             )
         else {
@@ -35,7 +35,7 @@ final class BiometryViewModel {
 
         do {
             let hasEvaluationSucceeded = try await context.evaluatePolicy(
-                .deviceOwnerAuthenticationWithBiometrics,
+                .deviceOwnerAuthentication,
                 localizedReason: reason
             )
             if hasEvaluationSucceeded {
