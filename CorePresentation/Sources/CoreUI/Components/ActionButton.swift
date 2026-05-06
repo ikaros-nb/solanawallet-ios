@@ -52,8 +52,7 @@ public struct ActionButton: View {
             Label {
                 text
             } icon: {
-                icon
-                    .font(.system(size: 18, weight: .semibold))
+                icon.typography(.buttonIcon)
             }
             .labelStyle(.titleAndIcon)
         } else {
@@ -61,9 +60,9 @@ public struct ActionButton: View {
         }
     }
 
-    private var text: Text {
+    private var text: some View {
         Text(title)
-            .font(.system(size: 16, weight: .semibold))
+            .typography(.button)
     }
 
     private var foregroundStyle: Color {
@@ -127,5 +126,5 @@ public struct ActionButton: View {
         ActionButton(title: "Go back", style: .textOnly, action: {})
     }
     .padding(16)
-    .background(.black)
+    .background(Color.deepIndigo)
 }

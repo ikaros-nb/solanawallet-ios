@@ -16,25 +16,7 @@ struct WelcomeView: View {
             VStack(spacing: 20) {
                 Spacer()
 
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [Color.solanaGreen, Color.solanaPurple],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .rotationEffect(.degrees(225))
-                        .frame(width: 120, height: 120)
-                        .shadow(color: Color.solanaGreen.opacity(0.4), radius: 40, x: 0, y: 8)
-                        .shadow(color: Color.solanaPurple.opacity(0.4), radius: 60, x: 0, y: 0)
-                    Image(systemName: "wallet.bifold")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 48, height: 48)
-                        .foregroundStyle(.white)
-                }
+                circleLogo()
                 Text(.Welcome.title)
                     .font(.system(size: 30, weight: .bold))
                     .foregroundStyle(.white)
@@ -63,12 +45,33 @@ struct WelcomeView: View {
                 }
 
                 Text(.Welcome.footer)
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundStyle(Color.footerText)
+                    .typography(.footer)
             }
             .padding(.horizontal, 32)
         }
         .background(Color.deepIndigo)
+    }
+
+    private func circleLogo() -> some View {
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [Color.solanaGreen, Color.solanaPurple],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .rotationEffect(.degrees(225))
+                .frame(width: 120, height: 120)
+                .shadow(color: Color.solanaGreen.opacity(0.4), radius: 40, x: 0, y: 8)
+                .shadow(color: Color.solanaPurple.opacity(0.4), radius: 60, x: 0, y: 0)
+            Image(systemName: "wallet.bifold")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 48, height: 48)
+                .foregroundStyle(.white)
+        }
     }
 }
 
