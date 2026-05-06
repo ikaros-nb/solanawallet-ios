@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "banner.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Never share your recovery phrase. Anyone with these words can access your funds."
+          }
+        }
+      }
+    },
     "button.phrase.saved" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -74,6 +85,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Your phrase will never be stored anywhere."
+          }
+        }
+      }
+    },
+    "navigation.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step 2 of 2"
           }
         }
       }
