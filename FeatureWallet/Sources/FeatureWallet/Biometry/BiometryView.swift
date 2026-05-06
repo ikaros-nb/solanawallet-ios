@@ -34,7 +34,9 @@ struct BiometryView: View {
                     icon: Image(systemName: "faceid"),
                     style: .primaryPurple
                 ) {
-                    viewModel.nextScreen(router: router)
+                    Task {
+                        await viewModel.authenticateWithFaceID(router: router)
+                    }
                 }
             }
         }

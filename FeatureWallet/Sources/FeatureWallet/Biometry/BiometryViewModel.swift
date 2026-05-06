@@ -5,6 +5,7 @@
 //  Created by Nicolas Bouème on 06/05/2026.
 //
 
+import LocalAuthentication
 import SwiftUI
 
 @Observable
@@ -16,7 +17,36 @@ final class BiometryViewModel {
         self.mode = mode
     }
 
-    func nextScreen(router: BiometryRouter) {
+    func authenticateWithFaceID(router: BiometryRouter) async {
+        let context = LAContext()
+        var error: NSError?
+
+        guard
+            context.canEvaluatePolicy(
+                .deviceOwnerAuthenticationWithBiometrics,
+                error: &error
+            )
+        else {
+            print("Can't evaluate policy")
+            return
+        }
+
+        let reason = String(localized: .Biometry.requestFaceIDDescription)
+
+        do {
+            let hasEvaluationSucceeded = try await context.evaluatePolicy(
+                .deviceOwnerAuthenticationWithBiometrics,
+                localizedReason: reason
+            )
+            if hasEvaluationSucceeded {
+                nextScreen(router: router)
+            }
+        } catch {
+            print("Authentication failed")
+        }
+    }
+
+    private func nextScreen(router: BiometryRouter) {
         switch mode {
         case .create:
             router.navigate(to: .createWallet)

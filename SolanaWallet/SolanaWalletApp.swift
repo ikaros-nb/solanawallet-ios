@@ -26,6 +26,7 @@ struct SolanaWalletApp: App {
     var body: some Scene {
         WindowGroup {
             RootView(deps: deps)
+                .preferredColorScheme(.dark)
                 .environment(appState)
                 .task {
                     async let rehydrate: Void = appState.rehydrate(from: deps.keychain)

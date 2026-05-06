@@ -38,6 +38,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E5982D012FAB05AD005615C1 /* Exceptions for "SolanaWallet" folder in "SolanaWallet" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = E5F88A562F928384004B90D0 /* SolanaWallet */;
+		};
 		E5F88A722F92890D004B90D0 /* Exceptions for "Config" folder in "SolanaWallet" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -57,6 +64,9 @@
 		};
 		E5F88A592F928384004B90D0 /* SolanaWallet */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E5982D012FAB05AD005615C1 /* Exceptions for "SolanaWallet" folder in "SolanaWallet" target */,
+			);
 			path = SolanaWallet;
 			sourceTree = "<group>";
 		};
@@ -443,6 +453,13 @@
 				DEVELOPMENT_TEAM = B96N5PJKRG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SolanaWallet/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "SolanaWallet Dev";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -466,6 +483,13 @@
 				DEVELOPMENT_TEAM = B96N5PJKRG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SolanaWallet/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "SolanaWallet Dev";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
