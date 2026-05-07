@@ -8,6 +8,7 @@
 import CoreEntities
 
 public protocol WalletCreator: Sendable {
-    func createWallet() async throws -> WalletCreationResult
+    func generateSeedPhrase() -> SecureSeedPhrase
+    func createWallet(seedPhrase: SecureSeedPhrase) async throws -> WalletAccount
     func importWallet(seedPhrase: String) async throws -> WalletAccount
 }

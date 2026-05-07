@@ -22,18 +22,29 @@ public actor WalletProvisioner: WalletCreator {
         self.keychain = keychain
     }
 
-    public func createWallet() async throws -> WalletCreationResult {
+    // `nonisolated` to satisfy the sync protocol requirement; safe because
+    // `Mnemonic(strength:)` only uses `SecRandomCopyBytes` and an immutable
+    // wordlist, touching no shared state.
+    public nonisolated func generateSeedPhrase() -> SecureSeedPhrase {
         let mnemonic = Mnemonic(strength: 128)
+        return SecureSeedPhrase(words: mnemonic.phrase)
+    }
+
+    public func createWallet(seedPhrase: SecureSeedPhrase) async throws -> WalletAccount {
+        let mnemonic: Mnemonic
+        do {
+            mnemonic = try Mnemonic(phrase: seedPhrase.read() ?? [])
+        } catch {
+            throw WalletError.invalidSeedPhrase
+        }
+
         let keyPair = try await KeyPair(
             mnemonic: mnemonic,
             network: .devnet, // deprecated and ignored
             derivablePath: .default
         )
         try persist(keyPair)
-        return WalletCreationResult(
-            account: WalletAccount(pubkey: keyPair.publicKey.base58EncodedString),
-            seedPhrase: SecureSeedPhrase(words: keyPair.phrase)
-        )
+        return WalletAccount(pubkey: keyPair.publicKey.base58EncodedString)
     }
 
     public func importWallet(seedPhrase: String) async throws -> WalletAccount {

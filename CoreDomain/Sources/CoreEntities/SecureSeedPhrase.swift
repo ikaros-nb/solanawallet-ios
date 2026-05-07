@@ -32,11 +32,13 @@ public final class SecureSeedPhrase: @unchecked Sendable {
     }
 
     /// Returns the seed phrase as space-joined words, or `nil` if already wiped.
-    public func read() -> String? {
+    public func read() -> [String]? {
         lock.lock()
         defer { lock.unlock() }
         guard !wiped else { return nil }
-        return String(bytes: storage, encoding: .utf8)
+        return String(bytes: storage, encoding: .utf8)?
+            .split(separator: " ")
+            .map { String($0) }
     }
 
     /// Zeroes the underlying buffer. Idempotent.

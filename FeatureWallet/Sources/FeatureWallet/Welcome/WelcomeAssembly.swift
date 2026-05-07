@@ -15,6 +15,7 @@ public enum WelcomeAssembly {
 
 private struct WelcomeFlowContainer: View {
     @State private var router = WelcomeRouter()
+    @State private var session = OnboardingSession()
 
     var body: some View {
         NavigationStack(path: $router.path) {
@@ -27,5 +28,6 @@ private struct WelcomeFlowContainer: View {
                 }
         }
         .environment(router)
+        .environment(session)
     }
 }

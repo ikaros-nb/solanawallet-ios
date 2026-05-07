@@ -7,5 +7,5 @@
 
 public enum WalletMode: Hashable, Codable {
     case create
-    case importWallet
+    case importViaBIP39
 }

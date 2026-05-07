@@ -17,6 +17,10 @@ struct RootView: View {
             Text("MainTabView")
         } else {
             WelcomeAssembly.make()
+                .environment(\.walletCreator, deps.walletCreator)
+                .environment(\.walletOnComplete) { account in
+                    appState.activeWallet = account
+                }
         }
     }
 }

@@ -5,6 +5,7 @@
 //  Created by Nicolas Bouème on 06/05/2026.
 //
 
+import CoreEntities
 import CoreUI
 import SwiftUI
 
@@ -40,7 +41,11 @@ struct RecoveryPhraseView: View {
                     title: .RecoveryPhrase.buttonPhraseSaved,
                     icon: Image(systemName: "square.on.square"),
                     style: .primaryPurple
-                ) {}
+                ) {
+                    Task {
+                        await viewModel.createWallet(router: router)
+                    }
+                }
 
                 Text(.RecoveryPhrase.footer)
                     .typography(.footer)
@@ -125,8 +130,14 @@ struct RecoveryPhraseView: View {
 }
 
 #Preview {
-    NavigationStack {
-        RecoveryPhraseView(viewModel: RecoveryPhraseViewModel())
+    let session = OnboardingSession()
+    session.setSeedPhrase(SecureSeedPhrase(words: [
+        "margin", "pioneer", "segment", "liquid",
+        "ocean", "frown", "spike", "ritual",
+        "poverty", "vivid", "purity", "atlas"
+    ]))
+    return NavigationStack {
+        RecoveryPhraseView(viewModel: RecoveryPhraseViewModel(session: session))
             .environment(RecoveryPhraseRouter(push: { _ in }))
     }
 }

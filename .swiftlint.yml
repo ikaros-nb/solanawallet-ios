@@ -29,7 +29,6 @@ opt_in_rules:
   - legacy_multiple
   - literal_expression_end_indentation
   - lower_acl_than_parent
-  - modifier_order
   - multiline_arguments
   - multiline_parameters
   - operator_usage_whitespace
@@ -56,6 +55,7 @@ analyzer_rules:
 
 disabled_rules:
   - todo
+  - modifier_order
 
 line_length:
   warning: 120

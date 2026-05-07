@@ -41,7 +41,7 @@ struct WelcomeView: View {
                     title: .Welcome.buttonImportWallet,
                     style: .secondary
                 ) {
-                    router.navigate(to: .biometry(.importWallet))
+                    router.navigate(to: .biometry(.importViaBIP39))
                 }
 
                 Text(.Welcome.footer)

@@ -72,7 +72,13 @@ struct BiometryView: View {
 
 #Preview {
     NavigationStack {
-        BiometryView(viewModel: BiometryViewModel(mode: .create))
-            .environment(BiometryRouter(push: { _ in }))
+        BiometryView(
+            viewModel: BiometryViewModel(
+                mode: .create,
+                walletCreator: nil,
+                session: OnboardingSession()
+            )
+        )
+        .environment(BiometryRouter(push: { _ in }))
     }
 }

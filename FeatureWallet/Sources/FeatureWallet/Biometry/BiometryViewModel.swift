@@ -5,6 +5,7 @@
 //  Created by Nicolas Bouème on 06/05/2026.
 //
 
+import CoreDomain
 import LocalAuthentication
 import SwiftUI
 
@@ -12,9 +13,17 @@ import SwiftUI
 @MainActor
 final class BiometryViewModel {
     private let mode: WalletMode
+    private let walletCreator: (any WalletCreator)?
+    private let session: OnboardingSession
 
-    init(mode: WalletMode) {
+    init(
+        mode: WalletMode,
+        walletCreator: (any WalletCreator)?,
+        session: OnboardingSession
+    ) {
         self.mode = mode
+        self.walletCreator = walletCreator
+        self.session = session
     }
 
     func authenticateWithFaceID(router: BiometryRouter) async {
@@ -49,8 +58,10 @@ final class BiometryViewModel {
     private func nextScreen(router: BiometryRouter) {
         switch mode {
         case .create:
+            guard let walletCreator else { return }
+            session.setSeedPhrase(walletCreator.generateSeedPhrase())
             router.navigate(to: .createWallet)
-        case .importWallet:
+        case .importViaBIP39:
             router.navigate(to: .importWallet)
         }
     }
