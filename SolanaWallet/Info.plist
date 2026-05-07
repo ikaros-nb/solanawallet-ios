@@ -4,5 +4,7 @@
 <dict>
 	<key>NSFaceIDUsageDescription</key>
 	<string>$(FACEID_USAGE_DESCRIPTION)</string>
+	<key>SolanaRpcEndpoint</key>
+	<string>$(SOLANA_RPC_ENDPOINT)</string>
 </dict>
 </plist>
