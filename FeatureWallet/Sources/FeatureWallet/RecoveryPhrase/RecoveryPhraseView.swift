@@ -112,7 +112,6 @@ struct RecoveryPhraseView: View {
             }
             .focused($isPhraseFieldFocused)
             .typography(.body)
-            .foregroundStyle(.white)
             .lineLimit(5, reservesSpace: true)
             .frame(maxWidth: .infinity, alignment: .topLeading)
             .padding(.horizontal, 16)
@@ -137,8 +136,8 @@ struct RecoveryPhraseView: View {
             }
 
             Button {
-                viewModel.pasteFromClipboard()
                 isPhraseFieldFocused = false
+                viewModel.pasteFromClipboard()
             } label: {
                 Label {
                     Text(content.clipboard)

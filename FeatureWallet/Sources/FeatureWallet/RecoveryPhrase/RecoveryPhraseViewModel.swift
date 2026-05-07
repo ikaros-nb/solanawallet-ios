@@ -88,7 +88,10 @@ final class RecoveryPhraseViewModel {
     }
 
     func pasteFromClipboard() {
-        importedPhrase = UIPasteboard.general.string ?? importedPhrase
+        guard let clipboard = UIPasteboard.general.string else {
+            return
+        }
+        importedPhrase = clipboard
     }
 
     func importWallet() async {
