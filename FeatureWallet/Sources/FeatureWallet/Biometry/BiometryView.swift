@@ -80,6 +80,7 @@ struct BiometryView: View {
             viewModel: BiometryViewModel(
                 mode: .create,
                 walletCreator: nil,
+                authenticator: nil,
                 session: OnboardingSession()
             )
         )

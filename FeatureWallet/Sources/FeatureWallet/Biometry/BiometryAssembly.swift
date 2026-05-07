@@ -17,6 +17,7 @@ private struct BiometryFlowContainer: View {
     private let mode: WalletMode
     @State private var router = BiometryRouter()
     @Environment(\.walletCreator) private var walletCreator
+    @Environment(\.biometricAuthenticator) private var authenticator
     @Environment(OnboardingSession.self) private var session
 
     init(mode: WalletMode) {
@@ -28,6 +29,7 @@ private struct BiometryFlowContainer: View {
             viewModel: BiometryViewModel(
                 mode: mode,
                 walletCreator: walletCreator,
+                authenticator: authenticator,
                 session: session
             )
         )

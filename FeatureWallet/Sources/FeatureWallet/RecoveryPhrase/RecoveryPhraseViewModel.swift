@@ -30,12 +30,11 @@ final class RecoveryPhraseViewModel {
     }
 
     func createWallet(router: RecoveryPhraseRouter) {
+        UIPasteboard.general.string = words.joined(separator: " ")
         router.present(.confirmation)
     }
 
     func confirmCreation(router: RecoveryPhraseRouter) async {
-        UIPasteboard.general.string = words.joined(separator: " ")
-
         guard let walletCreator, let seedPhrase = session.seedPhrase else {
             router.dismissSheet()
             return

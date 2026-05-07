@@ -15,6 +15,7 @@ import Foundation
 struct AppDependencies {
     let keychain: KeychainWalletStore
     let walletCreator: any WalletCreator
+    let biometricAuthenticator: any BiometricAuthenticator
     let solanaClient: SolanaClient
 
     static func make() throws -> AppDependencies {
@@ -38,6 +39,7 @@ struct AppDependencies {
         return AppDependencies(
             keychain: keychain,
             walletCreator: walletCreator,
+            biometricAuthenticator: LocalAuthenticationBiometricAuthenticator(),
             solanaClient: solanaClient
         )
     }

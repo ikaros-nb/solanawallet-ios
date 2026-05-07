@@ -27,6 +27,7 @@ struct RootView: View {
         } else {
             WelcomeAssembly.make()
                 .environment(\.walletCreator, deps.walletCreator)
+                .environment(\.biometricAuthenticator, deps.biometricAuthenticator)
                 .environment(\.walletOnComplete) { account in
                     appState.activeWallet = account
                 }

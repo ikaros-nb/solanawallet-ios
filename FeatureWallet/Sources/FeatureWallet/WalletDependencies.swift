@@ -12,6 +12,8 @@ import SwiftUI
 public extension EnvironmentValues {
     @Entry var walletCreator: (any WalletCreator)?
 
+    @Entry var biometricAuthenticator: (any BiometricAuthenticator)?
+
     @Entry var walletOnComplete: ((WalletAccount) -> Void)?
 }
 

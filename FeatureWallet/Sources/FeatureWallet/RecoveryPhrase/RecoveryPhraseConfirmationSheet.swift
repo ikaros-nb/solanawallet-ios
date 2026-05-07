@@ -14,13 +14,17 @@ struct RecoveryPhraseConfirmationSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text(.RecoveryPhrase.title)
+            Text(.RecoveryPhrase.confirmationTitle)
                 .typography(.sheetTitle)
 
-            Text(.RecoveryPhrase.description)
+            Text(.RecoveryPhrase.confirmationDescription)
                 .typography(.sheetBody)
 
-            ActionButton(title: .RecoveryPhrase.confirmationButtonYes, style: .primaryGreen) {
+            ActionButton(
+                title: .RecoveryPhrase.confirmationButtonYes,
+                icon: Image(systemName: "checkmark.shield"),
+                style: .primaryGreen
+            ) {
                 Task {
                     await viewModel.confirmCreation(router: router)
                 }
