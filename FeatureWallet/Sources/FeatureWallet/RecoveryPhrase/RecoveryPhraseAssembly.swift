@@ -20,19 +20,19 @@ private struct RecoveryPhraseFlowContainer: View {
     @Environment(OnboardingSession.self) private var session
 
     var body: some View {
-        RecoveryPhraseView(
-            viewModel: RecoveryPhraseViewModel(
-                session: session,
-                walletCreator: walletCreator,
-                onComplete: onComplete
-            )
+        let viewModel = RecoveryPhraseViewModel(
+            session: session,
+            walletCreator: walletCreator,
+            onComplete: onComplete
         )
-        .environment(router)
-        .sheet(item: $router.presentedSheet) { sheet in
-            switch sheet {
-            case .confirmation:
-                Text("Confirmation sheet")
+        RecoveryPhraseView(viewModel: viewModel)
+            .environment(router)
+            .sheet(item: $router.presentedSheet) { sheet in
+                switch sheet {
+                case .confirmation:
+                    RecoveryPhraseConfirmationSheet(viewModel: viewModel)
+                        .environment(router)
+                }
             }
-        }
     }
 }

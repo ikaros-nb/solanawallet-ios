@@ -42,6 +42,7 @@ private struct BiometryFlowContainer: View {
             switch sheet {
             case .error:
                 BiometryErrorSheet()
+                    .environment(router)
             }
         }
     }

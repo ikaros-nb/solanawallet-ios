@@ -5,6 +5,7 @@
 //  Created by Nicolas Bouème on 18/04/2026.
 //
 
+import CoreInfrastructure
 import FeatureWallet
 import SwiftUI
 
@@ -14,7 +15,15 @@ struct RootView: View {
 
     var body: some View {
         if appState.isOnboarded {
-            Text("MainTabView")
+            VStack(spacing: 16) {
+                Text("MainTabView")
+                #if DEBUG
+                Button("Reset wallet", role: .destructive) {
+                    try? deps.keychain.reset()
+                    appState.activeWallet = nil
+                }
+                #endif
+            }
         } else {
             WelcomeAssembly.make()
                 .environment(\.walletCreator, deps.walletCreator)

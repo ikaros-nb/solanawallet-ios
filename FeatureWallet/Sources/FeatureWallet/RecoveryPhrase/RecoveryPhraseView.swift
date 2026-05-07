@@ -42,9 +42,7 @@ struct RecoveryPhraseView: View {
                     icon: Image(systemName: "square.on.square"),
                     style: .primaryPurple
                 ) {
-                    Task {
-                        await viewModel.createWallet(router: router)
-                    }
+                    viewModel.createWallet(router: router)
                 }
                 .disabled(viewModel.words.isEmpty)
 
