@@ -133,6 +133,28 @@
         }
       }
     },
+    "import.error.generic" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t import wallet. Please try again."
+          }
+        }
+      }
+    },
+    "import.error.invalid.phrase" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid recovery phrase. Check the words and try again."
+          }
+        }
+      }
+    },
     "import.footer" : {
       "extractionState" : "manual",
       "localizations" : {

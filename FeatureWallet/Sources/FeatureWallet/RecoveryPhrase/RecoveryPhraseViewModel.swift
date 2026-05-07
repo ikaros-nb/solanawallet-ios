@@ -38,7 +38,12 @@ enum RecoveryPhraseContent {
 final class RecoveryPhraseViewModel {
     let words: [String]
     let content: RecoveryPhraseContent
-    var importedPhrase: String = ""
+    var importedPhrase: String = "" {
+        didSet { importError = nil }
+    }
+
+    var importError: LocalizedStringResource?
+    var isImporting: Bool = false
 
     private let session: OnboardingSession
     private let walletCreator: (any WalletCreator)?
@@ -84,5 +89,21 @@ final class RecoveryPhraseViewModel {
 
     func pasteFromClipboard() {
         importedPhrase = UIPasteboard.general.string ?? importedPhrase
+    }
+
+    func importWallet() async {
+        guard let walletCreator else { return }
+        importError = nil
+        isImporting = true
+        defer { isImporting = false }
+        do {
+            let account = try await walletCreator.importWallet(seedPhrase: importedPhrase)
+            session.clear()
+            onComplete?(account)
+        } catch WalletError.invalidSeedPhrase {
+            importError = .RecoveryPhrase.importErrorInvalidPhrase
+        } catch {
+            importError = .RecoveryPhrase.importErrorGeneric
+        }
     }
 }

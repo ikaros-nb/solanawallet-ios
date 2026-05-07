@@ -129,6 +129,13 @@ struct RecoveryPhraseView: View {
                     .stroke(.white.opacity(0.1), lineWidth: 1)
             )
 
+            if let importError = viewModel.importError {
+                Text(importError)
+                    .foregroundStyle(Color.negative)
+                    .typography(.footer)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
             Button {
                 viewModel.pasteFromClipboard()
                 isPhraseFieldFocused = false
@@ -160,9 +167,9 @@ struct RecoveryPhraseView: View {
                 style: .primaryPurple
             ) {
                 isPhraseFieldFocused = false
-                viewModel.createWallet(router: router)
+                Task { await viewModel.importWallet() }
             }
-            .disabled(viewModel.importedPhrase.isEmpty)
+            .disabled(viewModel.importedPhrase.isEmpty || viewModel.isImporting)
 
             Text(content.footer)
                 .typography(.footer)
