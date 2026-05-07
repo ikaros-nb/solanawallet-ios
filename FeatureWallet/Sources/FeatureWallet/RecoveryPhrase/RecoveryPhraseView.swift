@@ -10,49 +10,40 @@ import CoreUI
 import SwiftUI
 
 struct RecoveryPhraseView: View {
-    let viewModel: RecoveryPhraseViewModel
+    @Bindable var viewModel: RecoveryPhraseViewModel
     @Environment(RecoveryPhraseRouter.self) private var router
     @State private var isNarrow: Bool = false
     @State private var isShort: Bool = false
+    @FocusState private var isPhraseFieldFocused: Bool
 
     var body: some View {
-        VStack {
-            VStack(spacing: 20) {
-                shieldLogo()
-                Text(.RecoveryPhrase.createTitle)
-                    .typography(.title)
-                Text(.RecoveryPhrase.createDescription)
-                    .typography(.body)
-                    .multilineTextAlignment(.center)
-                recoveryPhraseGrid()
-
-                Spacer()
+        ScrollView {
+            VStack {
+                switch viewModel.content {
+                case let .create(content):
+                    createContent(content)
+                case let .importViaBIP39(content):
+                    importContent(content)
+                }
             }
             .frame(maxWidth: .infinity)
-
-            VStack(spacing: 16) {
-                Banner(
-                    message: .RecoveryPhrase.bannerMessage,
-                    icon: Image(systemName: "exclamationmark.triangle"),
-                    style: .warning
-                )
-
-                ActionButton(
-                    title: .RecoveryPhrase.buttonPhraseSaved,
-                    icon: Image(systemName: "square.on.square"),
-                    style: .primaryPurple
-                ) {
-                    viewModel.createWallet(router: router)
-                }
-                .disabled(viewModel.words.isEmpty)
-
-                Text(.RecoveryPhrase.createFooter)
-                    .typography(.footer)
-            }
+            .padding(.horizontal, 32)
         }
-        .padding(.horizontal, 32)
-        .padding(.bottom, 12)
+        .scrollDismissesKeyboard(.interactively)
+        .scrollBounceBehavior(.basedOnSize)
         .background(Color.deepIndigo)
+        .safeAreaInset(edge: .bottom) {
+            Group {
+                switch viewModel.content {
+                case let .create(content):
+                    createBottomBar(content)
+                case let .importViaBIP39(content):
+                    importBottomBar(content)
+                }
+            }
+            .padding(.horizontal, 32)
+            .padding(.bottom, 12)
+        }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
@@ -69,7 +60,116 @@ struct RecoveryPhraseView: View {
         }
     }
 
-    private func shieldLogo() -> some View {
+    private func createContent(_ content: RecoveryPhraseContent.Create) -> some View {
+        VStack(spacing: 20) {
+            logo(content.logo)
+            Text(content.title)
+                .typography(.title)
+            Text(content.description)
+                .typography(.body)
+                .multilineTextAlignment(.center)
+            recoveryPhraseGrid()
+        }
+    }
+
+    private func createBottomBar(_ content: RecoveryPhraseContent.Create) -> some View {
+        VStack(spacing: 16) {
+            Banner(
+                message: .RecoveryPhrase.bannerMessage,
+                icon: Image(systemName: "exclamationmark.triangle"),
+                style: .warning
+            )
+
+            ActionButton(
+                title: content.buttonTitle,
+                icon: Image(systemName: "square.on.square"),
+                style: .primaryPurple
+            ) {
+                viewModel.createWallet(router: router)
+            }
+            .disabled(viewModel.words.isEmpty)
+
+            Text(content.footer)
+                .typography(.footer)
+        }
+    }
+
+    private func importContent(_ content: RecoveryPhraseContent.Import) -> some View {
+        VStack(spacing: 20) {
+            logo(content.logo)
+            Text(content.title)
+                .typography(.title)
+            Text(content.description)
+                .typography(.body)
+                .multilineTextAlignment(.center)
+
+            TextField(
+                text: $viewModel.importedPhrase,
+                prompt: Text(content.placeholder).foregroundStyle(.white.opacity(0.25)),
+                axis: .vertical
+            ) {
+                EmptyView()
+            }
+            .focused($isPhraseFieldFocused)
+            .typography(.body)
+            .foregroundStyle(.white)
+            .lineLimit(5, reservesSpace: true)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(.white.opacity(0.05))
+                    .stroke(.white.opacity(0.06), lineWidth: 1)
+            )
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .fill(.white.opacity(0.05))
+                    .stroke(.white.opacity(0.1), lineWidth: 1)
+            )
+
+            Button {
+                viewModel.pasteFromClipboard()
+                isPhraseFieldFocused = false
+            } label: {
+                Label {
+                    Text(content.clipboard)
+                } icon: {
+                    Image(systemName: "arrow.right.page.on.clipboard")
+                }
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(Color.violet)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+            }
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(.white.opacity(0.05))
+                    .stroke(.white.opacity(0.1), lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(0.08), radius: 0, x: 0, y: 1)
+        }
+    }
+
+    private func importBottomBar(_ content: RecoveryPhraseContent.Import) -> some View {
+        VStack(spacing: 16) {
+            ActionButton(
+                title: content.buttonTitle,
+                icon: Image(systemName: "tray.and.arrow.down"),
+                style: .primaryPurple
+            ) {
+                isPhraseFieldFocused = false
+                viewModel.createWallet(router: router)
+            }
+            .disabled(viewModel.importedPhrase.isEmpty)
+
+            Text(content.footer)
+                .typography(.footer)
+        }
+    }
+
+    private func logo(_ logo: String) -> some View {
         ZStack {
             Circle()
                 .fill(Color.card)
@@ -77,7 +177,7 @@ struct RecoveryPhraseView: View {
                 .frame(width: 80, height: 80)
                 .shadow(color: Color.solanaGreen.opacity(0.13), radius: 80, x: 0, y: 0)
                 .shadow(color: Color.solanaPurple.opacity(0.4), radius: 50, x: 0, y: 0)
-            Image(systemName: "checkmark.shield")
+            Image(systemName: logo)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 36, height: 36)
@@ -128,7 +228,7 @@ struct RecoveryPhraseView: View {
     }
 }
 
-#Preview {
+#Preview("Create") {
     let session = OnboardingSession()
     session.setSeedPhrase(SecureSeedPhrase(words: [
         "margin", "pioneer", "segment", "liquid",
@@ -136,7 +236,34 @@ struct RecoveryPhraseView: View {
         "poverty", "vivid", "purity", "atlas"
     ]))
     return NavigationStack {
-        RecoveryPhraseView(viewModel: RecoveryPhraseViewModel(session: session))
-            .environment(RecoveryPhraseRouter())
+        RecoveryPhraseView(
+            viewModel: RecoveryPhraseViewModel(
+                mode: .create,
+                session: session,
+                walletCreator: nil,
+                onComplete: nil
+            )
+        )
+        .environment(RecoveryPhraseRouter())
+    }
+}
+
+#Preview("Import") {
+    let session = OnboardingSession()
+    session.setSeedPhrase(SecureSeedPhrase(words: [
+        "margin", "pioneer", "segment", "liquid",
+        "ocean", "frown", "spike", "ritual",
+        "poverty", "vivid", "purity", "atlas"
+    ]))
+    return NavigationStack {
+        RecoveryPhraseView(
+            viewModel: RecoveryPhraseViewModel(
+                mode: .importViaBIP39,
+                session: session,
+                walletCreator: nil,
+                onComplete: nil
+            )
+        )
+        .environment(RecoveryPhraseRouter())
     }
 }

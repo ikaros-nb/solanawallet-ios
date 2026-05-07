@@ -36,8 +36,8 @@ private struct BiometryFlowContainer: View {
         .environment(router)
         .navigationDestination(for: BiometryRoute.self) { route in
             switch route {
-            case .recoveryPhrase:
-                RecoveryPhraseAssembly.make()
+            case let .recoveryPhrase(mode):
+                RecoveryPhraseAssembly.make(mode: mode)
             }
         }
         .sheet(item: $router.presentedSheet) { sheet in

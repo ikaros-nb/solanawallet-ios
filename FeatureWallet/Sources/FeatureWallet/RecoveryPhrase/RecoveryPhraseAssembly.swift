@@ -8,19 +8,25 @@
 import SwiftUI
 
 public enum RecoveryPhraseAssembly {
-    public static func make() -> some View {
-        RecoveryPhraseFlowContainer()
+    public static func make(mode: WalletMode) -> some View {
+        RecoveryPhraseFlowContainer(mode: mode)
     }
 }
 
 private struct RecoveryPhraseFlowContainer: View {
+    private let mode: WalletMode
     @State private var router = RecoveryPhraseRouter()
     @Environment(\.walletCreator) private var walletCreator
     @Environment(\.walletOnComplete) private var onComplete
     @Environment(OnboardingSession.self) private var session
 
+    init(mode: WalletMode) {
+        self.mode = mode
+    }
+
     var body: some View {
         let viewModel = RecoveryPhraseViewModel(
+            mode: mode,
             session: session,
             walletCreator: walletCreator,
             onComplete: onComplete

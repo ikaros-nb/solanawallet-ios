@@ -10,19 +10,50 @@ import CoreEntities
 import SwiftUI
 import UIKit
 
+enum RecoveryPhraseContent {
+    case create(Create)
+    case importViaBIP39(Import)
+
+    struct Create {
+        let logo: String = "checkmark.shield"
+        let title: LocalizedStringResource = .RecoveryPhrase.createTitle
+        let description: LocalizedStringResource = .RecoveryPhrase.createDescription
+        let footer: LocalizedStringResource = .RecoveryPhrase.createFooter
+        let buttonTitle: LocalizedStringResource = .RecoveryPhrase.buttonPhraseSaved
+    }
+
+    struct Import {
+        let logo: String = "tray.and.arrow.down"
+        let title: LocalizedStringResource = .RecoveryPhrase.importTitle
+        let description: LocalizedStringResource = .RecoveryPhrase.importDescription
+        let footer: LocalizedStringResource = .RecoveryPhrase.importFooter
+        let buttonTitle: LocalizedStringResource = .RecoveryPhrase.buttonImportWallet
+        let placeholder: LocalizedStringResource = .RecoveryPhrase.importPlaceholder
+        let clipboard: LocalizedStringResource = .RecoveryPhrase.importClipboard
+    }
+}
+
 @Observable
 @MainActor
 final class RecoveryPhraseViewModel {
     let words: [String]
+    let content: RecoveryPhraseContent
+    var importedPhrase: String = ""
+
     private let session: OnboardingSession
     private let walletCreator: (any WalletCreator)?
     private let onComplete: ((WalletAccount) -> Void)?
 
     init(
+        mode: WalletMode,
         session: OnboardingSession,
-        walletCreator: (any WalletCreator)? = nil,
-        onComplete: ((WalletAccount) -> Void)? = nil
+        walletCreator: (any WalletCreator)?,
+        onComplete: ((WalletAccount) -> Void)?
     ) {
+        content = switch mode {
+        case .create: .create(.init())
+        case .importViaBIP39: .importViaBIP39(.init())
+        }
         self.session = session
         self.walletCreator = walletCreator
         self.onComplete = onComplete
@@ -49,5 +80,9 @@ final class RecoveryPhraseViewModel {
             print("Failed to create wallet: \(error)")
             router.dismissSheet()
         }
+    }
+
+    func pasteFromClipboard() {
+        importedPhrase = UIPasteboard.general.string ?? importedPhrase
     }
 }
