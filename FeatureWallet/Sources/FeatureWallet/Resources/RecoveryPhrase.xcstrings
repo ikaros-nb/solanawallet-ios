@@ -12,6 +12,17 @@
         }
       }
     },
+    "button.import.wallet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import wallet"
+          }
+        }
+      }
+    },
     "button.phrase.saved" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -67,7 +78,7 @@
         }
       }
     },
-    "description" : {
+    "create.description" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -78,13 +89,79 @@
         }
       }
     },
-    "footer" : {
+    "create.footer" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Your phrase will never be stored anywhere."
+          }
+        }
+      }
+    },
+    "create.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your recovery phrase"
+          }
+        }
+      }
+    },
+    "import.clipboard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paste from clipboard"
+          }
+        }
+      }
+    },
+    "import.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter your 12 or 24-word recovery phrase\nto restore access to your wallet."
+          }
+        }
+      }
+    },
+    "import.footer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your phrase is verified locally and never be stored."
+          }
+        }
+      }
+    },
+    "import.placeholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter your recovery phrase separated by spaces..."
+          }
+        }
+      }
+    },
+    "import.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import your wallet"
           }
         }
       }
@@ -96,17 +173,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Step 2 of 2"
-          }
-        }
-      }
-    },
-    "title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your recovery phrase"
           }
         }
       }

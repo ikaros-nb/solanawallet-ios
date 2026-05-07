@@ -19,9 +19,9 @@ struct RecoveryPhraseView: View {
         VStack {
             VStack(spacing: 20) {
                 shieldLogo()
-                Text(.RecoveryPhrase.title)
+                Text(.RecoveryPhrase.createTitle)
                     .typography(.title)
-                Text(.RecoveryPhrase.description)
+                Text(.RecoveryPhrase.createDescription)
                     .typography(.body)
                     .multilineTextAlignment(.center)
                 recoveryPhraseGrid()
@@ -46,7 +46,7 @@ struct RecoveryPhraseView: View {
                 }
                 .disabled(viewModel.words.isEmpty)
 
-                Text(.RecoveryPhrase.footer)
+                Text(.RecoveryPhrase.createFooter)
                     .typography(.footer)
             }
         }
