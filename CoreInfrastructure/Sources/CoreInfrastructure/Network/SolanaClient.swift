@@ -7,7 +7,7 @@
 
 import CoreDomain
 import CoreEntities
-import SolanaSwift
+@preconcurrency import SolanaSwift
 
 public actor SolanaClient {
     private let rpc: SolanaAPIClient
@@ -28,11 +28,63 @@ public actor SolanaClient {
 
 extension SolanaClient: WalletReader {
     public func fetchBalance(for owner: Pubkey) async throws -> Lamports {
-        throw WalletError.unknown(underlying: "not implemented (S19)")
+        do {
+            let lamports = try await rpc.getBalance(account: owner, commitment: nil)
+            balanceCache[owner] = lamports
+            return lamports
+        } catch {
+            let mapped = mapToWalletError(error)
+            if let cached = balanceCache[owner] {
+                throw WalletError.staleCache(cached, underlying: mapped)
+            }
+            throw mapped
+        }
     }
 
     public func fetchTokenAccounts(for owner: Pubkey) async throws -> [SPLTokenAccount] {
-        throw WalletError.unknown(underlying: "not implemented (S19)")
+        do {
+            let raw = try await rpc.getTokenAccountsByOwner(
+                pubkey: owner,
+                params: .init(mint: nil, programId: TokenProgram.id.base58EncodedString),
+                configs: .init(commitment: "confirmed", encoding: "base64")
+            )
+
+            let accounts: [SPLTokenAccount] = try await withThrowingTaskGroup(
+                of: SPLTokenAccount.self
+            ) { group in
+                for token in raw {
+                    let address = token.pubkey
+                    let mint = token.account.data.mint.base58EncodedString
+                    let amount = token.account.data.lamports
+                    group.addTask { [rpc] in
+                        let balance = try await rpc.getTokenAccountBalance(
+                            pubkey: address,
+                            commitment: nil
+                        )
+                        return SPLTokenAccount(
+                            mint: mint,
+                            address: address,
+                            amount: amount,
+                            decimals: balance.decimals ?? 0
+                        )
+                    }
+                }
+                var out: [SPLTokenAccount] = []
+                for try await account in group {
+                    out.append(account)
+                }
+                return out
+            }
+
+            tokensCache[owner] = accounts
+            return accounts
+        } catch {
+            let mapped = mapToWalletError(error)
+            if let cached = tokensCache[owner] {
+                throw WalletError.staleTokenCache(cached, underlying: mapped)
+            }
+            throw mapped
+        }
     }
 }
 
