@@ -15,15 +15,16 @@ struct RootView: View {
 
     var body: some View {
         if appState.isOnboarded {
-            VStack(spacing: 16) {
-                Text("MainTabView")
-                #if DEBUG
-                Button("Reset wallet", role: .destructive) {
-                    try? deps.keychain.reset()
-                    appState.activeWallet = nil
-                }
-                #endif
-            }
+//            VStack(spacing: 16) {
+//                Text("MainTabView")
+//                #if DEBUG
+//                Button("Reset wallet", role: .destructive) {
+//                    try? deps.keychain.reset()
+//                    appState.activeWallet = nil
+//                }
+//                #endif
+//            }
+            MainTabView()
         } else {
             WelcomeAssembly.make()
                 .environment(\.walletCreator, deps.walletCreator)
