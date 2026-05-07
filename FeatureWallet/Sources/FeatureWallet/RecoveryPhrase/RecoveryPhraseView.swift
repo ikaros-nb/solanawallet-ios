@@ -12,8 +12,8 @@ import SwiftUI
 struct RecoveryPhraseView: View {
     let viewModel: RecoveryPhraseViewModel
     @Environment(RecoveryPhraseRouter.self) private var router
-    @State var isNarrow: Bool = false
-    @State var isShort: Bool = false
+    @State private var isNarrow: Bool = false
+    @State private var isShort: Bool = false
 
     var body: some View {
         VStack {
@@ -46,6 +46,7 @@ struct RecoveryPhraseView: View {
                         await viewModel.createWallet(router: router)
                     }
                 }
+                .disabled(viewModel.words.isEmpty)
 
                 Text(.RecoveryPhrase.footer)
                     .typography(.footer)
@@ -138,6 +139,6 @@ struct RecoveryPhraseView: View {
     ]))
     return NavigationStack {
         RecoveryPhraseView(viewModel: RecoveryPhraseViewModel(session: session))
-            .environment(RecoveryPhraseRouter(push: { _ in }))
+            .environment(RecoveryPhraseRouter())
     }
 }

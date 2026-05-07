@@ -8,28 +8,19 @@
 import SwiftUI
 
 public enum BiometryAssembly {
-    public static func make(
-        mode: WalletMode,
-        push: @escaping (any Hashable) -> Void
-    ) -> some View {
-        BiometryFlowContainer(mode: mode, push: push)
+    public static func make(mode: WalletMode) -> some View {
+        BiometryFlowContainer(mode: mode)
     }
 }
 
 private struct BiometryFlowContainer: View {
     private let mode: WalletMode
-    private let push: (any Hashable) -> Void
-    @State private var router: BiometryRouter
+    @State private var router = BiometryRouter()
     @Environment(\.walletCreator) private var walletCreator
     @Environment(OnboardingSession.self) private var session
 
-    init(
-        mode: WalletMode,
-        push: @escaping (any Hashable) -> Void
-    ) {
+    init(mode: WalletMode) {
         self.mode = mode
-        self.push = push
-        _router = State(initialValue: BiometryRouter(push: push))
     }
 
     var body: some View {
@@ -43,19 +34,14 @@ private struct BiometryFlowContainer: View {
         .environment(router)
         .navigationDestination(for: BiometryRoute.self) { route in
             switch route {
-            case .createWallet:
-                RecoveryPhraseAssembly.make(push: push)
-            case .importWallet:
-                RecoveryPhraseAssembly.make(push: push)
+            case .recoveryPhrase:
+                RecoveryPhraseAssembly.make()
             }
         }
         .sheet(item: $router.presentedSheet) { sheet in
             switch sheet {
             case .error:
-                BiometryErrorSheet(
-                    openSettings: router.openSettings,
-                    dismissSheet: router.dismissSheet
-                )
+                BiometryErrorSheet()
             }
         }
     }

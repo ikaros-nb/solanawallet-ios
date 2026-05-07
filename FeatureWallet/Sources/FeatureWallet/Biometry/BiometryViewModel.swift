@@ -26,7 +26,10 @@ final class BiometryViewModel {
         self.session = session
     }
 
-    func authenticateWithFaceID(router: BiometryRouter) async {
+    func authenticateWithFaceID(
+        router: BiometryRouter,
+        navigator: WalletNavigator
+    ) async {
         let context = LAContext()
         var error: NSError?
 
@@ -48,21 +51,21 @@ final class BiometryViewModel {
                 localizedReason: reason
             )
             if hasEvaluationSucceeded {
-                nextScreen(router: router)
+                nextScreen(navigator: navigator)
             }
         } catch {
             router.present(.error)
         }
     }
 
-    private func nextScreen(router: BiometryRouter) {
+    private func nextScreen(navigator: WalletNavigator) {
         switch mode {
         case .create:
             guard let walletCreator else { return }
             session.setSeedPhrase(walletCreator.generateSeedPhrase())
-            router.navigate(to: .createWallet)
+            navigator.push(BiometryRoute.recoveryPhrase(.create))
         case .importViaBIP39:
-            router.navigate(to: .importWallet)
+            navigator.push(BiometryRoute.recoveryPhrase(.importViaBIP39))
         }
     }
 }

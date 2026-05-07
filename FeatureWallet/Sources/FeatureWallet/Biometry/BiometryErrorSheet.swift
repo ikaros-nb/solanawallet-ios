@@ -7,10 +7,11 @@
 
 import CoreUI
 import SwiftUI
+import UIKit
 
 struct BiometryErrorSheet: View {
-    var openSettings: () -> Void
-    var dismissSheet: () -> Void
+    @Environment(BiometryRouter.self) private var router
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -21,11 +22,13 @@ struct BiometryErrorSheet: View {
                 .typography(.sheetBody)
 
             ActionButton(title: .Biometry.errorButtonSettings, style: .primaryPurple) {
-                openSettings()
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    openURL(url)
+                }
             }
 
             ActionButton(title: .Biometry.errorButtonCancel, style: .textOnly) {
-                dismissSheet()
+                router.dismissSheet()
             }
         }
         .padding(.top, 44)

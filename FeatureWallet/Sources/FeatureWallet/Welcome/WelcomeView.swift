@@ -9,7 +9,7 @@ import CoreUI
 import SwiftUI
 
 struct WelcomeView: View {
-    @Environment(WelcomeRouter.self) private var router
+    @Environment(WalletNavigator.self) private var navigator
 
     var body: some View {
         VStack {
@@ -34,14 +34,14 @@ struct WelcomeView: View {
                     title: .Welcome.buttonCreateWallet,
                     style: .primaryPurple
                 ) {
-                    router.navigate(to: .biometry(.create))
+                    navigator.push(WelcomeRoute.biometry(.create))
                 }
 
                 ActionButton(
                     title: .Welcome.buttonImportWallet,
                     style: .secondary
                 ) {
-                    router.navigate(to: .biometry(.importViaBIP39))
+                    navigator.push(WelcomeRoute.biometry(.importViaBIP39))
                 }
 
                 Text(.Welcome.footer)
@@ -78,5 +78,5 @@ struct WelcomeView: View {
 
 #Preview {
     WelcomeView()
-        .environment(WelcomeRouter())
+        .environment(WalletNavigator())
 }

@@ -31,9 +31,12 @@ public actor WalletProvisioner: WalletCreator {
     }
 
     public func createWallet(seedPhrase: SecureSeedPhrase) async throws -> WalletAccount {
+        guard let words = seedPhrase.read() else {
+            throw WalletError.seedPhraseUnavailable
+        }
         let mnemonic: Mnemonic
         do {
-            mnemonic = try Mnemonic(phrase: seedPhrase.read() ?? [])
+            mnemonic = try Mnemonic(phrase: words)
         } catch {
             throw WalletError.invalidSeedPhrase
         }

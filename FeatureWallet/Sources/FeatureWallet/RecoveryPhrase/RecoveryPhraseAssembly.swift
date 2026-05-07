@@ -8,24 +8,16 @@
 import SwiftUI
 
 public enum RecoveryPhraseAssembly {
-    public static func make(
-        push: @escaping (any Hashable) -> Void
-    ) -> some View {
-        RecoveryPhraseFlowContainer(push: push)
+    public static func make() -> some View {
+        RecoveryPhraseFlowContainer()
     }
 }
 
 private struct RecoveryPhraseFlowContainer: View {
-    private let push: (any Hashable) -> Void
-    @State private var router: RecoveryPhraseRouter
+    @State private var router = RecoveryPhraseRouter()
     @Environment(\.walletCreator) private var walletCreator
     @Environment(\.walletOnComplete) private var onComplete
     @Environment(OnboardingSession.self) private var session
-
-    init(push: @escaping (any Hashable) -> Void) {
-        self.push = push
-        _router = State(initialValue: RecoveryPhraseRouter(push: push))
-    }
 
     var body: some View {
         RecoveryPhraseView(
@@ -36,12 +28,6 @@ private struct RecoveryPhraseFlowContainer: View {
             )
         )
         .environment(router)
-        .navigationDestination(for: RecoveryPhraseRoute.self) { route in
-            switch route {
-            case .dashboard:
-                Text("Dashboard")
-            }
-        }
         .sheet(item: $router.presentedSheet) { sheet in
             switch sheet {
             case .confirmation:

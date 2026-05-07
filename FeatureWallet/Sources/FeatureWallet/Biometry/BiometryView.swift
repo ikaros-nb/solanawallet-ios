@@ -11,6 +11,7 @@ import SwiftUI
 struct BiometryView: View {
     let viewModel: BiometryViewModel
     @Environment(BiometryRouter.self) private var router
+    @Environment(WalletNavigator.self) private var navigator
 
     var body: some View {
         VStack {
@@ -35,7 +36,10 @@ struct BiometryView: View {
                     style: .primaryPurple
                 ) {
                     Task {
-                        await viewModel.authenticateWithFaceID(router: router)
+                        await viewModel.authenticateWithFaceID(
+                            router: router,
+                            navigator: navigator
+                        )
                     }
                 }
             }
@@ -79,6 +83,7 @@ struct BiometryView: View {
                 session: OnboardingSession()
             )
         )
-        .environment(BiometryRouter(push: { _ in }))
+        .environment(BiometryRouter())
+        .environment(WalletNavigator())
     }
 }

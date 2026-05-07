@@ -14,20 +14,20 @@ public enum WelcomeAssembly {
 }
 
 private struct WelcomeFlowContainer: View {
-    @State private var router = WelcomeRouter()
+    @State private var navigator = WalletNavigator()
     @State private var session = OnboardingSession()
 
     var body: some View {
-        NavigationStack(path: $router.path) {
+        NavigationStack(path: $navigator.path) {
             WelcomeView()
                 .navigationDestination(for: WelcomeRoute.self) { route in
                     switch route {
                     case let .biometry(mode):
-                        BiometryAssembly.make(mode: mode) { router.path.append($0) }
+                        BiometryAssembly.make(mode: mode)
                     }
                 }
         }
-        .environment(router)
+        .environment(navigator)
         .environment(session)
     }
 }
