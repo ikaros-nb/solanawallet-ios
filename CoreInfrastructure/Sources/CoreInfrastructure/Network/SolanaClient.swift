@@ -12,12 +12,18 @@ import CoreEntities
 public actor SolanaClient {
     private let rpc: SolanaAPIClient
     private let keychain: KeychainWalletStore
+    private let tokenRepository: TokenRepository?
     private var balanceCache: [Pubkey: Lamports] = [:]
     private var tokensCache: [Pubkey: [SPLTokenAccount]] = [:]
 
-    public init(rpc: SolanaAPIClient, keychain: KeychainWalletStore) {
+    public init(
+        rpc: SolanaAPIClient,
+        keychain: KeychainWalletStore,
+        tokenRepository: TokenRepository? = nil
+    ) {
         self.rpc = rpc
         self.keychain = keychain
+        self.tokenRepository = tokenRepository
     }
 
     func invalidateCache() {
@@ -49,6 +55,9 @@ extension SolanaClient: WalletReader {
                 configs: .init(commitment: "confirmed", encoding: "base64")
             )
 
+            let mints = raw.map(\.account.data.mint.base58EncodedString)
+            let metadata = try? await tokenRepository?.get(addresses: mints)
+
             let accounts: [SPLTokenAccount] = try await withThrowingTaskGroup(
                 of: SPLTokenAccount.self
             ) { group in
@@ -56,6 +65,8 @@ extension SolanaClient: WalletReader {
                     let address = token.pubkey
                     let mint = token.account.data.mint.base58EncodedString
                     let amount = token.account.data.lamports
+                    let name = metadata?[mint]?.name
+                    let symbol = metadata?[mint]?.symbol
                     group.addTask { [rpc] in
                         let balance = try await rpc.getTokenAccountBalance(
                             pubkey: address,
@@ -65,7 +76,9 @@ extension SolanaClient: WalletReader {
                             mint: mint,
                             address: address,
                             amount: amount,
-                            decimals: balance.decimals ?? 0
+                            decimals: balance.decimals ?? 0,
+                            name: name,
+                            symbol: symbol
                         )
                     }
                 }

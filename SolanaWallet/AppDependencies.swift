@@ -33,7 +33,17 @@ struct AppDependencies {
             networkManager: makeNetworkManager()
         )
 
-        let solanaClient = SolanaClient(rpc: apiClient, keychain: keychain)
+        let tokenRepository = SolanaTokenListRepository(
+            tokenListSource: SolanaTokenListSourceImpl.solanaLabs(
+                networkManager: makeNetworkManager()
+            )
+        )
+
+        let solanaClient = SolanaClient(
+            rpc: apiClient,
+            keychain: keychain,
+            tokenRepository: tokenRepository
+        )
         let walletCreator = WalletProvisioner(keychain: keychain)
 
         return AppDependencies(
