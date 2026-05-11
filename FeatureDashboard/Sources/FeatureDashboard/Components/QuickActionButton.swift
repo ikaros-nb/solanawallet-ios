@@ -5,6 +5,7 @@
 //  Created by Nicolas Bouème on 11/05/2026.
 //
 
+import CoreUI
 import SwiftUI
 
 struct QuickActionButton: View {
@@ -27,11 +28,6 @@ struct QuickActionButton: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: 48)
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(.white.opacity(0.08))
-                .stroke(.white.opacity(0.1), lineWidth: 1)
-                .shadow(color: .white.opacity(0.8), radius: 0, x: 0, y: 1)
-        )
+        .cardBackground(cornerRadius: 16)
     }
 }

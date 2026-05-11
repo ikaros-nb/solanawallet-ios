@@ -10,12 +10,14 @@ let package = Package(
         .library(name: "FeatureDashboard", targets: ["FeatureDashboard"])
     ],
     dependencies: [
+        .package(path: "../CoreDomain"),
         .package(path: "../CorePresentation")
     ],
     targets: [
         .target(
             name: "FeatureDashboard",
             dependencies: [
+                .product(name: "CoreEntities", package: "CoreDomain"),
                 .product(name: "CoreUI", package: "CorePresentation")
             ],
             resources: [.process("Resources")],

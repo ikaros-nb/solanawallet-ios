@@ -1,4 +1,12 @@
+//
+//  DashboardViewModel.swift
+//  FeatureDashboard
+//
+//  Created by Nicolas Bouème on 11/05/2026.
+//
+
 import CoreEntities
+import Foundation
 
 @Observable
 @MainActor

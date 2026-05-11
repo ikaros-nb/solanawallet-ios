@@ -8,10 +8,10 @@
 import CoreUI
 import SwiftUI
 
-public struct DashboardView: View {
-    public init() {}
+struct DashboardView: View {
+    let viewModel: DashboardViewModel
 
-    public var body: some View {
+    var body: some View {
         VStack(spacing: 16) {
             balanceSection()
             vaultSavingsSection()
@@ -37,12 +37,7 @@ public struct DashboardView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(.white.opacity(0.08))
-                .stroke(.white.opacity(0.1), lineWidth: 1)
-                .shadow(color: .white.opacity(0.8), radius: 0, x: 0, y: 1)
-        )
+        .cardBackground()
     }
 
     private func vaultSavingsSection() -> some View {
@@ -69,12 +64,7 @@ public struct DashboardView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(.white.opacity(0.08))
-                .stroke(.white.opacity(0.1), lineWidth: 1)
-                .shadow(color: .white.opacity(0.8), radius: 0, x: 0, y: 1)
-        )
+        .cardBackground()
     }
 
     private func quickActionsSection() -> some View {
@@ -105,22 +95,13 @@ public struct DashboardView: View {
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(.white)
 
-            TokenRow(
-                name: "Solana",
-                shortName: "SOL",
-                symbol: "S",
-                amount: 245.82
-            )
-            TokenRow(
-                name: "Vault Token",
-                shortName: "VLT",
-                symbol: "V",
-                amount: 4_200_000
-            )
+            ForEach(viewModel.tokens, id: \.mint) { token in
+                TokenRow(token: token)
+            }
         }
     }
 }
 
 #Preview {
-    DashboardView()
+    DashboardView(viewModel: DashboardViewModel())
 }
