@@ -28,4 +28,12 @@ public struct SPLTokenAccount: Sendable, Equatable, Hashable {
         self.name = name
         self.symbol = symbol
     }
+
+    public var uiAmount: Double {
+        var divisor: Double = 1
+        for _ in 0..<Int(decimals) {
+            divisor *= 10
+        }
+        return Double(amount) / divisor
+    }
 }

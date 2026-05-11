@@ -5,11 +5,12 @@
 //  Created by Nicolas Bouème on 07/05/2026.
 //
 
+import CoreEntities
 import CoreUI
 import SwiftUI
 
 struct DashboardView: View {
-    let viewModel: DashboardViewModel
+    @State var viewModel: DashboardViewModel
 
     var body: some View {
         VStack(spacing: 16) {
@@ -24,6 +25,9 @@ struct DashboardView: View {
         .padding(.top, 16)
         .padding(.horizontal, 20)
         .background(Color.deepIndigo)
+        .task {
+            await viewModel.load()
+        }
     }
 
     private func balanceSection() -> some View {
@@ -31,13 +35,24 @@ struct DashboardView: View {
             Text(.Dashboard.solBalanceLabel)
                 .font(.system(size: 13, weight: .regular))
                 .foregroundStyle(Color.tertiaryText)
-            Text(.Dashboard.solBalanceValue(245.82))
+            balanceValue()
                 .font(.system(size: 40, weight: .bold))
                 .foregroundStyle(.white)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
         .cardBackground()
+    }
+
+    @ViewBuilder
+    private func balanceValue() -> some View {
+        if let lamports = viewModel.solBalance {
+            Text(.Dashboard.solBalanceValue(
+                SOL.toSOL(lamports).formatted(.number.precision(.fractionLength(2...4)))
+            ))
+        } else {
+            Text(verbatim: "—")
+        }
     }
 
     private func vaultSavingsSection() -> some View {
@@ -94,6 +109,7 @@ struct DashboardView: View {
             Text(.Dashboard.tokensLabel)
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             ForEach(viewModel.tokens, id: \.mint) { token in
                 TokenRow(token: token)
@@ -103,5 +119,7 @@ struct DashboardView: View {
 }
 
 #Preview {
-    DashboardView(viewModel: DashboardViewModel())
+    DashboardView(
+        viewModel: DashboardViewModel(owner: "PreviewOwner", walletReader: nil)
+    )
 }

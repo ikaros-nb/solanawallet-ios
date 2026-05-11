@@ -10,6 +10,10 @@ import CoreEntities
 @preconcurrency import SolanaSwift
 
 public actor SolanaClient {
+    private static let vaultTokenMint: Pubkey = "666gTuw7LC1auGbivZh1834HFquTHD5DwVtiR1jQv82E"
+    private static let vaultTokenName = "Vault Token"
+    private static let vaultTokenSymbol = "VLT"
+
     private let rpc: SolanaAPIClient
     private let keychain: KeychainWalletStore
     private let tokenRepository: TokenRepository?
@@ -65,8 +69,15 @@ extension SolanaClient: WalletReader {
                     let address = token.pubkey
                     let mint = token.account.data.mint.base58EncodedString
                     let amount = token.account.data.lamports
-                    let name = metadata?[mint]?.name
-                    let symbol = metadata?[mint]?.symbol
+                    let name: String?
+                    let symbol: String?
+                    if mint == Self.vaultTokenMint {
+                        name = Self.vaultTokenName
+                        symbol = Self.vaultTokenSymbol
+                    } else {
+                        name = metadata?[mint]?.name
+                        symbol = metadata?[mint]?.symbol
+                    }
                     group.addTask { [rpc] in
                         let balance = try await rpc.getTokenAccountBalance(
                             pubkey: address,

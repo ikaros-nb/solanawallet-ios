@@ -17,6 +17,7 @@ let package = Package(
         .target(
             name: "FeatureDashboard",
             dependencies: [
+                .product(name: "CoreDomain", package: "CoreDomain"),
                 .product(name: "CoreEntities", package: "CoreDomain"),
                 .product(name: "CoreUI", package: "CorePresentation")
             ],

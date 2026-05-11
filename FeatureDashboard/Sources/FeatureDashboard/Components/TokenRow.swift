@@ -25,9 +25,13 @@ struct TokenRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            Text("\(token.amount)")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundStyle(.white)
+            Text(
+                token.uiAmount.formatted(
+                    .number.precision(.fractionLength(0...min(Int(token.decimals), 6)))
+                )
+            )
+            .font(.system(size: 14, weight: .medium))
+            .foregroundStyle(.white)
         }
         .padding(.vertical, 12)
     }
