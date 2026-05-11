@@ -116,17 +116,9 @@ struct RecoveryPhraseView: View {
             .frame(maxWidth: .infinity, alignment: .topLeading)
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
-            .background(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(.white.opacity(0.05))
-                    .stroke(.white.opacity(0.06), lineWidth: 1)
-            )
+            .cardBackground(cornerRadius: 16, fillOpacity: 0.05, strokeOpacity: 0.06, highlight: nil)
             .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(.white.opacity(0.05))
-                    .stroke(.white.opacity(0.1), lineWidth: 1)
-            )
+            .cardBackground(cornerRadius: 20, fillOpacity: 0.05, highlight: nil)
 
             if let importError = viewModel.importError {
                 Text(importError)
@@ -149,12 +141,7 @@ struct RecoveryPhraseView: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
             }
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(.white.opacity(0.05))
-                    .stroke(.white.opacity(0.1), lineWidth: 1)
-            )
-            .shadow(color: .black.opacity(0.08), radius: 0, x: 0, y: 1)
+            .cardBackground(cornerRadius: 12, fillOpacity: 0.05, highlight: .black.opacity(0.08))
         }
     }
 
@@ -206,11 +193,7 @@ struct RecoveryPhraseView: View {
         }
         .padding(.horizontal, isShort || isNarrow ? 10 : 16)
         .padding(.vertical, isShort || isNarrow ? 12 : 20)
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(.white.opacity(0.05))
-                .stroke(.white.opacity(0.1), lineWidth: 1)
-        )
+        .cardBackground(cornerRadius: 16, fillOpacity: 0.05, highlight: nil)
         .shadow(color: .black.opacity(0.08), radius: 0, x: 0, y: 1)
     }
 
@@ -226,11 +209,7 @@ struct RecoveryPhraseView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, isShort || isNarrow ? 6 : 10)
         .padding(.vertical, isShort || isNarrow ? 8 : 14)
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(.white.opacity(0.05))
-                .stroke(.white.opacity(0.06), lineWidth: 1)
-        )
+        .cardBackground(cornerRadius: 16, fillOpacity: 0.05, strokeOpacity: 0.06, highlight: nil)
     }
 }
 
