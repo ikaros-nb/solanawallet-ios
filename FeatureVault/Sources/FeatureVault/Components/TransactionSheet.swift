@@ -1,3 +1,14 @@
+//
+//  TransactionSheet.swift
+//  FeatureVault
+//
+//  Created by Nicolas Bouème on 13/05/2026.
+//
+
+import CoreEntities
+import CoreUI
+import SwiftUI
+
 struct TransactionSheet: View {
     enum Kind {
         case deposit
