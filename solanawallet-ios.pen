@@ -274,7 +274,7 @@
                       "type": "text",
                       "id": "ISqxt",
                       "fill": "#000000CC",
-                      "content": "Mint Green",
+                      "content": "Solana Green",
                       "fontFamily": "Inter",
                       "fontSize": 10,
                       "fontWeight": "500"
@@ -1371,7 +1371,7 @@
                       "content": "Total Balance",
                       "fontFamily": "Inter",
                       "fontSize": 13,
-                      "fontWeight": "normal"
+                      "fontWeight": "500"
                     },
                     {
                       "type": "text",
@@ -3816,6 +3816,16 @@
       "width": 393,
       "height": 852,
       "fill": "$--bg-deep",
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#00000040",
+        "offset": {
+          "x": 0,
+          "y": 4
+        },
+        "blur": 4
+      },
       "layout": "vertical",
       "children": [
         {
@@ -4179,7 +4189,18 @@
               "type": "frame",
               "id": "GKcLS",
               "name": "bottomArea",
+              "rotation": 0.00751591784871443,
               "width": "fill_container",
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#00000040",
+                "offset": {
+                  "x": 0,
+                  "y": 4
+                },
+                "blur": 4
+              },
               "layout": "vertical",
               "gap": 16,
               "children": [
@@ -5337,7 +5358,7 @@
                 "thickness": {
                   "top": 1
                 },
-                "fill": "#FFFFFF1A"
+                "fill": "#ffffff1a"
               },
               "effect": {
                 "type": "shadow",
@@ -5799,7 +5820,7 @@
                       "id": "h4OR1",
                       "name": "heroAmount",
                       "fill": "$--font-primary",
-                      "content": "58.420",
+                      "content": "500",
                       "fontFamily": "Inter",
                       "fontSize": 44,
                       "fontWeight": "700"

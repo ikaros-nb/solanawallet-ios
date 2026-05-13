@@ -34,7 +34,7 @@ struct DashboardView: View {
     private func balanceSection() -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(.Dashboard.solBalanceLabel)
-                .font(.system(size: 13, weight: .regular))
+                .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(Color.tertiaryText)
             balanceValue()
                 .font(.system(size: 40, weight: .bold))

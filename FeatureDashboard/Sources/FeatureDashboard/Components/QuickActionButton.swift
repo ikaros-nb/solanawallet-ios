@@ -15,6 +15,7 @@ struct QuickActionButton: View {
 
     var body: some View {
         Button {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             action()
         } label: {
             Label {
