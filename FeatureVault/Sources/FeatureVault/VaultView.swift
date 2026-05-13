@@ -25,6 +25,9 @@ struct VaultView: View {
         .padding(.top, 16)
         .padding(.horizontal, 20)
         .background(Color.deepIndigo)
+        .task {
+            await viewModel.load()
+        }
     }
 
     private func savingsSection() -> some View {
@@ -59,7 +62,7 @@ struct VaultView: View {
             Text(.Vault.savingsLabel)
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(Color.tertiaryText)
-            Text("500")
+            vaultBalanceValue()
                 .font(.system(size: 44, weight: .bold))
                 .foregroundStyle(.white)
             Text(.Vault.symbol)
@@ -69,6 +72,15 @@ struct VaultView: View {
         .frame(maxWidth: .infinity)
         .padding(28)
         .cardBackground()
+    }
+
+    @ViewBuilder
+    private func vaultBalanceValue() -> some View {
+        if let balance = viewModel.vaultBalance {
+            Text(VLT.format(balance))
+        } else {
+            Text(verbatim: "—")
+        }
     }
 
     private func actionsSection() -> some View {
@@ -97,23 +109,25 @@ struct VaultView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             ScrollView(.vertical) {
-                TransactionRow(
-                    type: .deposit,
-                    stringDate: "May 2, 2026 · 14:32",
-                    amount: 5
-                )
+                VStack(spacing: 12) {
+                    TransactionRow(
+                        type: .deposit,
+                        stringDate: "May 2, 2026 · 14:32",
+                        amount: 5
+                    )
 
-                TransactionRow(
-                    type: .deposit,
-                    stringDate: "Apr 28, 2026 · 09:15",
-                    amount: 10
-                )
+                    TransactionRow(
+                        type: .deposit,
+                        stringDate: "Apr 28, 2026 · 09:15",
+                        amount: 10
+                    )
 
-                TransactionRow(
-                    type: .withdraw,
-                    stringDate: "Apr 25, 2026 · 11:18",
-                    amount: 12
-                )
+                    TransactionRow(
+                        type: .withdraw,
+                        stringDate: "Apr 25, 2026 · 11:18",
+                        amount: 12
+                    )
+                }
             }
             .scrollBounceBehavior(.basedOnSize, axes: .vertical)
         }
@@ -203,41 +217,12 @@ struct TransactionRow: View {
 
 #Preview {
     VaultView(
-        viewModel: VaultViewModel(owner: "PreviewOwner", walletReader: PreviewWalletReader())
+        viewModel: VaultViewModel(owner: "PreviewOwner", vaultReader: PreviewVaultReader())
     )
 }
 
-private struct PreviewWalletReader: WalletReader {
-    nonisolated func fetchBalance(for _: Pubkey) async throws -> Lamports {
-        42_997_949_729
-    }
-
-    nonisolated func fetchTokenAccounts(for _: Pubkey) async throws -> [SPLTokenAccount] {
-        [
-            SPLTokenAccount(
-                mint: "666gTuw7LC1auGbivZh1834HFquTHD5DwVtiR1jQv82E",
-                address: "PreviewVLTAccount",
-                amount: 4_200_000_000,
-                decimals: 9,
-                name: "Vault Token",
-                symbol: "VLT"
-            ),
-            SPLTokenAccount(
-                mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8GVEsLuT5wgF8Dt1v",
-                address: "PreviewUSDCAccount",
-                amount: 1_500_000,
-                decimals: 6,
-                name: "USD Coin",
-                symbol: "USDC"
-            ),
-            SPLTokenAccount(
-                mint: "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
-                address: "PreviewBONKAccount",
-                amount: 12_345_678_900,
-                decimals: 5,
-                name: "Bonk",
-                symbol: "BONK"
-            )
-        ]
+private struct PreviewVaultReader: VaultReader {
+    nonisolated func fetchVaultBalance(for _: Pubkey) async throws -> Decimal {
+        899.9995
     }
 }

@@ -7,6 +7,7 @@
 
 import CoreInfrastructure
 import FeatureDashboard
+import FeatureVault
 import FeatureWallet
 import SwiftUI
 
@@ -27,6 +28,7 @@ struct RootView: View {
 //            }
             MainTabView()
                 .environment(\.walletReader, deps.solanaClient)
+                .environment(\.vaultReader, deps.solanaClient)
         } else {
             WelcomeAssembly.make()
                 .environment(\.walletCreator, deps.walletCreator)

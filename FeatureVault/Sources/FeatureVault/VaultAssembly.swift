@@ -16,17 +16,14 @@ public enum VaultAssembly {
 
 private struct VaultFlowContainer: View {
     private let owner: Pubkey
-    @Environment(\.walletReader) private var walletReader
+    @Environment(\.vaultReader) private var vaultReader
 
     init(owner: Pubkey) {
         self.owner = owner
     }
 
     var body: some View {
-        let viewModel = VaultViewModel(
-            owner: owner,
-            walletReader: walletReader
-        )
+        let viewModel = VaultViewModel(owner: owner, vaultReader: vaultReader)
         VaultView(viewModel: viewModel)
     }
 }

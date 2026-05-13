@@ -133,7 +133,7 @@ private struct PreviewWalletReader: WalletReader {
     nonisolated func fetchTokenAccounts(for _: Pubkey) async throws -> [SPLTokenAccount] {
         [
             SPLTokenAccount(
-                mint: "666gTuw7LC1auGbivZh1834HFquTHD5DwVtiR1jQv82E",
+                mint: VLT.mint,
                 address: "PreviewVLTAccount",
                 amount: 4_200_000_000,
                 decimals: 9,

@@ -6,6 +6,7 @@
 //
 
 import CoreEntities
+import Foundation
 
 public enum WalletError: Error, Equatable, Sendable {
     case networkUnavailable
@@ -21,4 +22,5 @@ public enum WalletError: Error, Equatable, Sendable {
     case unknown(underlying: String)
     indirect case staleCache(Lamports, underlying: WalletError)
     indirect case staleTokenCache([SPLTokenAccount], underlying: WalletError)
+    indirect case staleVaultCache(Decimal, underlying: WalletError)
 }
