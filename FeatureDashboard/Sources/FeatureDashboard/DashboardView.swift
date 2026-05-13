@@ -73,9 +73,11 @@ struct DashboardView: View {
                 Text(.Dashboard.vaultSavingsLabel)
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(.white)
-                Text(.Dashboard.vaultSavingsValue("0"))
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundStyle(Color.secondaryText)
+                Text(.Dashboard.vaultSavingsValue(
+                    viewModel.vaultBalance.map(VLT.format) ?? "—"
+                ))
+                .font(.system(size: 12, weight: .regular))
+                .foregroundStyle(Color.secondaryText)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -121,8 +123,18 @@ struct DashboardView: View {
 
 #Preview {
     DashboardView(
-        viewModel: DashboardViewModel(owner: "PreviewOwner", walletReader: PreviewWalletReader())
+        viewModel: DashboardViewModel(
+            owner: "PreviewOwner",
+            walletReader: PreviewWalletReader(),
+            vaultReader: PreviewVaultReader()
+        )
     )
+}
+
+private struct PreviewVaultReader: VaultReader {
+    nonisolated func fetchVaultBalance(for _: Pubkey) async throws -> Decimal {
+        899.9995
+    }
 }
 
 private struct PreviewWalletReader: WalletReader {
