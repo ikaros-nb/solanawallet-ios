@@ -73,7 +73,7 @@ struct DashboardView: View {
                 Text(.Dashboard.vaultSavingsLabel)
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(.white)
-                Text(.Dashboard.vaultSavingsValue(32.5))
+                Text(.Dashboard.vaultSavingsValue("0"))
                     .font(.system(size: 12, weight: .regular))
                     .foregroundStyle(Color.secondaryText)
             }

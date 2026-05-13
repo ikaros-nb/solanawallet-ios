@@ -23,7 +23,9 @@ struct MainTabView: View {
             }
 
             Tab("Vault", systemImage: "lock") {
-                VaultView()
+                if let owner = appState.activeWallet?.pubkey {
+                    VaultAssembly.make(owner: owner)
+                }
             }
         }
         .tint(Color.solanaPurple)

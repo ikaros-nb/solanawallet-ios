@@ -84,7 +84,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%f VLT locked"
+            "value" : "%@ VLT locked"
           }
         }
       }
