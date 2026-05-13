@@ -110,23 +110,9 @@ struct VaultView: View {
 
             ScrollView(.vertical) {
                 VStack(spacing: 12) {
-                    TransactionRow(
-                        type: .deposit,
-                        stringDate: "May 2, 2026 · 14:32",
-                        amount: 5
-                    )
-
-                    TransactionRow(
-                        type: .deposit,
-                        stringDate: "Apr 28, 2026 · 09:15",
-                        amount: 10
-                    )
-
-                    TransactionRow(
-                        type: .withdraw,
-                        stringDate: "Apr 25, 2026 · 11:18",
-                        amount: 12
-                    )
+                    ForEach(viewModel.transactions ?? []) { tx in
+                        TransactionRow(transaction: tx)
+                    }
                 }
             }
             .scrollBounceBehavior(.basedOnSize, axes: .vertical)
@@ -134,95 +120,50 @@ struct VaultView: View {
     }
 }
 
-struct TransactionRow: View {
-    enum TransactionType {
-        case deposit
-        case withdraw
-    }
-
-    let type: TransactionType
-    let stringDate: String
-    let amount: Int
-
-    private var image: Image {
-        switch type {
-        case .deposit: Image(systemName: "tray.and.arrow.down.fill")
-        case .withdraw: Image(systemName: "tray.and.arrow.up.fill")
-        }
-    }
-
-    private var title: LocalizedStringResource {
-        switch type {
-        case .deposit: .Vault.depositLabel
-        case .withdraw: .Vault.withdrawLabel
-        }
-    }
-
-    private var amountText: String {
-        let symbol = String(localized: .Vault.symbol)
-        return switch type {
-        case .deposit: "+\(amount) \(symbol)"
-        case .withdraw: "-\(amount) \(symbol)"
-        }
-    }
-
-    private var iconColor: Color {
-        switch type {
-        case .deposit: .solanaGreen
-        case .withdraw: .white
-        }
-    }
-
-    private var background: Color {
-        switch type {
-        case .deposit: .solanaGreen
-        case .withdraw: .violet
-        }
-    }
-
-    var body: some View {
-        HStack(spacing: 12) {
-            image
-                .resizable()
-                .scaledToFit()
-                .frame(width: 18, height: 18)
-                .foregroundStyle(iconColor)
-                .padding(11)
-                .background(background.opacity(0.09), in: .rect(cornerRadius: 12))
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.white)
-                Text(stringDate)
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundStyle(Color.tertiaryText)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            Text(amountText)
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(background)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-        .cardBackground(
-            cornerRadius: 16,
-            fillOpacity: 0.05,
-            strokeOpacity: 0.06,
-            highlight: nil
-        )
-    }
-}
-
 #Preview {
     VaultView(
-        viewModel: VaultViewModel(owner: "PreviewOwner", vaultReader: PreviewVaultReader())
+        viewModel: VaultViewModel(
+            owner: "PreviewOwner",
+            vaultReader: PreviewVaultReader(),
+            historyReader: PreviewVaultHistoryReader()
+        )
     )
 }
 
 private struct PreviewVaultReader: VaultReader {
     nonisolated func fetchVaultBalance(for _: Pubkey) async throws -> Decimal {
         899.9995
+    }
+}
+
+private struct PreviewVaultHistoryReader: VaultHistoryReader {
+    nonisolated func fetchVaultTransactions(
+        for _: Pubkey,
+        limit _: Int
+    ) async throws -> [VaultTransaction] {
+        let now = Date()
+        return [
+            VaultTransaction(
+                signature: "sig1",
+                kind: .deposit,
+                amount: 5,
+                timestamp: now.addingTimeInterval(-86400),
+                slot: 1
+            ),
+            VaultTransaction(
+                signature: "sig2",
+                kind: .deposit,
+                amount: 10,
+                timestamp: now.addingTimeInterval(-86400 * 4),
+                slot: 2
+            ),
+            VaultTransaction(
+                signature: "sig3",
+                kind: .withdraw,
+                amount: Decimal(string: "0.12") ?? 0,
+                timestamp: now.addingTimeInterval(-86400 * 7),
+                slot: 3
+            )
+        ]
     }
 }

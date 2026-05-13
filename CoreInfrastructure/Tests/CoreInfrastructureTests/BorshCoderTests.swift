@@ -86,6 +86,50 @@ struct BorshCoderTests {
         #expect(coder.encodeWithdraw(amount: UInt64.max) == expected)
     }
 
+    // MARK: Decode vault instruction
+
+    @Test
+    func `decodeVaultInstruction round-trips a deposit`() throws {
+        let amount: UInt64 = 5_000_000
+        let data = coder.encodeDeposit(amount: amount)
+        let decoded = try coder.decodeVaultInstruction(from: data)
+        #expect(decoded.kind == .deposit)
+        #expect(decoded.amount == amount)
+    }
+
+    @Test
+    func `decodeVaultInstruction round-trips a withdraw`() throws {
+        let amount: UInt64 = 12
+        let data = coder.encodeWithdraw(amount: amount)
+        let decoded = try coder.decodeVaultInstruction(from: data)
+        #expect(decoded.kind == .withdraw)
+        #expect(decoded.amount == amount)
+    }
+
+    @Test
+    func `decodeVaultInstruction round-trips UInt64 max as withdraw`() throws {
+        let data = coder.encodeWithdraw(amount: UInt64.max)
+        let decoded = try coder.decodeVaultInstruction(from: data)
+        #expect(decoded.kind == .withdraw)
+        #expect(decoded.amount == UInt64.max)
+    }
+
+    @Test
+    func `decodeVaultInstruction rejects unknown discriminator`() {
+        let bogus = Data(repeating: 0xAA, count: 16)
+        #expect(throws: BorshCoderError.self) {
+            try coder.decodeVaultInstruction(from: bogus)
+        }
+    }
+
+    @Test
+    func `decodeVaultInstruction rejects payload shorter than 16 bytes`() {
+        let short = Data(repeating: 0x00, count: 10)
+        #expect(throws: BorshCoderError.invalidInputData) {
+            try coder.decodeVaultInstruction(from: short)
+        }
+    }
+
     // MARK: Decode VaultState — round-trip from known bytes
 
     private static let vaultStateGoldenHex =

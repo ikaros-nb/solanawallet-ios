@@ -29,6 +29,7 @@ struct RootView: View {
             MainTabView()
                 .environment(\.walletReader, deps.solanaClient)
                 .environment(\.vaultReader, deps.solanaClient)
+                .environment(\.vaultHistoryReader, deps.solanaClient)
         } else {
             WelcomeAssembly.make()
                 .environment(\.walletCreator, deps.walletCreator)

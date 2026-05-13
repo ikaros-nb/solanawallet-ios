@@ -10,4 +10,5 @@ import SwiftUI
 
 public extension EnvironmentValues {
     @Entry var vaultReader: (any VaultReader)?
+    @Entry var vaultHistoryReader: (any VaultHistoryReader)?
 }

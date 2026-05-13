@@ -23,4 +23,5 @@ public enum WalletError: Error, Equatable, Sendable {
     indirect case staleCache(Lamports, underlying: WalletError)
     indirect case staleTokenCache([SPLTokenAccount], underlying: WalletError)
     indirect case staleVaultCache(Decimal, underlying: WalletError)
+    indirect case staleVaultHistoryCache([VaultTransaction], underlying: WalletError)
 }

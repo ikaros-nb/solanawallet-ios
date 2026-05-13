@@ -16,6 +16,16 @@ public enum BorshCoderError: Error, Equatable, Sendable {
     case invalidPublicKeyBytes
 }
 
+public struct DecodedVaultInstruction: Equatable, Sendable {
+    public enum Kind: Equatable, Sendable {
+        case deposit
+        case withdraw
+    }
+
+    public let kind: Kind
+    public let amount: UInt64
+}
+
 public struct BorshCoder: Sendable {
     public init() {}
 
@@ -25,6 +35,37 @@ public struct BorshCoder: Sendable {
 
     public func encodeWithdraw(amount: UInt64) -> Data {
         encodeInstructionData(instructionName: "withdraw", amount: amount)
+    }
+
+    public func decodeVaultInstruction(from data: Data) throws -> DecodedVaultInstruction {
+        let discLen = Self.discriminatorLength
+        let amountLen = MemoryLayout<UInt64>.size
+        guard data.count >= discLen + amountLen else {
+            throw BorshCoderError.invalidInputData
+        }
+
+        let receivedDisc = data.prefix(discLen)
+        let depositDisc = Self.instructionDiscriminator(name: "deposit")
+        let withdrawDisc = Self.instructionDiscriminator(name: "withdraw")
+
+        let kind: DecodedVaultInstruction.Kind
+        if receivedDisc == depositDisc {
+            kind = .deposit
+        } else if receivedDisc == withdrawDisc {
+            kind = .withdraw
+        } else {
+            throw BorshCoderError.invalidDiscriminator(
+                expected: depositDisc,
+                got: Data(receivedDisc)
+            )
+        }
+
+        let amountRange = discLen..<(discLen + amountLen)
+        let amount = data[amountRange].withUnsafeBytes { raw in
+            raw.loadUnaligned(as: UInt64.self)
+        }.littleEndian
+
+        return DecodedVaultInstruction(kind: kind, amount: amount)
     }
 
     public func decodeVaultAccount(from data: Data) throws -> VaultAccount {

@@ -11,8 +11,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../CoreDomain"),
-        .package(path: "../CorePresentation"),
-        .package(path: "../FeatureVault")
+        .package(path: "../CorePresentation")
     ],
     targets: [
         .target(
@@ -20,8 +19,7 @@ let package = Package(
             dependencies: [
                 .product(name: "CoreDomain", package: "CoreDomain"),
                 .product(name: "CoreEntities", package: "CoreDomain"),
-                .product(name: "CoreUI", package: "CorePresentation"),
-                .product(name: "FeatureVault", package: "FeatureVault")
+                .product(name: "CoreUI", package: "CorePresentation")
             ],
             resources: [.process("Resources")],
             swiftSettings: [
