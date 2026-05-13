@@ -1,3 +1,10 @@
+//
+//  VaultDependencies.swift
+//  FeatureVault
+//
+//  Created by Nicolas Bouème on 13/05/2026.
+//
+
 import CoreDomain
 import SwiftUI
 

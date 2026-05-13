@@ -1,7 +1,50 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-
+    "deposit.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deposit"
+          }
+        }
+      }
+    },
+    "savings.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Secured savings"
+          }
+        }
+      }
+    },
+    "symbol" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VLT"
+          }
+        }
+      }
+    },
+    "withdraw.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Withdraw"
+          }
+        }
+      }
+    }
   },
   "version" : "1.2"
 }
