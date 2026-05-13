@@ -45,6 +45,105 @@
         }
       }
     },
+    "transaction.amount.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Amount"
+          }
+        }
+      }
+    },
+    "transaction.balance.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Available balance"
+          }
+        }
+      }
+    },
+    "transaction.deposit.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter the amount of VLT you want to deposit into your vault."
+          }
+        }
+      }
+    },
+    "transaction.deposit.button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm deposit"
+          }
+        }
+      }
+    },
+    "transaction.deposit.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deposit VLT"
+          }
+        }
+      }
+    },
+    "transaction.savings.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Savings"
+          }
+        }
+      }
+    },
+    "transaction.withdraw.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter the amount of VLT you want to withdraw from your vault."
+          }
+        }
+      }
+    },
+    "transaction.withdraw.button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm withdraw"
+          }
+        }
+      }
+    },
+    "transaction.withdraw.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Withdraw VLT"
+          }
+        }
+      }
+    },
     "withdraw.label" : {
       "extractionState" : "manual",
       "localizations" : {

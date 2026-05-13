@@ -15,6 +15,8 @@ public struct ActionButton: View {
         case textOnly
     }
 
+    @Environment(\.isEnabled) private var isEnabled
+
     let title: LocalizedStringResource
     let icon: Image?
     let style: Style
@@ -42,6 +44,7 @@ public struct ActionButton: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 18)
                 .background(background)
+                .opacity(isEnabled ? 1 : 0.4)
         })
         .buttonStyle(PressScaleButtonStyle())
     }

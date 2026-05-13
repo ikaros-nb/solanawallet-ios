@@ -26,9 +26,9 @@ struct QuickActionButton: View {
                 icon
                     .foregroundStyle(Color.solanaGreen)
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .cardBackground(cornerRadius: 16)
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 48)
-        .cardBackground(cornerRadius: 16)
     }
 }
