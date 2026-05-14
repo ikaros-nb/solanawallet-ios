@@ -36,10 +36,6 @@ struct TransactionSheet: View {
         viewModel.isTransacting
     }
 
-    private var errorMessage: String? {
-        viewModel.transactionError.map { "\($0)" }
-    }
-
     private var content: Content {
         switch route {
         case .deposit:
@@ -120,13 +116,6 @@ struct TransactionSheet: View {
                 Text(availableAmountText)
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(Color.solanaGreen)
-            }
-
-            if let errorMessage {
-                Text(verbatim: errorMessage)
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundStyle(Color.negative)
-                    .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             ActionButton(
