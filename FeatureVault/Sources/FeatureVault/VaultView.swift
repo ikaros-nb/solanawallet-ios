@@ -11,7 +11,8 @@ import CoreUI
 import SwiftUI
 
 struct VaultView: View {
-    @State var viewModel: VaultViewModel
+    @Bindable var viewModel: VaultViewModel
+    @Environment(VaultRouter.self) private var router
 
     var body: some View {
         VStack(spacing: 16) {
@@ -89,14 +90,14 @@ struct VaultView: View {
                 title: .Vault.depositLabel,
                 icon: Image(systemName: "tray.and.arrow.down.fill"),
                 style: .primaryPurple,
-                action: {}
+                action: { router.present(.deposit) }
             )
 
             ActionButton(
                 title: .Vault.withdrawLabel,
                 icon: Image(systemName: "tray.and.arrow.up.fill"),
                 style: .secondary,
-                action: {}
+                action: { router.present(.withdraw) }
             )
         }
     }
@@ -124,13 +125,15 @@ struct VaultView: View {
     VaultView(
         viewModel: VaultViewModel(
             owner: "PreviewOwner",
-            vaultReader: PreviewVaultReader(),
-            historyReader: PreviewVaultHistoryReader()
+            balanceReader: PreviewVaultReader(),
+            historyReader: PreviewVaultHistoryReader(),
+            transactor: nil
         )
     )
+    .environment(VaultRouter())
 }
 
-private struct PreviewVaultReader: VaultReader {
+private struct PreviewVaultReader: VaultBalanceReader {
     nonisolated func fetchVaultBalance(for _: Pubkey) async throws -> Decimal {
         899.9995
     }

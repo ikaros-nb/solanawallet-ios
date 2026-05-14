@@ -13,8 +13,8 @@ import Foundation
 @MainActor
 final class DashboardViewModel {
     private let owner: Pubkey
+    private let vaultBalanceReader: (any VaultBalanceReader)?
     private let walletReader: (any WalletReader)?
-    private let vaultReader: (any VaultReader)?
 
     private(set) var solBalance: Lamports?
     private(set) var tokens: [SPLTokenAccount] = []
@@ -24,12 +24,12 @@ final class DashboardViewModel {
 
     init(
         owner: Pubkey,
-        walletReader: (any WalletReader)?,
-        vaultReader: (any VaultReader)? = nil
+        vaultBalanceReader: (any VaultBalanceReader)?,
+        walletReader: (any WalletReader)?
     ) {
-        self.walletReader = walletReader
-        self.vaultReader = vaultReader
         self.owner = owner
+        self.vaultBalanceReader = vaultBalanceReader
+        self.walletReader = walletReader
     }
 
     func load() async {
@@ -73,9 +73,9 @@ final class DashboardViewModel {
     }
 
     private func loadVaultBalance() async {
-        guard let vaultReader else { return }
+        guard let vaultBalanceReader else { return }
         do {
-            vaultBalance = try await vaultReader.fetchVaultBalance(for: owner)
+            vaultBalance = try await vaultBalanceReader.fetchVaultBalance(for: owner)
         } catch let WalletError.staleVaultCache(cached, underlying) {
             vaultBalance = cached
             loadError = underlying

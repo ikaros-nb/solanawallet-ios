@@ -19,7 +19,7 @@ public enum DashboardAssembly {
 private struct DashboardFlowContainer: View {
     private let owner: Pubkey
     @Environment(\.walletReader) private var walletReader
-    @Environment(\.vaultReader) private var vaultReader
+    @Environment(\.vaultBalanceReader) private var vaultBalanceReader
 
     init(owner: Pubkey) {
         self.owner = owner
@@ -28,8 +28,8 @@ private struct DashboardFlowContainer: View {
     var body: some View {
         let viewModel = DashboardViewModel(
             owner: owner,
-            walletReader: walletReader,
-            vaultReader: vaultReader
+            vaultBalanceReader: vaultBalanceReader,
+            walletReader: walletReader
         )
         DashboardView(viewModel: viewModel)
     }

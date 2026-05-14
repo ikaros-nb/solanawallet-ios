@@ -27,13 +27,14 @@ struct RootView: View {
 //                #endif
 //            }
             MainTabView()
-                .environment(\.walletReader, deps.solanaClient)
-                .environment(\.vaultReader, deps.solanaClient)
+                .environment(\.vaultBalanceReader, deps.solanaClient)
                 .environment(\.vaultHistoryReader, deps.solanaClient)
+                .environment(\.vaultTransactor, deps.solanaClient)
+                .environment(\.walletReader, deps.solanaClient)
         } else {
             WelcomeAssembly.make()
-                .environment(\.walletCreator, deps.walletCreator)
                 .environment(\.biometricAuthenticator, deps.biometricAuthenticator)
+                .environment(\.walletCreator, deps.walletCreator)
                 .environment(\.walletOnComplete) { account in
                     appState.activeWallet = account
                 }

@@ -24,8 +24,9 @@ struct AppDependencies {
         let secureEnclave = try SecureEnclaveManager()
         let keychain = KeychainWalletStore(secureEnclave: secureEnclave)
 
+        let endpointAddress = solanaRpcEndpoint()
         let endpoint = APIEndPoint(
-            address: solanaRpcEndpoint(),
+            address: endpointAddress,
             network: .devnet
         )
         let apiClient = JSONRPCAPIClient(
@@ -39,8 +40,13 @@ struct AppDependencies {
             )
         )
 
+        guard let endpointURL = URL(string: endpointAddress) else {
+            fatalError("Invalid Solana RPC endpoint: \(endpointAddress)")
+        }
+
         let solanaClient = SolanaClient(
             rpc: apiClient,
+            rpcEndpoint: endpointURL,
             keychain: keychain,
             tokenRepository: tokenRepository
         )

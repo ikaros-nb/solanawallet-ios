@@ -13,23 +13,28 @@ import Foundation
 @MainActor
 final class VaultViewModel {
     private let owner: Pubkey
-    private let vaultReader: (any VaultReader)?
+    private let balanceReader: (any VaultBalanceReader)?
     private let historyReader: (any VaultHistoryReader)?
+    private let transactor: (any VaultTransactor)?
 
     private(set) var vaultBalance: Decimal?
     private(set) var transactions: [VaultTransaction]?
     private(set) var isLoading = false
     private(set) var loadError: WalletError?
     private(set) var historyError: WalletError?
+    private(set) var isTransacting = false
+    private(set) var transactionError: WalletError?
 
     init(
         owner: Pubkey,
-        vaultReader: (any VaultReader)?,
-        historyReader: (any VaultHistoryReader)?
+        balanceReader: (any VaultBalanceReader)?,
+        historyReader: (any VaultHistoryReader)?,
+        transactor: (any VaultTransactor)?
     ) {
         self.owner = owner
-        self.vaultReader = vaultReader
+        self.balanceReader = balanceReader
         self.historyReader = historyReader
+        self.transactor = transactor
     }
 
     func load() async {
@@ -45,9 +50,9 @@ final class VaultViewModel {
     }
 
     private func loadVaultBalance() async {
-        guard let vaultReader else { return }
+        guard let balanceReader else { return }
         do {
-            vaultBalance = try await vaultReader.fetchVaultBalance(for: owner)
+            vaultBalance = try await balanceReader.fetchVaultBalance(for: owner)
         } catch let WalletError.staleVaultCache(cached, underlying) {
             vaultBalance = cached
             loadError = underlying
@@ -69,6 +74,41 @@ final class VaultViewModel {
             historyError = error
         } catch {
             historyError = .unknown(underlying: "\(error)")
+        }
+    }
+
+    @discardableResult
+    func deposit(amount: Decimal) async -> Bool {
+        await runVaultTransaction { transactor in
+            try await transactor.depositVault(owner: owner, amount: amount)
+        }
+    }
+
+    @discardableResult
+    func withdraw(amount: Decimal) async -> Bool {
+        await runVaultTransaction { transactor in
+            try await transactor.withdrawVault(owner: owner, amount: amount)
+        }
+    }
+
+    private func runVaultTransaction(
+        _ submit: @MainActor (any VaultTransactor) async throws -> TransactionSignature
+    ) async -> Bool {
+        guard let transactor, !isTransacting else { return false }
+        isTransacting = true
+        transactionError = nil
+        defer { isTransacting = false }
+
+        do {
+            _ = try await submit(transactor)
+            await load()
+            return true
+        } catch let error as WalletError {
+            transactionError = error
+            return false
+        } catch {
+            transactionError = .unknown(underlying: "\(error)")
+            return false
         }
     }
 }

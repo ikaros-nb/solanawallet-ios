@@ -9,6 +9,7 @@ import CoreDomain
 import SwiftUI
 
 public extension EnvironmentValues {
-    @Entry var vaultReader: (any VaultReader)?
+    @Entry var vaultBalanceReader: (any VaultBalanceReader)?
     @Entry var vaultHistoryReader: (any VaultHistoryReader)?
+    @Entry var vaultTransactor: (any VaultTransactor)?
 }

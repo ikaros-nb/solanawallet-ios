@@ -74,7 +74,7 @@ struct DashboardView: View {
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(.white)
                 Text(.Dashboard.vaultSavingsValue(
-                    viewModel.vaultBalance.map(VLT.format) ?? "—"
+                    viewModel.vaultBalance.map { VLT.format($0) } ?? "—"
                 ))
                 .font(.system(size: 12, weight: .regular))
                 .foregroundStyle(Color.secondaryText)
@@ -125,13 +125,13 @@ struct DashboardView: View {
     DashboardView(
         viewModel: DashboardViewModel(
             owner: "PreviewOwner",
-            walletReader: PreviewWalletReader(),
-            vaultReader: PreviewVaultReader()
+            vaultBalanceReader: PreviewVaultReader(),
+            walletReader: PreviewWalletReader()
         )
     )
 }
 
-private struct PreviewVaultReader: VaultReader {
+private struct PreviewVaultReader: VaultBalanceReader {
     nonisolated func fetchVaultBalance(for _: Pubkey) async throws -> Decimal {
         899.9995
     }

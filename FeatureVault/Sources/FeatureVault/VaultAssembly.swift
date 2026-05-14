@@ -16,19 +16,46 @@ public enum VaultAssembly {
 
 private struct VaultFlowContainer: View {
     private let owner: Pubkey
-    @Environment(\.vaultReader) private var vaultReader
+    @State private var router = VaultRouter()
+    @Environment(\.vaultBalanceReader) private var vaultBalanceReader
     @Environment(\.vaultHistoryReader) private var vaultHistoryReader
+    @Environment(\.vaultTransactor) private var vaultTransactor
 
     init(owner: Pubkey) {
         self.owner = owner
     }
 
     var body: some View {
-        let viewModel = VaultViewModel(
-            owner: owner,
-            vaultReader: vaultReader,
-            historyReader: vaultHistoryReader
+        VaultFlowBody(
+            router: router,
+            initialViewModel: VaultViewModel(
+                owner: owner,
+                balanceReader: vaultBalanceReader,
+                historyReader: vaultHistoryReader,
+                transactor: vaultTransactor
+            )
         )
+    }
+}
+
+// Owns the viewModel via @State so it survives body re-evaluations triggered by
+// `.sheet(item: $router.presentedSheet)`. The container above can't own it because
+// it needs @Environment values for construction — which can't be read in init.
+private struct VaultFlowBody: View {
+    @State private var viewModel: VaultViewModel
+    @Bindable private var router: VaultRouter
+
+    init(router: VaultRouter, initialViewModel: VaultViewModel) {
+        self.router = router
+        _viewModel = State(wrappedValue: initialViewModel)
+    }
+
+    var body: some View {
         VaultView(viewModel: viewModel)
+            .environment(router)
+            .sheet(item: $router.presentedSheet) { route in
+                TransactionSheet(route: route, viewModel: viewModel)
+                    .environment(router)
+            }
     }
 }

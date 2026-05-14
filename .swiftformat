@@ -8,6 +8,7 @@
 --trimwhitespace always
 --allman false
 --empty-braces no-space
+--disable wrapMultilineStatementBraces
 
 --wraparguments before-first
 --wrapparameters before-first
