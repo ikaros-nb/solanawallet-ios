@@ -127,10 +127,17 @@ struct VaultView: View {
             owner: "PreviewOwner",
             balanceReader: PreviewVaultReader(),
             historyReader: PreviewVaultHistoryReader(),
+            tokenBalanceReader: PreviewTokenBalanceReader(),
             transactor: nil
         )
     )
     .environment(VaultRouter())
+}
+
+private struct PreviewTokenBalanceReader: TokenBalanceReader {
+    nonisolated func fetchTokenBalance(for _: Pubkey, mint _: Pubkey) async throws -> Decimal {
+        1234.5
+    }
 }
 
 private struct PreviewVaultReader: VaultBalanceReader {

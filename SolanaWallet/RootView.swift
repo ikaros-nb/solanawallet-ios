@@ -5,9 +5,8 @@
 //  Created by Nicolas Bouème on 18/04/2026.
 //
 
+import CoreDependencies
 import CoreInfrastructure
-import FeatureDashboard
-import FeatureVault
 import FeatureWallet
 import SwiftUI
 
@@ -27,6 +26,7 @@ struct RootView: View {
 //                #endif
 //            }
             MainTabView()
+                .environment(\.tokenBalanceReader, deps.solanaClient)
                 .environment(\.vaultBalanceReader, deps.solanaClient)
                 .environment(\.vaultHistoryReader, deps.solanaClient)
                 .environment(\.vaultTransactor, deps.solanaClient)

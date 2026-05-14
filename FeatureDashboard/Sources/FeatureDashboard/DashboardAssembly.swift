@@ -5,9 +5,9 @@
 //  Created by Nicolas Bouème on 11/05/2026.
 //
 
+import CoreDependencies
 import CoreDomain
 import CoreEntities
-import FeatureVault
 import SwiftUI
 
 public enum DashboardAssembly {

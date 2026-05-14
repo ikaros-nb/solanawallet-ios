@@ -5,6 +5,9 @@
       location = "group:SolanaWallet.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:CoreDependencies">
+   </FileRef>
+   <FileRef
       location = "group:CoreDomain">
    </FileRef>
    <FileRef

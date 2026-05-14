@@ -11,6 +11,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../CoreDomain"),
+        .package(path: "../CoreDependencies"),
         .package(path: "../CorePresentation")
     ],
     targets: [
@@ -18,6 +19,7 @@ let package = Package(
             name: "FeatureWallet",
             dependencies: [
                 .product(name: "CoreDomain", package: "CoreDomain"),
+                .product(name: "CoreDependencies", package: "CoreDependencies"),
                 .product(name: "CoreUI", package: "CorePresentation")
             ],
             resources: [.process("Resources")],

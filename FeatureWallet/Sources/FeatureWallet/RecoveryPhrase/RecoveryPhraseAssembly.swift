@@ -5,6 +5,7 @@
 //  Created by Nicolas Bouème on 06/05/2026.
 //
 
+import CoreDependencies
 import SwiftUI
 
 public enum RecoveryPhraseAssembly {

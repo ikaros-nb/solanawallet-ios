@@ -15,9 +15,11 @@ final class VaultViewModel {
     private let owner: Pubkey
     private let balanceReader: (any VaultBalanceReader)?
     private let historyReader: (any VaultHistoryReader)?
+    private let tokenBalanceReader: (any TokenBalanceReader)?
     private let transactor: (any VaultTransactor)?
 
     private(set) var vaultBalance: Decimal?
+    private(set) var splBalance: Decimal?
     private(set) var transactions: [VaultTransaction]?
     private(set) var isLoading = false
     private(set) var loadError: WalletError?
@@ -29,11 +31,13 @@ final class VaultViewModel {
         owner: Pubkey,
         balanceReader: (any VaultBalanceReader)?,
         historyReader: (any VaultHistoryReader)?,
+        tokenBalanceReader: (any TokenBalanceReader)?,
         transactor: (any VaultTransactor)?
     ) {
         self.owner = owner
         self.balanceReader = balanceReader
         self.historyReader = historyReader
+        self.tokenBalanceReader = tokenBalanceReader
         self.transactor = transactor
     }
 
@@ -46,7 +50,8 @@ final class VaultViewModel {
 
         async let balance: Void = loadVaultBalance()
         async let history: Void = loadVaultHistory()
-        _ = await (balance, history)
+        async let spl: Void = loadSPLBalance()
+        _ = await (balance, history, spl)
     }
 
     private func loadVaultBalance() async {
@@ -56,6 +61,17 @@ final class VaultViewModel {
         } catch let WalletError.staleVaultCache(cached, underlying) {
             vaultBalance = cached
             loadError = underlying
+        } catch let error as WalletError {
+            loadError = error
+        } catch {
+            loadError = .unknown(underlying: "\(error)")
+        }
+    }
+
+    private func loadSPLBalance() async {
+        guard let tokenBalanceReader else { return }
+        do {
+            splBalance = try await tokenBalanceReader.fetchTokenBalance(for: owner, mint: VLT.mint)
         } catch let error as WalletError {
             loadError = error
         } catch {

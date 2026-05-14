@@ -26,7 +26,10 @@ struct TransactionSheet: View {
     @State private var amount: Decimal?
 
     private var availableAmount: Decimal {
-        viewModel.vaultBalance ?? 0
+        switch route {
+        case .deposit: viewModel.splBalance ?? 0
+        case .withdraw: viewModel.vaultBalance ?? 0
+        }
     }
 
     private var isBusy: Bool {

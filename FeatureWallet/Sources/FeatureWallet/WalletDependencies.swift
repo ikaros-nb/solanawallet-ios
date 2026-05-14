@@ -5,15 +5,10 @@
 //  Created by Nicolas Bouème on 06/05/2026.
 //
 
-import CoreDomain
 import CoreEntities
 import SwiftUI
 
 public extension EnvironmentValues {
-    @Entry var walletCreator: (any WalletCreator)?
-
-    @Entry var biometricAuthenticator: (any BiometricAuthenticator)?
-
     @Entry var walletOnComplete: ((WalletAccount) -> Void)?
 }
 

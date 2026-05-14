@@ -16,6 +16,7 @@
 		E5EC180F2F92A5DF00D58D08 /* FeatureDashboard in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC180E2F92A5DF00D58D08 /* FeatureDashboard */; };
 		E5EC18112F92A5DF00D58D08 /* FeatureVault in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC18102F92A5DF00D58D08 /* FeatureVault */; };
 		E5EC18132F92A5DF00D58D08 /* FeatureWallet in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC18122F92A5DF00D58D08 /* FeatureWallet */; };
+		E5EC18152F92A5DF00D58D08 /* CoreDependencies in Frameworks */ = {isa = PBXBuildFile; productRef = E5EC18142F92A5DF00D58D08 /* CoreDependencies */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -101,6 +102,7 @@
 				E5EC18132F92A5DF00D58D08 /* FeatureWallet in Frameworks */,
 				E54FB3C92FA50225009948D7 /* SolanaSwift in Frameworks */,
 				E5EC18072F92A5DF00D58D08 /* CoreDomain in Frameworks */,
+				E5EC18152F92A5DF00D58D08 /* CoreDependencies in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -184,6 +186,7 @@
 			name = SolanaWallet;
 			packageProductDependencies = (
 				E5EC18062F92A5DF00D58D08 /* CoreDomain */,
+				E5EC18142F92A5DF00D58D08 /* CoreDependencies */,
 				E5EC18082F92A5DF00D58D08 /* CoreEntities */,
 				E5EC180A2F92A5DF00D58D08 /* CoreInfrastructure */,
 				E5EC180C2F92A5DF00D58D08 /* CoreUI */,
@@ -582,6 +585,10 @@
 		E5EC18122F92A5DF00D58D08 /* FeatureWallet */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FeatureWallet;
+		};
+		E5EC18142F92A5DF00D58D08 /* CoreDependencies */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CoreDependencies;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

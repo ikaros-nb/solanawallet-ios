@@ -127,6 +127,14 @@ extension SolanaClient: WalletReader {
     }
 }
 
+extension SolanaClient: TokenBalanceReader {
+    public func fetchTokenBalance(for owner: Pubkey, mint: Pubkey) async throws -> Decimal {
+        let accounts = try await fetchTokenAccounts(for: owner)
+        guard let account = accounts.first(where: { $0.mint == mint }) else { return 0 }
+        return Decimal(account.amount) / pow(10, Int(account.decimals))
+    }
+}
+
 extension SolanaClient: VaultBalanceReader {
     public func fetchVaultBalance(for owner: Pubkey) async throws -> Decimal {
         let tokenAccountPDA: PublicKey

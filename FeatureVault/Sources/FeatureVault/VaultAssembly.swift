@@ -5,6 +5,7 @@
 //  Created by Nicolas Bouème on 13/05/2026.
 //
 
+import CoreDependencies
 import CoreEntities
 import SwiftUI
 
@@ -20,6 +21,7 @@ private struct VaultFlowContainer: View {
     @Environment(\.vaultBalanceReader) private var vaultBalanceReader
     @Environment(\.vaultHistoryReader) private var vaultHistoryReader
     @Environment(\.vaultTransactor) private var vaultTransactor
+    @Environment(\.tokenBalanceReader) private var tokenBalanceReader
 
     init(owner: Pubkey) {
         self.owner = owner
@@ -32,6 +34,7 @@ private struct VaultFlowContainer: View {
                 owner: owner,
                 balanceReader: vaultBalanceReader,
                 historyReader: vaultHistoryReader,
+                tokenBalanceReader: tokenBalanceReader,
                 transactor: vaultTransactor
             )
         )
