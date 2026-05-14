@@ -61,11 +61,8 @@ struct TransactionRow: View {
 
     private var amountText: String {
         let symbol = String(localized: .Vault.symbol)
-        let formatted = VLT.format(transaction.amount)
-        return switch transaction.kind {
-        case .deposit: "+\(formatted) \(symbol)"
-        case .withdraw: "-\(formatted) \(symbol)"
-        }
+        let formatted = VLT.format(transaction.amount, sign: true)
+        return "\(formatted) \(symbol)"
     }
 
     private var iconColor: Color {
@@ -83,14 +80,13 @@ struct TransactionRow: View {
     }
 
     private var transactionAt: String {
-        Self.activityDateFormatter.string(from: transaction.timestamp)
+        let timestamp = transaction.timestamp
+        let datePart = timestamp.formatted(
+            .dateTime.month(.abbreviated).day().year()
+        )
+        let timePart = timestamp.formatted(
+            .dateTime.hour().minute()
+        )
+        return "\(datePart) · \(timePart)"
     }
-
-    private static let activityDateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = .current
-        formatter.timeZone = .current
-        formatter.dateFormat = "MMM d, yyyy · HH:mm"
-        return formatter
-    }()
 }

@@ -11,8 +11,11 @@ public enum VLT {
     public static let mint: Pubkey = "666gTuw7LC1auGbivZh1834HFquTHD5DwVtiR1jQv82E"
     public static let decimals: UInt8 = 9
 
-    public static func format(_ amount: Decimal) -> String {
-        amount.formatted(.number.precision(.fractionLength(2...6)))
+    public static func format(_ amount: Decimal, sign: Bool = false) -> String {
+        amount.formatted(.number
+            .sign(strategy: sign ? .always() : .never)
+            .precision(.fractionLength(2...6))
+        )
     }
 }
 
