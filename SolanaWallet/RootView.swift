@@ -7,38 +7,35 @@
 
 import CoreDependencies
 import CoreInfrastructure
+import CoreUI
 import FeatureWallet
 import SwiftUI
 
 struct RootView: View {
     @Environment(AppState.self) private var appState
+    @State private var toastCenter = ToastCenter()
     let deps: AppDependencies
 
     var body: some View {
-        if appState.isOnboarded {
-//            VStack(spacing: 16) {
-//                Text("MainTabView")
-//                #if DEBUG
-//                Button("Reset wallet", role: .destructive) {
-//                    try? deps.keychain.reset()
-//                    appState.activeWallet = nil
-//                }
-//                #endif
-//            }
-            MainTabView()
-                .environment(\.tokenBalanceReader, deps.solanaClient)
-                .environment(\.vaultBalanceReader, deps.solanaClient)
-                .environment(\.vaultHistoryReader, deps.solanaClient)
-                .environment(\.vaultTransactor, deps.solanaClient)
-                .environment(\.walletReader, deps.solanaClient)
-        } else {
-            WelcomeAssembly.make()
-                .environment(\.biometricAuthenticator, deps.biometricAuthenticator)
-                .environment(\.walletCreator, deps.walletCreator)
-                .environment(\.walletOnComplete) { account in
-                    appState.activeWallet = account
-                }
+        Group {
+            if appState.isOnboarded {
+                MainTabView()
+                    .environment(\.tokenBalanceReader, deps.solanaClient)
+                    .environment(\.vaultBalanceReader, deps.solanaClient)
+                    .environment(\.vaultHistoryReader, deps.solanaClient)
+                    .environment(\.vaultTransactor, deps.solanaClient)
+                    .environment(\.walletReader, deps.solanaClient)
+            } else {
+                WelcomeAssembly.make()
+                    .environment(\.biometricAuthenticator, deps.biometricAuthenticator)
+                    .environment(\.walletCreator, deps.walletCreator)
+                    .environment(\.walletOnComplete) { account in
+                        appState.activeWallet = account
+                    }
+            }
         }
+        .environment(toastCenter)
+        .toastOverlay(toastCenter)
     }
 }
 

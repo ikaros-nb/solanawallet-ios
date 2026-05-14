@@ -19,10 +19,8 @@ struct VaultView: View {
             savingsSection()
             actionsSection()
             activitySection()
-
-            Spacer()
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding(.top, 16)
         .padding(.horizontal, 20)
         .background(Color.deepIndigo)
@@ -128,7 +126,8 @@ struct VaultView: View {
             balanceReader: PreviewVaultReader(),
             historyReader: PreviewVaultHistoryReader(),
             tokenBalanceReader: PreviewTokenBalanceReader(),
-            transactor: nil
+            transactor: nil,
+            toastCenter: ToastCenter()
         )
     )
     .environment(VaultRouter())

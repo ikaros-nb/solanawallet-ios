@@ -7,6 +7,7 @@
 
 import CoreDomain
 import CoreEntities
+import CoreUI
 import Foundation
 
 @Observable
@@ -17,6 +18,7 @@ final class VaultViewModel {
     private let historyReader: (any VaultHistoryReader)?
     private let tokenBalanceReader: (any TokenBalanceReader)?
     private let transactor: (any VaultTransactor)?
+    private let toastCenter: ToastCenter
 
     private(set) var vaultBalance: Decimal?
     private(set) var splBalance: Decimal?
@@ -32,13 +34,15 @@ final class VaultViewModel {
         balanceReader: (any VaultBalanceReader)?,
         historyReader: (any VaultHistoryReader)?,
         tokenBalanceReader: (any TokenBalanceReader)?,
-        transactor: (any VaultTransactor)?
+        transactor: (any VaultTransactor)?,
+        toastCenter: ToastCenter
     ) {
         self.owner = owner
         self.balanceReader = balanceReader
         self.historyReader = historyReader
         self.tokenBalanceReader = tokenBalanceReader
         self.transactor = transactor
+        self.toastCenter = toastCenter
     }
 
     func load() async {
@@ -95,15 +99,27 @@ final class VaultViewModel {
 
     @discardableResult
     func deposit(amount: Decimal) async -> Bool {
-        await runVaultTransaction { transactor in
+        let success = await runVaultTransaction { transactor in
             try await transactor.depositVault(owner: owner, amount: amount)
         }
+        showResultToast(success: success, successMessage: .Vault.transactionDepositSuccess)
+        return success
     }
 
     @discardableResult
     func withdraw(amount: Decimal) async -> Bool {
-        await runVaultTransaction { transactor in
+        let success = await runVaultTransaction { transactor in
             try await transactor.withdrawVault(owner: owner, amount: amount)
+        }
+        showResultToast(success: success, successMessage: .Vault.transactionWithdrawSuccess)
+        return success
+    }
+
+    private func showResultToast(success: Bool, successMessage: LocalizedStringResource) {
+        if success {
+            toastCenter.show(.success(successMessage))
+        } else if transactionError != nil {
+            toastCenter.show(.error(.Vault.transactionFailure))
         }
     }
 

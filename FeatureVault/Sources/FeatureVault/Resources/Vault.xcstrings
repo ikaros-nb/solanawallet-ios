@@ -133,6 +133,39 @@
         }
       }
     },
+    "transaction.deposit.success" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deposit successful"
+          }
+        }
+      }
+    },
+    "transaction.failure" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transaction failed"
+          }
+        }
+      }
+    },
+    "transaction.withdraw.success" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Withdraw successful"
+          }
+        }
+      }
+    },
     "transaction.withdraw.title" : {
       "extractionState" : "manual",
       "localizations" : {
