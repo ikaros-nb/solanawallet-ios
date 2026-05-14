@@ -8,6 +8,7 @@
 import CoreDependencies
 import CoreDomain
 import CoreEntities
+import CoreUI
 import SwiftUI
 
 public enum DashboardAssembly {
@@ -20,6 +21,7 @@ private struct DashboardFlowContainer: View {
     private let owner: Pubkey
     @Environment(\.walletReader) private var walletReader
     @Environment(\.vaultBalanceReader) private var vaultBalanceReader
+    @Environment(ToastCenter.self) private var toastCenter
 
     init(owner: Pubkey) {
         self.owner = owner
@@ -29,7 +31,8 @@ private struct DashboardFlowContainer: View {
         let viewModel = DashboardViewModel(
             owner: owner,
             vaultBalanceReader: vaultBalanceReader,
-            walletReader: walletReader
+            walletReader: walletReader,
+            toastCenter: toastCenter
         )
         DashboardView(viewModel: viewModel)
     }

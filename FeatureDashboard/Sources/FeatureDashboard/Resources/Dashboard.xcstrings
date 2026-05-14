@@ -78,6 +78,17 @@
         }
       }
     },
+    "load.failure" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to load wallet"
+          }
+        }
+      }
+    },
     "vault.savings.value" : {
       "extractionState" : "manual",
       "localizations" : {

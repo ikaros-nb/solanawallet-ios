@@ -7,6 +7,7 @@
 
 import CoreDomain
 import CoreEntities
+import CoreUI
 import Foundation
 
 @Observable
@@ -15,6 +16,7 @@ final class DashboardViewModel {
     private let owner: Pubkey
     private let vaultBalanceReader: (any VaultBalanceReader)?
     private let walletReader: (any WalletReader)?
+    private let toastCenter: ToastCenter
 
     private(set) var solBalance: Lamports?
     private(set) var tokens: [SPLTokenAccount] = []
@@ -25,11 +27,13 @@ final class DashboardViewModel {
     init(
         owner: Pubkey,
         vaultBalanceReader: (any VaultBalanceReader)?,
-        walletReader: (any WalletReader)?
+        walletReader: (any WalletReader)?,
+        toastCenter: ToastCenter
     ) {
         self.owner = owner
         self.vaultBalanceReader = vaultBalanceReader
         self.walletReader = walletReader
+        self.toastCenter = toastCenter
     }
 
     func load() async {
@@ -42,6 +46,10 @@ final class DashboardViewModel {
         async let tokenList: Void = loadTokens()
         async let vault: Void = loadVaultBalance()
         _ = await (balance, tokenList, vault)
+
+        if loadError != nil {
+            toastCenter.show(.error(.Dashboard.loadFailure))
+        }
     }
 
     private func loadBalance() async {

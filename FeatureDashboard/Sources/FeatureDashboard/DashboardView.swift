@@ -14,18 +14,21 @@ struct DashboardView: View {
     @State var viewModel: DashboardViewModel
 
     var body: some View {
-        VStack(spacing: 16) {
-            balanceSection()
-            vaultSavingsSection()
-            quickActionsSection()
-            tokensSection()
-
-            Spacer()
+        ScrollView(.vertical) {
+            VStack(spacing: 16) {
+                balanceSection()
+                vaultSavingsSection()
+                quickActionsSection()
+                tokensSection()
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.top, 16)
+            .padding(.horizontal, 20)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 16)
-        .padding(.horizontal, 20)
         .background(Color.deepIndigo)
+        .refreshable {
+            await viewModel.load()
+        }
         .task {
             await viewModel.load()
         }
@@ -126,7 +129,8 @@ struct DashboardView: View {
         viewModel: DashboardViewModel(
             owner: "PreviewOwner",
             vaultBalanceReader: PreviewVaultReader(),
-            walletReader: PreviewWalletReader()
+            walletReader: PreviewWalletReader(),
+            toastCenter: ToastCenter()
         )
     )
 }
