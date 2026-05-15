@@ -17,7 +17,7 @@ extension SolanaClient: VaultHistoryReader {
     ) async throws -> [VaultTransaction] {
         let vaultStatePDA: PublicKey
         do {
-            vaultStatePDA = try Self.deriveVaultStatePDA(for: owner)
+            vaultStatePDA = try VaultPDA.vault(for: owner)
         } catch {
             throw WalletError.vaultError(code: 0, message: "PDA derivation failed: \(error)")
         }
@@ -94,15 +94,5 @@ extension SolanaClient: VaultHistoryReader {
         } catch {
             return nil
         }
-    }
-
-    private static func deriveVaultStatePDA(for owner: Pubkey) throws -> PublicKey {
-        let programId = try PublicKey(string: VaultProgram.id)
-        let ownerKey = try PublicKey(string: owner)
-        let (vaultPDA, _) = try PublicKey.findProgramAddress(
-            seeds: [Data(VaultProgram.vaultSeed.utf8), ownerKey.data],
-            programId: programId
-        )
-        return vaultPDA
     }
 }

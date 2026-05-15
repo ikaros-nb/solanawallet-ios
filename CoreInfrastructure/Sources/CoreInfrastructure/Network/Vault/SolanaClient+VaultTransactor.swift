@@ -33,9 +33,9 @@ extension SolanaClient: VaultTransactor {
         owner: Pubkey,
         reason: String
     ) async throws -> TransactionSignature {
-        let accounts: VaultInstructionAccounts
+        let accounts: VaultPDA.InstructionAccounts
         do {
-            accounts = try Self.deriveVaultInstructionAccounts(owner: owner)
+            accounts = try VaultPDA.instructionAccounts(owner: owner)
         } catch {
             throw WalletError.vaultError(code: 0, message: "account derivation failed: \(error)")
         }
@@ -115,44 +115,6 @@ extension SolanaClient: VaultTransactor {
             }
         }
         throw WalletError.transactionExpired
-    }
-
-    private struct VaultInstructionAccounts {
-        let payer: PublicKey
-        let vault: PublicKey
-        let mint: PublicKey
-        let payerTokenAccount: PublicKey
-        let vaultTokenAccount: PublicKey
-        let programId: PublicKey
-    }
-
-    private static func deriveVaultInstructionAccounts(
-        owner: Pubkey
-    ) throws -> VaultInstructionAccounts {
-        let programId = try PublicKey(string: VaultProgram.id)
-        let payer = try PublicKey(string: owner)
-        let mint = try PublicKey(string: VLT.mint)
-        let (vault, _) = try PublicKey.findProgramAddress(
-            seeds: [Data(VaultProgram.vaultSeed.utf8), payer.data],
-            programId: programId
-        )
-        let (vaultTokenAccount, _) = try PublicKey.findProgramAddress(
-            seeds: [Data(VaultProgram.tokenSeed.utf8), vault.data],
-            programId: programId
-        )
-        let payerTokenAccount = try PublicKey.associatedTokenAddress(
-            walletAddress: payer,
-            tokenMintAddress: mint,
-            tokenProgramId: TokenProgram.id
-        )
-        return VaultInstructionAccounts(
-            payer: payer,
-            vault: vault,
-            mint: mint,
-            payerTokenAccount: payerTokenAccount,
-            vaultTokenAccount: vaultTokenAccount,
-            programId: programId
-        )
     }
 
     private static func scaledAmount(_ amount: Decimal) throws -> UInt64 {

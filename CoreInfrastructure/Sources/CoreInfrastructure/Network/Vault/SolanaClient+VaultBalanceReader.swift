@@ -14,16 +14,7 @@ extension SolanaClient: VaultBalanceReader {
     public func fetchVaultBalance(for owner: Pubkey) async throws -> Decimal {
         let tokenAccountPDA: PublicKey
         do {
-            let programId = try PublicKey(string: VaultProgram.id)
-            let ownerKey = try PublicKey(string: owner)
-            let (vaultPDA, _) = try PublicKey.findProgramAddress(
-                seeds: [Data(VaultProgram.vaultSeed.utf8), ownerKey.data],
-                programId: programId
-            )
-            (tokenAccountPDA, _) = try PublicKey.findProgramAddress(
-                seeds: [Data(VaultProgram.tokenSeed.utf8), vaultPDA.data],
-                programId: programId
-            )
+            tokenAccountPDA = try VaultPDA.vaultTokenAccount(for: owner)
         } catch {
             throw WalletError.vaultError(code: 0, message: "PDA derivation failed: \(error)")
         }
