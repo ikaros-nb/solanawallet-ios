@@ -34,11 +34,9 @@ extension SolanaClient: VaultBalanceReader {
             vaultBalanceCache[owner] = 0
             return 0
         } catch {
-            let mapped = mapToWalletError(error)
-            if let cached = vaultBalanceCache[owner] {
-                throw WalletError.staleVaultCache(cached, underlying: mapped)
+            throw mapToStaleCacheError(error, cached: vaultBalanceCache[owner]) {
+                .staleVaultCache($0, underlying: $1)
             }
-            throw mapped
         }
     }
 

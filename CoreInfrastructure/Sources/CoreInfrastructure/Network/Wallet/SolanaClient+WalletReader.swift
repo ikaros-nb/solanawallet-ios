@@ -17,11 +17,9 @@ extension SolanaClient: WalletReader {
             balanceCache[owner] = lamports
             return lamports
         } catch {
-            let mapped = mapToWalletError(error)
-            if let cached = balanceCache[owner] {
-                throw WalletError.staleCache(cached, underlying: mapped)
+            throw mapToStaleCacheError(error, cached: balanceCache[owner]) {
+                .staleCache($0, underlying: $1)
             }
-            throw mapped
         }
     }
 
@@ -77,11 +75,9 @@ extension SolanaClient: WalletReader {
             tokensCache[owner] = accounts
             return accounts
         } catch {
-            let mapped = mapToWalletError(error)
-            if let cached = tokensCache[owner] {
-                throw WalletError.staleTokenCache(cached, underlying: mapped)
+            throw mapToStaleCacheError(error, cached: tokensCache[owner]) {
+                .staleTokenCache($0, underlying: $1)
             }
-            throw mapped
         }
     }
 }

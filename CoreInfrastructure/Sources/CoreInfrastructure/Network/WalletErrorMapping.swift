@@ -22,3 +22,15 @@ func mapToWalletError(_ error: Error) -> WalletError {
     // Cible : table ADR-001 D7 (transactionExpired, insufficient*, vaultError, signingFailed)
     return .unknown(underlying: "\(error)")
 }
+
+func mapToStaleCacheError<Value>(
+    _ error: Error,
+    cached: Value?,
+    wrap: (Value, WalletError) -> WalletError
+) -> WalletError {
+    let mapped = mapToWalletError(error)
+    if let cached {
+        return wrap(cached, mapped)
+    }
+    return mapped
+}

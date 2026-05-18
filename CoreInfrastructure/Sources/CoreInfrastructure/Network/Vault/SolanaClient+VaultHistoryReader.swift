@@ -33,11 +33,9 @@ extension SolanaClient: VaultHistoryReader {
             vaultHistoryCache[owner] = sorted
             return sorted
         } catch {
-            let mapped = mapToWalletError(error)
-            if let cached = vaultHistoryCache[owner] {
-                throw WalletError.staleVaultHistoryCache(cached, underlying: mapped)
+            throw mapToStaleCacheError(error, cached: vaultHistoryCache[owner]) {
+                .staleVaultHistoryCache($0, underlying: $1)
             }
-            throw mapped
         }
     }
 
