@@ -13,7 +13,7 @@ import Foundation
 extension SolanaClient: VaultTransactor {
     public func depositVault(owner: Pubkey, amount: Decimal) async throws -> TransactionSignature {
         try await submitVaultInstruction(
-            data: coder.encodeDeposit(amount: Self.scaledAmount(amount)),
+            data: coder.encodeDeposit(amount: VaultAmount.scale(amount)),
             owner: owner,
             reason: "Confirm vault deposit"
         )
@@ -21,7 +21,7 @@ extension SolanaClient: VaultTransactor {
 
     public func withdrawVault(owner: Pubkey, amount: Decimal) async throws -> TransactionSignature {
         try await submitVaultInstruction(
-            data: coder.encodeWithdraw(amount: Self.scaledAmount(amount)),
+            data: coder.encodeWithdraw(amount: VaultAmount.scale(amount)),
             owner: owner,
             reason: "Confirm vault withdrawal"
         )
@@ -115,20 +115,6 @@ extension SolanaClient: VaultTransactor {
             }
         }
         throw WalletError.transactionExpired
-    }
-
-    private static func scaledAmount(_ amount: Decimal) throws -> UInt64 {
-        guard amount > 0 else {
-            throw WalletError.vaultError(code: 6001, message: "amount must be greater than zero")
-        }
-        var scaled = amount * pow(10, Int(VLT.decimals))
-        var rounded = Decimal()
-        NSDecimalRound(&rounded, &scaled, 0, .down)
-        let number = NSDecimalNumber(decimal: rounded)
-        guard number.doubleValue.isFinite, number.uint64Value > 0 else {
-            throw WalletError.vaultError(code: 6001, message: "amount must be greater than zero")
-        }
-        return number.uint64Value
     }
 
     private func fetchLatestBlockhash() async throws -> String {

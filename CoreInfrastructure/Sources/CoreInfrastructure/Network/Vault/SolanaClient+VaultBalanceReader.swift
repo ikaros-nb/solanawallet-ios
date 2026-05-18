@@ -24,7 +24,7 @@ extension SolanaClient: VaultBalanceReader {
                 pubkey: tokenAccountPDA.base58EncodedString,
                 commitment: nil
             )
-            let decimal = try Self.decode(tokenAccountBalance: balance)
+            let decimal = try VaultAmount.decode(balance)
             vaultBalanceCache[owner] = decimal
             return decimal
         } catch let APIClientError.responseError(response) where Self.isAccountNotFound(response) {
@@ -40,17 +40,6 @@ extension SolanaClient: VaultBalanceReader {
             }
             throw mapped
         }
-    }
-
-    private static let posix = Locale(identifier: "en_US_POSIX")
-
-    private static func decode(tokenAccountBalance balance: TokenAccountBalance) throws -> Decimal {
-        let uiDecimal = balance.uiAmountString.flatMap { Decimal(string: $0, locale: posix) }
-        if let decimal = uiDecimal { return decimal }
-        guard let rawAmount = UInt64(balance.amount), let decimals = balance.decimals else {
-            throw WalletError.vaultError(code: 0, message: "invalid token account balance response")
-        }
-        return Decimal(rawAmount) / pow(10, Int(decimals))
     }
 
     private static func isAccountNotFound(_ response: ResponseError) -> Bool {
