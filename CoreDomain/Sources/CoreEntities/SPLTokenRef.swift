@@ -16,9 +16,3 @@ public struct SPLTokenRef: Sendable, Equatable, Hashable {
         self.decimals = decimals
     }
 }
-
-public extension SPLTokenAccount {
-    var ref: SPLTokenRef {
-        SPLTokenRef(mint: mint, programId: programId, decimals: decimals)
-    }
-}

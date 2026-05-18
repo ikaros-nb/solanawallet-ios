@@ -43,7 +43,18 @@ extension SolanaClient: WalletReader {
 
             let allMints = classic.map(\.account.data.mint.base58EncodedString)
                 + token2022.map(\.account.data.mint.base58EncodedString)
-            let metadata = try await tokenRepository.get(addresses: allMints)
+            let uniqueMints = Array(Set(allMints))
+
+            async let metadataTask = tokenRepository.get(addresses: allMints)
+            // TokenMintState decodes the 82-byte mint prefix shared by SPL Token and Token-2022,
+            // so this single batch covers both programs.
+            async let mintDatasTask = rpc.getMultipleMintDatas(
+                mintAddresses: uniqueMints,
+                commitment: SolanaCommitment.default,
+                mintType: TokenMintState.self
+            )
+            let metadata = try await metadataTask
+            let mintDatas = try await mintDatasTask
 
             var seeds: [TokenAccountSeed] = []
             seeds.reserveCapacity(classic.count + token2022.count)
@@ -54,34 +65,18 @@ extension SolanaClient: WalletReader {
                 seeds.append(makeSeed(token: token, programId: token2022ProgramId, metadata: metadata))
             }
 
-            let unsorted: [SPLTokenAccount] = try await withThrowingTaskGroup(
-                of: SPLTokenAccount.self
-            ) { group in
-                for seed in seeds {
-                    group.addTask { [rpc] in
-                        let balance = try await rpc.getTokenAccountBalance(
-                            pubkey: seed.address,
-                            commitment: SolanaCommitment.default
-                        )
-                        return SPLTokenAccount(
-                            mint: seed.mint,
-                            address: seed.address,
-                            amount: seed.amount,
-                            decimals: balance.decimals ?? 0,
-                            programId: seed.programId,
-                            name: seed.name,
-                            symbol: seed.symbol
-                        )
-                    }
-                }
-                var out: [SPLTokenAccount] = []
-                for try await account in group {
-                    out.append(account)
-                }
-                return out
+            let accounts: [SPLTokenAccount] = seeds.map { seed in
+                SPLTokenAccount(
+                    mint: seed.mint,
+                    address: seed.address,
+                    amount: seed.amount,
+                    decimals: mintDatas[seed.mint]?.decimals ?? 0,
+                    programId: seed.programId,
+                    name: seed.name,
+                    symbol: seed.symbol
+                )
             }
 
-            let accounts = unsorted.sorted(by: tokenOrder(_:before:))
             tokensCache[owner] = accounts
             return accounts
         } catch {
@@ -89,16 +84,6 @@ extension SolanaClient: WalletReader {
                 .staleTokenCache($0, underlying: $1)
             }
         }
-    }
-
-    private nonisolated func tokenOrder(_ lhs: SPLTokenAccount, before rhs: SPLTokenAccount) -> Bool {
-        let lhsKnown = lhs.symbol?.isEmpty == false || lhs.name?.isEmpty == false
-        let rhsKnown = rhs.symbol?.isEmpty == false || rhs.name?.isEmpty == false
-        if lhsKnown != rhsKnown { return lhsKnown }
-        let lhsKey = (lhs.symbol ?? lhs.name ?? lhs.mint).localizedLowercase
-        let rhsKey = (rhs.symbol ?? rhs.name ?? rhs.mint).localizedLowercase
-        if lhsKey != rhsKey { return lhsKey < rhsKey }
-        return lhs.mint < rhs.mint
     }
 
     private func makeSeed(

@@ -79,17 +79,6 @@ extension SolanaClient: TransactionSender {
             tokenProgramId: programIdKey
         )
 
-        let destinationExists: Bool
-        do {
-            destinationExists = try await rpc.checkIfAssociatedTokenAccountExists(
-                owner: recipientKey,
-                mint: token.mint,
-                tokenProgramId: programIdKey
-            )
-        } catch {
-            throw mapToWalletError(error)
-        }
-
         let accounts = TransferAccounts(
             source: sourceATA,
             destination: destinationATA,
@@ -98,17 +87,16 @@ extension SolanaClient: TransactionSender {
             programId: programIdKey
         )
 
-        var instructions: [TransactionInstruction] = []
-        if !destinationExists {
-            let createATA = try AssociatedTokenProgram.createAssociatedTokenAccountInstruction(
-                mint: mintKey,
-                owner: recipientKey,
-                payer: ownerKey,
-                tokenProgramId: programIdKey
-            )
-            instructions.append(createATA)
-        }
-        instructions.append(buildTransferChecked(accounts: accounts, amount: amount, decimals: token.decimals))
+        let createATA = try createAssociatedTokenAccountIdempotentInstruction(
+            mint: mintKey,
+            owner: recipientKey,
+            payer: ownerKey,
+            tokenProgramId: programIdKey
+        )
+        let instructions: [TransactionInstruction] = [
+            createATA,
+            buildTransferChecked(accounts: accounts, amount: amount, decimals: token.decimals)
+        ]
 
         let signature = try await submitInstructions(
             instructions,
@@ -195,4 +183,34 @@ private struct TransferAccounts {
     let mint: PublicKey
     let owner: PublicKey
     let programId: PublicKey
+}
+
+/// solana-swift only ships the non-idempotent variant; idempotent has the same accounts
+/// but a `1` discriminator byte, and succeeds whether or not the ATA already exists.
+private func createAssociatedTokenAccountIdempotentInstruction(
+    mint: PublicKey,
+    owner: PublicKey,
+    payer: PublicKey,
+    tokenProgramId: PublicKey
+) throws -> TransactionInstruction {
+    try TransactionInstruction(
+        keys: [
+            .init(publicKey: payer, isSigner: true, isWritable: true),
+            .init(
+                publicKey: PublicKey.associatedTokenAddress(
+                    walletAddress: owner,
+                    tokenMintAddress: mint,
+                    tokenProgramId: tokenProgramId
+                ),
+                isSigner: false,
+                isWritable: true
+            ),
+            .init(publicKey: owner, isSigner: false, isWritable: false),
+            .init(publicKey: mint, isSigner: false, isWritable: false),
+            .init(publicKey: SystemProgram.id, isSigner: false, isWritable: false),
+            .init(publicKey: tokenProgramId, isSigner: false, isWritable: false)
+        ],
+        programId: AssociatedTokenProgram.id,
+        data: [UInt8(1)]
+    )
 }

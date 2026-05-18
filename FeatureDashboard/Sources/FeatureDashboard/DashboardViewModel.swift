@@ -70,18 +70,8 @@ final class DashboardViewModel {
         case .sol:
             String(localized: .Dashboard.sendSymbol)
         case let .spl(token):
-            tokenDisplaySymbol(for: token)
+            token.displaySymbol.isEmpty ? token.displayName : token.displaySymbol
         }
-    }
-
-    private func tokenDisplaySymbol(for token: SPLTokenAccount) -> String {
-        if let symbol = token.symbol, !symbol.isEmpty {
-            return symbol
-        }
-        if let name = token.name, !name.isEmpty {
-            return name
-        }
-        return String(token.mint.prefix(4)) + "…"
     }
 
     init(
@@ -184,15 +174,25 @@ final class DashboardViewModel {
     private func loadTokens() async {
         guard let walletReader else { return }
         do {
-            tokens = try await walletReader.fetchTokenAccounts(for: owner)
+            tokens = try await walletReader.fetchTokenAccounts(for: owner).sorted(by: Self.tokenOrder)
         } catch let WalletError.staleTokenCache(cached, underlying) {
-            tokens = cached
+            tokens = cached.sorted(by: Self.tokenOrder)
             loadError = underlying
         } catch let error as WalletError {
             loadError = error
         } catch {
             loadError = .unknown(underlying: "\(error)")
         }
+    }
+
+    private static func tokenOrder(_ lhs: SPLTokenAccount, _ rhs: SPLTokenAccount) -> Bool {
+        let lhsKnown = lhs.symbol?.isEmpty == false || lhs.name?.isEmpty == false
+        let rhsKnown = rhs.symbol?.isEmpty == false || rhs.name?.isEmpty == false
+        if lhsKnown != rhsKnown { return lhsKnown }
+        let lhsKey = (lhs.symbol ?? lhs.name ?? lhs.mint).localizedLowercase
+        let rhsKey = (rhs.symbol ?? rhs.name ?? rhs.mint).localizedLowercase
+        if lhsKey != rhsKey { return lhsKey < rhsKey }
+        return lhs.mint < rhs.mint
     }
 
     private func loadVaultBalance() async {

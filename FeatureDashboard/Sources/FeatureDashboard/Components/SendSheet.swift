@@ -153,6 +153,18 @@ struct SendSheet: View {
         .onChange(of: selectedAsset) { _, _ in
             amount = nil
         }
+        .onAppear(perform: snapSelectedAssetIfNeeded)
+        .onChange(of: sendableAssets) { _, _ in
+            snapSelectedAssetIfNeeded()
+        }
+    }
+
+    private func snapSelectedAssetIfNeeded() {
+        guard
+            !sendableAssets.contains(selectedAsset),
+            let first = sendableAssets.first
+        else { return }
+        selectedAsset = first
     }
 
     @ViewBuilder
@@ -172,13 +184,13 @@ struct SendSheet: View {
                     Text(selectedSymbol)
                         .font(.system(size: 13, weight: .medium))
                         .foregroundStyle(Color.tertiaryText)
+                        .frame(width: 80, alignment: .trailing)
                     Image(systemName: "chevron.down")
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(Color.tertiaryText)
                 }
             }
             .disabled(isBusy)
-            .accessibilityLabel(Text(.Dashboard.sendAssetMenuLabel))
         } else {
             Text(selectedSymbol)
                 .font(.system(size: 13, weight: .medium))

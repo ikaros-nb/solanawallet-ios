@@ -39,4 +39,25 @@ public struct SPLTokenAccount: Sendable, Equatable, Hashable {
         }
         return Double(amount) / divisor
     }
+
+    public var displayName: String {
+        if let name, !name.isEmpty { return name }
+        if let symbol, !symbol.isEmpty { return symbol }
+        return Self.truncatedMint(mint)
+    }
+
+    public var displaySymbol: String {
+        if let symbol, !symbol.isEmpty { return symbol }
+        if name?.isEmpty == false { return "" }
+        return Self.truncatedMint(mint)
+    }
+
+    public static func truncatedMint(_ mint: Pubkey) -> String {
+        guard mint.count > 8 else { return mint }
+        return mint.prefix(4) + "…" + mint.suffix(4)
+    }
+
+    public var ref: SPLTokenRef {
+        SPLTokenRef(mint: mint, programId: programId, decimals: decimals)
+    }
 }
