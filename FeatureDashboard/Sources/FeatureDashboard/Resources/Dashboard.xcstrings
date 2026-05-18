@@ -45,6 +45,61 @@
         }
       }
     },
+    "receive.address.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your wallet address"
+          }
+        }
+      }
+    },
+    "receive.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share your wallet address to receive SOL."
+          }
+        }
+      }
+    },
+    "receive.button.copy" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy address"
+          }
+        }
+      }
+    },
+    "receive.copy.success" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Address copied"
+          }
+        }
+      }
+    },
+    "receive.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receive SOL"
+          }
+        }
+      }
+    },
     "send.amount.label" : {
       "extractionState" : "manual",
       "localizations" : {

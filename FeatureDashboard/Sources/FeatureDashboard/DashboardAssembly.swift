@@ -31,6 +31,7 @@ private struct DashboardFlowContainer: View {
 
     var body: some View {
         DashboardFlowBody(
+            owner: owner,
             router: router,
             initialViewModel: DashboardViewModel(
                 owner: owner,
@@ -47,10 +48,12 @@ private struct DashboardFlowContainer: View {
 // `.sheet(item: $router.presentedSheet)`. The container above can't own it because
 // it needs @Environment values for construction — which can't be read in init.
 private struct DashboardFlowBody: View {
+    private let owner: Pubkey
     @State private var viewModel: DashboardViewModel
     @Bindable private var router: DashboardRouter
 
-    init(router: DashboardRouter, initialViewModel: DashboardViewModel) {
+    init(owner: Pubkey, router: DashboardRouter, initialViewModel: DashboardViewModel) {
+        self.owner = owner
         self.router = router
         _viewModel = State(wrappedValue: initialViewModel)
     }
@@ -59,8 +62,14 @@ private struct DashboardFlowBody: View {
         DashboardView(viewModel: viewModel)
             .environment(router)
             .sheet(item: $router.presentedSheet) { route in
-                SendSheet(route: route, viewModel: viewModel)
-                    .environment(router)
+                switch route {
+                case .send:
+                    SendSheet(route: route, viewModel: viewModel)
+                        .environment(router)
+                case .receive:
+                    ReceiveSheet(owner: owner)
+                        .environment(router)
+                }
             }
     }
 }

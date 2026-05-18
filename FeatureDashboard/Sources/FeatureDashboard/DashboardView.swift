@@ -105,7 +105,7 @@ struct DashboardView: View {
                 QuickActionButton(
                     icon: Image(systemName: "arrow.down.backward"),
                     title: .Dashboard.buttonReceiveSOL,
-                    action: {}
+                    action: { router.present(.receive) }
                 )
             }
         }
