@@ -56,20 +56,24 @@ extension VaultProgram {
 
     static func depositInstruction(
         owner: Pubkey,
-        amount: Decimal,
-        coder: BorshCoder
+        amount: Decimal
     ) throws -> TransactionInstruction {
         let scaled = try VaultAmount.scale(amount)
-        return try makeInstruction(data: coder.encodeDeposit(amount: scaled), owner: owner)
+        return try makeInstruction(data: encodeAmountInstruction(name: "deposit", amount: scaled), owner: owner)
     }
 
     static func withdrawInstruction(
         owner: Pubkey,
-        amount: Decimal,
-        coder: BorshCoder
+        amount: Decimal
     ) throws -> TransactionInstruction {
         let scaled = try VaultAmount.scale(amount)
-        return try makeInstruction(data: coder.encodeWithdraw(amount: scaled), owner: owner)
+        return try makeInstruction(data: encodeAmountInstruction(name: "withdraw", amount: scaled), owner: owner)
+    }
+
+    static func encodeAmountInstruction(name: String, amount: UInt64) -> Data {
+        let disc = BorshCoder.instructionDiscriminator(name: name)
+        let amountLE = withUnsafeBytes(of: amount.littleEndian) { Data($0) }
+        return disc + amountLE
     }
 
     private static func makeInstruction(

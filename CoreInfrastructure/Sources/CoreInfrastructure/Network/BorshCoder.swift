@@ -26,14 +26,6 @@ public struct DecodedVaultInstruction: Equatable, Sendable {
 public struct BorshCoder: Sendable {
     public init() {}
 
-    public func encodeDeposit(amount: UInt64) -> Data {
-        encodeInstructionData(instructionName: "deposit", amount: amount)
-    }
-
-    public func encodeWithdraw(amount: UInt64) -> Data {
-        encodeInstructionData(instructionName: "withdraw", amount: amount)
-    }
-
     public func decodeVaultInstruction(from data: Data) throws -> DecodedVaultInstruction {
         let discLen = Self.discriminatorLength
         let amountLen = MemoryLayout<UInt64>.size
@@ -74,12 +66,6 @@ public struct BorshCoder: Sendable {
     }
 
     // MARK: Private
-
-    private func encodeInstructionData(instructionName: String, amount: UInt64) -> Data {
-        let discriminator = Self.instructionDiscriminator(name: instructionName)
-        let amountLE = withUnsafeBytes(of: amount.littleEndian) { Data($0) }
-        return discriminator + amountLE
-    }
 
     private static func discriminator(prefix: String, name: String) -> Data {
         let payload = Data("\(prefix):\(name)".utf8)

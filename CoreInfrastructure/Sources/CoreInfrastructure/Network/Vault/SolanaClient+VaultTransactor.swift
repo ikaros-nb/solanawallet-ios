@@ -14,8 +14,7 @@ extension SolanaClient: VaultTransactor {
     public func depositVault(owner: Pubkey, amount: Decimal) async throws -> TransactionSignature {
         let instruction = try VaultProgram.depositInstruction(
             owner: owner,
-            amount: amount,
-            coder: coder
+            amount: amount
         )
         return try await submitVaultInstruction(
             instruction,
@@ -27,8 +26,7 @@ extension SolanaClient: VaultTransactor {
     public func withdrawVault(owner: Pubkey, amount: Decimal) async throws -> TransactionSignature {
         let instruction = try VaultProgram.withdrawInstruction(
             owner: owner,
-            amount: amount,
-            coder: coder
+            amount: amount
         )
         return try await submitVaultInstruction(
             instruction,
