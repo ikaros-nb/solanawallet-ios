@@ -54,7 +54,7 @@ extension SolanaClient: WalletReader {
                 seeds.append(makeSeed(token: token, programId: token2022ProgramId, metadata: metadata))
             }
 
-            let accounts: [SPLTokenAccount] = try await withThrowingTaskGroup(
+            let unsorted: [SPLTokenAccount] = try await withThrowingTaskGroup(
                 of: SPLTokenAccount.self
             ) { group in
                 for seed in seeds {
@@ -81,6 +81,7 @@ extension SolanaClient: WalletReader {
                 return out
             }
 
+            let accounts = unsorted.sorted(by: tokenOrder(_:before:))
             tokensCache[owner] = accounts
             return accounts
         } catch {
@@ -88,6 +89,16 @@ extension SolanaClient: WalletReader {
                 .staleTokenCache($0, underlying: $1)
             }
         }
+    }
+
+    private nonisolated func tokenOrder(_ lhs: SPLTokenAccount, before rhs: SPLTokenAccount) -> Bool {
+        let lhsKnown = lhs.symbol?.isEmpty == false || lhs.name?.isEmpty == false
+        let rhsKnown = rhs.symbol?.isEmpty == false || rhs.name?.isEmpty == false
+        if lhsKnown != rhsKnown { return lhsKnown }
+        let lhsKey = (lhs.symbol ?? lhs.name ?? lhs.mint).localizedLowercase
+        let rhsKey = (rhs.symbol ?? rhs.name ?? rhs.mint).localizedLowercase
+        if lhsKey != rhsKey { return lhsKey < rhsKey }
+        return lhs.mint < rhs.mint
     }
 
     private func makeSeed(
