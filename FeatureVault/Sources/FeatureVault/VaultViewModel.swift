@@ -14,12 +14,14 @@ import Foundation
 @MainActor
 final class VaultViewModel {
     private let owner: Pubkey
+    private let stateReader: (any VaultStateReader)?
     private let balanceReader: (any VaultBalanceReader)?
     private let historyReader: (any VaultHistoryReader)?
     private let tokenBalanceReader: (any TokenBalanceReader)?
     private let transactor: (any VaultTransactor)?
     private let toastCenter: ToastCenter
 
+    private(set) var vaultExists: Bool?
     private(set) var vaultBalance: Decimal?
     private(set) var splBalance: Decimal?
     private(set) var transactions: [VaultTransaction]?
@@ -31,6 +33,7 @@ final class VaultViewModel {
 
     init(
         owner: Pubkey,
+        stateReader: (any VaultStateReader)?,
         balanceReader: (any VaultBalanceReader)?,
         historyReader: (any VaultHistoryReader)?,
         tokenBalanceReader: (any TokenBalanceReader)?,
@@ -38,6 +41,7 @@ final class VaultViewModel {
         toastCenter: ToastCenter
     ) {
         self.owner = owner
+        self.stateReader = stateReader
         self.balanceReader = balanceReader
         self.historyReader = historyReader
         self.tokenBalanceReader = tokenBalanceReader
@@ -52,10 +56,22 @@ final class VaultViewModel {
         historyError = nil
         defer { isLoading = false }
 
+        async let existence: Void = loadVaultExistence()
         async let balance: Void = loadVaultBalance()
         async let history: Void = loadVaultHistory()
         async let spl: Void = loadSPLBalance()
-        _ = await (balance, history, spl)
+        _ = await (existence, balance, history, spl)
+    }
+
+    private func loadVaultExistence() async {
+        guard let stateReader else { return }
+        do {
+            vaultExists = try await stateReader.fetchVaultExists(for: owner)
+        } catch let error as WalletError {
+            loadError = error
+        } catch {
+            loadError = .unknown(underlying: "\(error)")
+        }
     }
 
     private func loadVaultBalance() async {
@@ -98,6 +114,15 @@ final class VaultViewModel {
     }
 
     @discardableResult
+    func initialize() async -> Bool {
+        let success = await runVaultTransaction { transactor in
+            try await transactor.initializeVault(owner: owner)
+        }
+        showInitializeResultToast(success: success)
+        return success
+    }
+
+    @discardableResult
     func deposit(amount: Decimal) async -> Bool {
         let success = await runVaultTransaction { transactor in
             try await transactor.depositVault(owner: owner, amount: amount)
@@ -120,6 +145,14 @@ final class VaultViewModel {
             toastCenter.show(.success(successMessage))
         } else if transactionError != nil {
             toastCenter.show(.error(.Vault.transactionFailure))
+        }
+    }
+
+    private func showInitializeResultToast(success: Bool) {
+        if success {
+            toastCenter.show(.success(.Vault.initializeSuccess))
+        } else if transactionError != nil {
+            toastCenter.show(.error(.Vault.initializeFailure))
         }
     }
 

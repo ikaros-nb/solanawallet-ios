@@ -22,6 +22,7 @@ struct RootView: View {
                 MainTabView()
                     .environment(\.tokenBalanceReader, deps.solanaClient)
                     .environment(\.transactionSender, deps.solanaClient)
+                    .environment(\.vaultStateReader, deps.solanaClient)
                     .environment(\.vaultBalanceReader, deps.solanaClient)
                     .environment(\.vaultHistoryReader, deps.solanaClient)
                     .environment(\.vaultTransactor, deps.solanaClient)

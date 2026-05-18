@@ -23,6 +23,61 @@
         }
       }
     },
+    "initialize.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Initialize your vault to start savings."
+          }
+        }
+      }
+    },
+    "initialize.button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Initialize vault"
+          }
+        }
+      }
+    },
+    "initialize.failure" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not initialize vault"
+          }
+        }
+      }
+    },
+    "initialize.success" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vault initialized"
+          }
+        }
+      }
+    },
+    "initialize.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your vault isn't set up yet"
+          }
+        }
+      }
+    },
     "savings.label" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -89,6 +144,17 @@
         }
       }
     },
+    "transaction.deposit.success" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deposit successful"
+          }
+        }
+      }
+    },
     "transaction.deposit.title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -96,6 +162,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Deposit VLT"
+          }
+        }
+      }
+    },
+    "transaction.failure" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transaction failed"
           }
         }
       }
@@ -129,28 +206,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Confirm withdraw"
-          }
-        }
-      }
-    },
-    "transaction.deposit.success" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deposit successful"
-          }
-        }
-      }
-    },
-    "transaction.failure" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Transaction failed"
           }
         }
       }

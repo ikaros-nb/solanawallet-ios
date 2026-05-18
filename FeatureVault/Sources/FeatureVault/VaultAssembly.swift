@@ -19,6 +19,7 @@ public enum VaultAssembly {
 private struct VaultFlowContainer: View {
     private let owner: Pubkey
     @State private var router = VaultRouter()
+    @Environment(\.vaultStateReader) private var vaultStateReader
     @Environment(\.vaultBalanceReader) private var vaultBalanceReader
     @Environment(\.vaultHistoryReader) private var vaultHistoryReader
     @Environment(\.vaultTransactor) private var vaultTransactor
@@ -34,6 +35,7 @@ private struct VaultFlowContainer: View {
             router: router,
             initialViewModel: VaultViewModel(
                 owner: owner,
+                stateReader: vaultStateReader,
                 balanceReader: vaultBalanceReader,
                 historyReader: vaultHistoryReader,
                 tokenBalanceReader: tokenBalanceReader,

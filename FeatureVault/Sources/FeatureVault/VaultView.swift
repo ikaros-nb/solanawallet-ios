@@ -17,7 +17,11 @@ struct VaultView: View {
     var body: some View {
         VStack(spacing: 16) {
             savingsSection()
-            actionsSection()
+            if viewModel.vaultExists == true {
+                actionsSection()
+            } else if viewModel.vaultExists == false {
+                initializeSection()
+            }
             activitySection()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -100,6 +104,31 @@ struct VaultView: View {
         }
     }
 
+    private func initializeSection() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(.Vault.initializeTitle)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(.white)
+
+            Text(.Vault.initializeBody)
+                .font(.system(size: 13, weight: .regular))
+                .foregroundStyle(Color.tertiaryText)
+
+            ActionButton(
+                title: .Vault.initializeButton,
+                icon: Image(systemName: "plus.circle.fill"),
+                style: .primaryPurple,
+                action: {
+                    Task { await viewModel.initialize() }
+                }
+            )
+            .disabled(viewModel.isTransacting)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(20)
+        .cardBackground()
+    }
+
     private func activitySection() -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(.Vault.activityLabel)
@@ -123,10 +152,11 @@ struct VaultView: View {
     }
 }
 
-#Preview {
+#Preview("Initialized") {
     VaultView(
         viewModel: VaultViewModel(
             owner: "PreviewOwner",
+            stateReader: PreviewVaultStateReader(exists: true),
             balanceReader: PreviewVaultReader(),
             historyReader: PreviewVaultHistoryReader(),
             tokenBalanceReader: PreviewTokenBalanceReader(),
@@ -135,6 +165,28 @@ struct VaultView: View {
         )
     )
     .environment(VaultRouter())
+}
+
+#Preview("Uninitialized") {
+    VaultView(
+        viewModel: VaultViewModel(
+            owner: "PreviewOwner",
+            stateReader: PreviewVaultStateReader(exists: false),
+            balanceReader: PreviewVaultReader(),
+            historyReader: PreviewVaultHistoryReader(),
+            tokenBalanceReader: PreviewTokenBalanceReader(),
+            transactor: nil,
+            toastCenter: ToastCenter()
+        )
+    )
+    .environment(VaultRouter())
+}
+
+private struct PreviewVaultStateReader: VaultStateReader {
+    let exists: Bool
+    nonisolated func fetchVaultExists(for _: Pubkey) async throws -> Bool {
+        exists
+    }
 }
 
 private struct PreviewTokenBalanceReader: TokenBalanceReader {

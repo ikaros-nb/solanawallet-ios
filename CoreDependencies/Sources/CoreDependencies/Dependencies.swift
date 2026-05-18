@@ -12,6 +12,7 @@ public extension EnvironmentValues {
     @Entry var walletReader: (any WalletReader)?
     @Entry var walletCreator: (any WalletCreator)?
     @Entry var biometricAuthenticator: (any BiometricAuthenticator)?
+    @Entry var vaultStateReader: (any VaultStateReader)?
     @Entry var vaultBalanceReader: (any VaultBalanceReader)?
     @Entry var vaultHistoryReader: (any VaultHistoryReader)?
     @Entry var vaultTransactor: (any VaultTransactor)?

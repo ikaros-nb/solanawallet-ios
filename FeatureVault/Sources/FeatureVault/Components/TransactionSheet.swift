@@ -131,7 +131,7 @@ struct TransactionSheet: View {
         .padding(.top, 44)
         .padding(.horizontal, 32)
         .presentationBackground(Color.card)
-        .presentationDetents([.height(350)])
+        .presentationDetents([.height(380)])
         .presentationDragIndicator(.visible)
         .interactiveDismissDisabled(true)
     }

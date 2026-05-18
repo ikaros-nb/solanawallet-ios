@@ -10,6 +10,17 @@ import CoreEntities
 import Foundation
 
 extension SolanaClient: VaultTransactor {
+    public func initializeVault(owner: Pubkey) async throws -> TransactionSignature {
+        let instruction = try VaultProgram.initializeInstruction(owner: owner)
+        let signature = try await submitInstruction(
+            instruction,
+            owner: owner,
+            reason: "Initialize your VLT vault"
+        )
+        invalidateVaultCaches(for: owner)
+        return signature
+    }
+
     public func depositVault(owner: Pubkey, amount: Decimal) async throws -> TransactionSignature {
         let instruction = try VaultProgram.depositInstruction(owner: owner, amount: amount)
         let signature = try await submitInstruction(

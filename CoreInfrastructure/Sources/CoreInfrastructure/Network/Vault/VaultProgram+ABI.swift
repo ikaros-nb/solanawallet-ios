@@ -30,6 +30,14 @@ extension VaultProgram {
         let programId: PublicKey
     }
 
+    struct InitializeAccounts {
+        let payer: PublicKey
+        let vault: PublicKey
+        let tokenAccount: PublicKey
+        let mint: PublicKey
+        let programId: PublicKey
+    }
+
     static func statePDA(for owner: Pubkey) throws -> PublicKey {
         let programId = try PublicKey(string: id)
         let ownerKey = try PublicKey(string: owner)
@@ -41,6 +49,21 @@ extension VaultProgram {
         let ownerKey = try PublicKey(string: owner)
         let state = try deriveState(programId: programId, owner: ownerKey)
         return try deriveTokenAccount(programId: programId, state: state)
+    }
+
+    static func initializeAccounts(owner: Pubkey) throws -> InitializeAccounts {
+        let programId = try PublicKey(string: id)
+        let payer = try PublicKey(string: owner)
+        let mint = try PublicKey(string: VLT.mint)
+        let vault = try deriveState(programId: programId, owner: payer)
+        let tokenAccount = try deriveTokenAccount(programId: programId, state: vault)
+        return InitializeAccounts(
+            payer: payer,
+            vault: vault,
+            tokenAccount: tokenAccount,
+            mint: mint,
+            programId: programId
+        )
     }
 
     static func instructionAccounts(owner: Pubkey) throws -> InstructionAccounts {
@@ -62,6 +85,31 @@ extension VaultProgram {
             vaultTokenAccount: vaultTokenAccount,
             programId: programId
         )
+    }
+
+    static func initializeInstruction(owner: Pubkey) throws -> TransactionInstruction {
+        let accounts: InitializeAccounts
+        do {
+            accounts = try initializeAccounts(owner: owner)
+        } catch {
+            throw WalletError.vaultError(code: 0, message: "account derivation failed: \(error)")
+        }
+        return TransactionInstruction(
+            keys: [
+                AccountMeta(publicKey: accounts.payer, isSigner: true, isWritable: true),
+                AccountMeta(publicKey: accounts.vault, isSigner: false, isWritable: true),
+                AccountMeta(publicKey: accounts.tokenAccount, isSigner: false, isWritable: true),
+                AccountMeta(publicKey: accounts.mint, isSigner: false, isWritable: false),
+                AccountMeta(publicKey: TokenProgram.id, isSigner: false, isWritable: false),
+                AccountMeta(publicKey: SystemProgram.id, isSigner: false, isWritable: false)
+            ],
+            programId: accounts.programId,
+            data: [encodeInitializeInstruction()]
+        )
+    }
+
+    static func encodeInitializeInstruction() -> Data {
+        AnchorDiscriminator.instructionDiscriminator(name: "initialize")
     }
 
     static func depositInstruction(

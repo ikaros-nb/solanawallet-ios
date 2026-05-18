@@ -50,6 +50,70 @@ struct VaultProgramTests {
         }
     }
 
+    // MARK: initializeAccounts identity
+
+    @Test
+    func `initializeAccounts returns the five expected accounts in order`() throws {
+        let accounts = try VaultProgram.initializeAccounts(owner: Self.knownOwner)
+        #expect(accounts.payer.base58EncodedString == Self.knownOwner)
+        #expect(accounts.vault.base58EncodedString == Self.expectedVaultPDA)
+        #expect(accounts.tokenAccount.base58EncodedString == Self.expectedTokenPDA)
+        #expect(accounts.mint.base58EncodedString == VLT.mint)
+        #expect(accounts.programId.base58EncodedString == VaultProgram.id)
+    }
+
+    // MARK: initializeInstruction ABI layout
+
+    @Test
+    func `initializeInstruction layout matches the 6-account ABI`() throws {
+        let instruction = try VaultProgram.initializeInstruction(owner: Self.knownOwner)
+        #expect(instruction.programId.base58EncodedString == VaultProgram.id)
+        #expect(instruction.keys.count == 6)
+
+        let payer = instruction.keys[0]
+        #expect(payer.publicKey.base58EncodedString == Self.knownOwner)
+        #expect(payer.isSigner)
+        #expect(payer.isWritable)
+
+        let vault = instruction.keys[1]
+        #expect(vault.publicKey.base58EncodedString == Self.expectedVaultPDA)
+        #expect(!vault.isSigner)
+        #expect(vault.isWritable)
+
+        let tokenAccount = instruction.keys[2]
+        #expect(tokenAccount.publicKey.base58EncodedString == Self.expectedTokenPDA)
+        #expect(!tokenAccount.isSigner)
+        #expect(tokenAccount.isWritable)
+
+        let mint = instruction.keys[3]
+        #expect(mint.publicKey.base58EncodedString == VLT.mint)
+        #expect(!mint.isSigner)
+        #expect(!mint.isWritable)
+
+        let tokenProgramId = instruction.keys[4]
+        #expect(tokenProgramId.publicKey == TokenProgram.id)
+        #expect(!tokenProgramId.isSigner)
+        #expect(!tokenProgramId.isWritable)
+
+        let systemProgramId = instruction.keys[5]
+        #expect(systemProgramId.publicKey == SystemProgram.id)
+        #expect(!systemProgramId.isSigner)
+        #expect(!systemProgramId.isWritable)
+    }
+
+    @Test
+    func `initializeInstruction data is the 8-byte initialize discriminator`() throws {
+        let instruction = try VaultProgram.initializeInstruction(owner: Self.knownOwner)
+        let expected = Data([175, 175, 109, 31, 13, 152, 155, 237])
+        #expect(Data(instruction.data) == expected)
+    }
+
+    @Test
+    func `encodeInitializeInstruction returns the 8-byte initialize discriminator`() {
+        let expected = Data([175, 175, 109, 31, 13, 152, 155, 237])
+        #expect(VaultProgram.encodeInitializeInstruction() == expected)
+    }
+
     // MARK: instructionAccounts identity
 
     @Test
