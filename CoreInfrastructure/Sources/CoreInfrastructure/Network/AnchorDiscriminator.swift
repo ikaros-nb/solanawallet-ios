@@ -1,5 +1,5 @@
 //
-//  BorshCoder.swift
+//  AnchorDiscriminator.swift
 //  CoreInfrastructure
 //
 //  Created by Nicolas Bouème on 04/05/2026.
@@ -8,12 +8,10 @@
 import CryptoKit
 import Foundation
 
-public enum BorshCoderError: Error, Equatable, Sendable {
-    case invalidInputData
-    case invalidDiscriminator(expected: Data, got: Data)
-}
-
-public enum BorshCoder {
+/// Anchor-universal SHA256 discriminator primitives, shared by every on-chain
+/// Anchor program. Program-specific instruction/account decoding (and its
+/// errors) lives next to each program's ABI surface, not here.
+public enum AnchorDiscriminator {
     public static func instructionDiscriminator(name: String) -> Data {
         discriminator(prefix: "global", name: name)
     }

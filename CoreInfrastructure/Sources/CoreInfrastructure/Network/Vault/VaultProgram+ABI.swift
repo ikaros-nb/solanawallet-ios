@@ -10,6 +10,11 @@ import CoreEntities
 import Foundation
 @preconcurrency import SolanaSwift
 
+public enum VaultInstructionDecodingError: Error, Equatable, Sendable {
+    case invalidInputData
+    case invalidDiscriminator(expected: Data, got: Data)
+}
+
 extension VaultProgram {
     enum InstructionKind: Equatable {
         case deposit
@@ -76,7 +81,7 @@ extension VaultProgram {
     }
 
     static func encodeAmountInstruction(name: String, amount: UInt64) -> Data {
-        let disc = BorshCoder.instructionDiscriminator(name: name)
+        let disc = AnchorDiscriminator.instructionDiscriminator(name: name)
         let amountLE = withUnsafeBytes(of: amount.littleEndian) { Data($0) }
         return disc + amountLE
     }
@@ -87,12 +92,12 @@ extension VaultProgram {
         let discLen = 8
         let amountLen = MemoryLayout<UInt64>.size
         guard data.count >= discLen + amountLen else {
-            throw BorshCoderError.invalidInputData
+            throw VaultInstructionDecodingError.invalidInputData
         }
 
         let receivedDisc = data.prefix(discLen)
-        let depositDisc = BorshCoder.instructionDiscriminator(name: "deposit")
-        let withdrawDisc = BorshCoder.instructionDiscriminator(name: "withdraw")
+        let depositDisc = AnchorDiscriminator.instructionDiscriminator(name: "deposit")
+        let withdrawDisc = AnchorDiscriminator.instructionDiscriminator(name: "withdraw")
 
         let kind: InstructionKind
         if receivedDisc == depositDisc {
@@ -100,7 +105,7 @@ extension VaultProgram {
         } else if receivedDisc == withdrawDisc {
             kind = .withdraw
         } else {
-            throw BorshCoderError.invalidDiscriminator(
+            throw VaultInstructionDecodingError.invalidDiscriminator(
                 expected: depositDisc,
                 got: Data(receivedDisc)
             )

@@ -210,7 +210,7 @@ struct VaultProgramTests {
     @Test
     func `decodeInstruction rejects unknown discriminator`() {
         let bogus = Data(repeating: 0xAA, count: 16)
-        #expect(throws: BorshCoderError.self) {
+        #expect(throws: VaultInstructionDecodingError.self) {
             try VaultProgram.decodeInstruction(bogus)
         }
     }
@@ -218,7 +218,7 @@ struct VaultProgramTests {
     @Test
     func `decodeInstruction rejects payload shorter than 16 bytes`() {
         let short = Data(repeating: 0x00, count: 10)
-        #expect(throws: BorshCoderError.invalidInputData) {
+        #expect(throws: VaultInstructionDecodingError.invalidInputData) {
             try VaultProgram.decodeInstruction(short)
         }
     }
