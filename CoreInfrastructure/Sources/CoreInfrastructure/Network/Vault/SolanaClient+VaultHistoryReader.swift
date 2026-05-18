@@ -17,7 +17,7 @@ extension SolanaClient: VaultHistoryReader {
     ) async throws -> [VaultTransaction] {
         let vaultStatePDA: PublicKey
         do {
-            vaultStatePDA = try VaultPDA.vault(for: owner)
+            vaultStatePDA = try VaultProgram.statePDA(for: owner)
         } catch {
             throw WalletError.vaultError(code: 0, message: "PDA derivation failed: \(error)")
         }

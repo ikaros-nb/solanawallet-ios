@@ -12,46 +12,42 @@ import Foundation
 
 extension SolanaClient: VaultTransactor {
     public func depositVault(owner: Pubkey, amount: Decimal) async throws -> TransactionSignature {
-        try await submitVaultInstruction(
-            data: coder.encodeDeposit(amount: VaultAmount.scale(amount)),
+        let instruction = try VaultProgram.depositInstruction(
+            owner: owner,
+            amount: amount,
+            coder: coder
+        )
+        return try await submitVaultInstruction(
+            instruction,
             owner: owner,
             reason: "Confirm vault deposit"
         )
     }
 
     public func withdrawVault(owner: Pubkey, amount: Decimal) async throws -> TransactionSignature {
-        try await submitVaultInstruction(
-            data: coder.encodeWithdraw(amount: VaultAmount.scale(amount)),
+        let instruction = try VaultProgram.withdrawInstruction(
+            owner: owner,
+            amount: amount,
+            coder: coder
+        )
+        return try await submitVaultInstruction(
+            instruction,
             owner: owner,
             reason: "Confirm vault withdrawal"
         )
     }
 
-    // swiftlint:disable:next function_body_length
     private func submitVaultInstruction(
-        data: Data,
+        _ instruction: TransactionInstruction,
         owner: Pubkey,
         reason: String
     ) async throws -> TransactionSignature {
-        let accounts: VaultPDA.InstructionAccounts
+        let payer: PublicKey
         do {
-            accounts = try VaultPDA.instructionAccounts(owner: owner)
+            payer = try PublicKey(string: owner)
         } catch {
-            throw WalletError.vaultError(code: 0, message: "account derivation failed: \(error)")
+            throw WalletError.vaultError(code: 0, message: "invalid owner pubkey: \(error)")
         }
-
-        let instruction = TransactionInstruction(
-            keys: [
-                AccountMeta(publicKey: accounts.payer, isSigner: true, isWritable: true),
-                AccountMeta(publicKey: accounts.vault, isSigner: false, isWritable: false),
-                AccountMeta(publicKey: accounts.mint, isSigner: false, isWritable: false),
-                AccountMeta(publicKey: accounts.payerTokenAccount, isSigner: false, isWritable: true),
-                AccountMeta(publicKey: accounts.vaultTokenAccount, isSigner: false, isWritable: true),
-                AccountMeta(publicKey: TokenProgram.id, isSigner: false, isWritable: false)
-            ],
-            programId: accounts.programId,
-            data: [data]
-        )
 
         let blockhash: String
         do {
@@ -60,27 +56,12 @@ extension SolanaClient: VaultTransactor {
             throw mapToWalletError(error)
         }
 
-        let serialized: String
-        do {
-            let payer = accounts.payer
-            serialized = try keychain.withSigningSession(reason: reason) { secretKey in
-                let signer = KeyPair(phrase: [], publicKey: payer, secretKey: secretKey)
-                var tx = Transaction(
-                    instructions: [instruction],
-                    recentBlockhash: blockhash,
-                    feePayer: payer
-                )
-                try tx.sign(signers: [signer])
-                return try tx.serialize().base64EncodedString()
-            }
-        } catch KeychainWalletStore.Failure.userCancelled,
-            KeychainWalletStore.Failure.biometryFailed {
-            throw WalletError.signingFailed
-        } catch let walletError as WalletError {
-            throw walletError
-        } catch {
-            throw WalletError.signingFailed
-        }
+        let serialized = try signTransaction(
+            instruction,
+            payer: payer,
+            blockhash: blockhash,
+            reason: reason
+        )
 
         guard
             let sendConfig = RequestConfiguration(
@@ -99,10 +80,35 @@ extension SolanaClient: VaultTransactor {
         }
 
         try await confirmSignature(signature)
-
         invalidateVaultCaches(for: owner)
-
         return signature
+    }
+
+    private func signTransaction(
+        _ instruction: TransactionInstruction,
+        payer: PublicKey,
+        blockhash: String,
+        reason: String
+    ) throws -> String {
+        do {
+            return try keychain.withSigningSession(reason: reason) { secretKey in
+                let signer = KeyPair(phrase: [], publicKey: payer, secretKey: secretKey)
+                var tx = Transaction(
+                    instructions: [instruction],
+                    recentBlockhash: blockhash,
+                    feePayer: payer
+                )
+                try tx.sign(signers: [signer])
+                return try tx.serialize().base64EncodedString()
+            }
+        } catch KeychainWalletStore.Failure.userCancelled,
+            KeychainWalletStore.Failure.biometryFailed {
+            throw WalletError.signingFailed
+        } catch let walletError as WalletError {
+            throw walletError
+        } catch {
+            throw WalletError.signingFailed
+        }
     }
 
     private func confirmSignature(_ signature: TransactionSignature) async throws {
