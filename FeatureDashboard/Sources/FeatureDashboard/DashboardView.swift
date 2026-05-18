@@ -98,13 +98,13 @@ struct DashboardView: View {
             HStack(spacing: 10) {
                 QuickActionButton(
                     icon: Image(systemName: "arrow.up.right"),
-                    title: .Dashboard.buttonSendSOL,
+                    title: .Dashboard.buttonSend,
                     action: { router.present(.send) }
                 )
 
                 QuickActionButton(
                     icon: Image(systemName: "arrow.down.backward"),
-                    title: .Dashboard.buttonReceiveSOL,
+                    title: .Dashboard.buttonReceive,
                     action: { router.present(.receive) }
                 )
             }
@@ -156,6 +156,7 @@ private struct PreviewWalletReader: WalletReader {
                 address: "PreviewVLTAccount",
                 amount: 4_200_000_000,
                 decimals: 9,
+                programId: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
                 name: "Vault Token",
                 symbol: "VLT"
             ),
@@ -164,6 +165,7 @@ private struct PreviewWalletReader: WalletReader {
                 address: "PreviewUSDCAccount",
                 amount: 1_500_000,
                 decimals: 6,
+                programId: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
                 name: "USD Coin",
                 symbol: "USDC"
             ),
@@ -172,6 +174,7 @@ private struct PreviewWalletReader: WalletReader {
                 address: "PreviewBONKAccount",
                 amount: 12_345_678_900,
                 decimals: 5,
+                programId: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
                 name: "Bonk",
                 symbol: "BONK"
             )

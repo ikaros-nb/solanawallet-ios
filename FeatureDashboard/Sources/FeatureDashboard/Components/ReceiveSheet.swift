@@ -50,7 +50,7 @@ struct ReceiveSheet: View {
 
             ActionButton(
                 title: .Dashboard.receiveButtonCopy,
-                icon: Image(systemName: "doc.on.doc"),
+                icon: Image(systemName: "square.on.square"),
                 style: .primaryGreen
             ) {
                 UIPasteboard.general.string = owner

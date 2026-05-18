@@ -16,6 +16,14 @@ extension SolanaClient {
         owner: Pubkey,
         reason: String
     ) async throws -> TransactionSignature {
+        try await submitInstructions([instruction], owner: owner, reason: reason)
+    }
+
+    func submitInstructions(
+        _ instructions: [TransactionInstruction],
+        owner: Pubkey,
+        reason: String
+    ) async throws -> TransactionSignature {
         let payer: PublicKey
         do {
             payer = try PublicKey(string: owner)
@@ -31,7 +39,7 @@ extension SolanaClient {
         }
 
         let serialized = try signTransaction(
-            instruction,
+            instructions,
             payer: payer,
             blockhash: blockhash,
             reason: reason
@@ -58,7 +66,7 @@ extension SolanaClient {
     }
 
     private func signTransaction(
-        _ instruction: TransactionInstruction,
+        _ instructions: [TransactionInstruction],
         payer: PublicKey,
         blockhash: String,
         reason: String
@@ -67,7 +75,7 @@ extension SolanaClient {
             return try keychain.withSigningSession(reason: reason) { secretKey in
                 let signer = KeyPair(phrase: [], publicKey: payer, secretKey: secretKey)
                 var tx = Transaction(
-                    instructions: [instruction],
+                    instructions: instructions,
                     recentBlockhash: blockhash,
                     feePayer: payer
                 )

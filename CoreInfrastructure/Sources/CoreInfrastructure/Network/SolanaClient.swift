@@ -30,13 +30,6 @@ public actor SolanaClient {
         self.tokenRepository = tokenRepository
     }
 
-    func invalidateCache() {
-        balanceCache.removeAll()
-        tokensCache.removeAll()
-        vaultBalanceCache.removeAll()
-        vaultHistoryCache.removeAll()
-    }
-
     func invalidateVaultCaches(for owner: Pubkey) {
         tokensCache.removeValue(forKey: owner)
         vaultBalanceCache.removeValue(forKey: owner)

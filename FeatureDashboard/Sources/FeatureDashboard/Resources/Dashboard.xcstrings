@@ -1,24 +1,24 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "button.receiveSOL" : {
+    "button.receive" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Receive SOL"
+            "value" : "Receive"
           }
         }
       }
     },
-    "button.sendSOL" : {
+    "button.send" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Send SOL"
+            "value" : "Send"
           }
         }
       }
@@ -111,6 +111,17 @@
         }
       }
     },
+    "send.asset.menu.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select asset"
+          }
+        }
+      }
+    },
     "send.balance.label" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -188,6 +199,17 @@
         }
       }
     },
+    "send.failure.insufficientTokens" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Insufficient token balance."
+          }
+        }
+      }
+    },
     "send.failure.recipientNotWallet" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -238,7 +260,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Send SOL"
+            "value" : "Send"
           }
         }
       }

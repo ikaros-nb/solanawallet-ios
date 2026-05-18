@@ -25,43 +25,52 @@ extension SolanaClient: WalletReader {
 
     public func fetchTokenAccounts(for owner: Pubkey) async throws -> [SPLTokenAccount] {
         do {
-            let raw = try await rpc.getTokenAccountsByOwner(
+            async let classicRaw = rpc.getTokenAccountsByOwner(
                 pubkey: owner,
                 params: .init(mint: nil, programId: TokenProgram.id.base58EncodedString),
-                configs: .init(commitment: SolanaCommitment.default, encoding: "base64")
+                configs: RequestConfiguration(commitment: SolanaCommitment.default, encoding: "base64")
             )
+            async let token2022Raw = rpc.getTokenAccountsByOwner(
+                pubkey: owner,
+                params: .init(mint: nil, programId: Token2022Program.id.base58EncodedString),
+                configs: RequestConfiguration(commitment: SolanaCommitment.default, encoding: "base64")
+            )
+            let classic = try await classicRaw
+            let token2022 = try await token2022Raw
 
-            let mints = raw.map(\.account.data.mint.base58EncodedString)
-            let metadata = try await tokenRepository.get(addresses: mints)
+            let classicProgramId = TokenProgram.id.base58EncodedString
+            let token2022ProgramId = Token2022Program.id.base58EncodedString
+
+            let allMints = classic.map(\.account.data.mint.base58EncodedString)
+                + token2022.map(\.account.data.mint.base58EncodedString)
+            let metadata = try await tokenRepository.get(addresses: allMints)
+
+            var seeds: [TokenAccountSeed] = []
+            seeds.reserveCapacity(classic.count + token2022.count)
+            for token in classic {
+                seeds.append(makeSeed(token: token, programId: classicProgramId, metadata: metadata))
+            }
+            for token in token2022 {
+                seeds.append(makeSeed(token: token, programId: token2022ProgramId, metadata: metadata))
+            }
 
             let accounts: [SPLTokenAccount] = try await withThrowingTaskGroup(
                 of: SPLTokenAccount.self
             ) { group in
-                for token in raw {
-                    let address = token.pubkey
-                    let mint = token.account.data.mint.base58EncodedString
-                    let amount = token.account.data.lamports
-                    let name: String?
-                    let symbol: String?
-                    if mint == VLT.mint {
-                        name = VLT.tokenName
-                        symbol = VLT.tokenSymbol
-                    } else {
-                        name = metadata[mint]?.name
-                        symbol = metadata[mint]?.symbol
-                    }
+                for seed in seeds {
                     group.addTask { [rpc] in
                         let balance = try await rpc.getTokenAccountBalance(
-                            pubkey: address,
+                            pubkey: seed.address,
                             commitment: SolanaCommitment.default
                         )
                         return SPLTokenAccount(
-                            mint: mint,
-                            address: address,
-                            amount: amount,
+                            mint: seed.mint,
+                            address: seed.address,
+                            amount: seed.amount,
                             decimals: balance.decimals ?? 0,
-                            name: name,
-                            symbol: symbol
+                            programId: seed.programId,
+                            name: seed.name,
+                            symbol: seed.symbol
                         )
                     }
                 }
@@ -80,4 +89,38 @@ extension SolanaClient: WalletReader {
             }
         }
     }
+
+    private func makeSeed(
+        token: TokenAccount<TokenAccountState>,
+        programId: Pubkey,
+        metadata: [String: TokenMetadata]
+    ) -> TokenAccountSeed {
+        let mint = token.account.data.mint.base58EncodedString
+        let name: String?
+        let symbol: String?
+        if mint == VLT.mint {
+            name = VLT.tokenName
+            symbol = VLT.tokenSymbol
+        } else {
+            name = metadata[mint]?.name
+            symbol = metadata[mint]?.symbol
+        }
+        return TokenAccountSeed(
+            address: token.pubkey,
+            mint: mint,
+            amount: token.account.data.lamports,
+            programId: programId,
+            name: name,
+            symbol: symbol
+        )
+    }
+}
+
+private struct TokenAccountSeed {
+    let address: Pubkey
+    let mint: Pubkey
+    let amount: UInt64
+    let programId: Pubkey
+    let name: String?
+    let symbol: String?
 }

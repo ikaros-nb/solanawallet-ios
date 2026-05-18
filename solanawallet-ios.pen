@@ -5968,7 +5968,7 @@
                   "fill": "$--font-primary",
                   "content": "Recent Activity",
                   "fontFamily": "Inter",
-                  "fontSize": 16,
+                  "fontSize": 15,
                   "fontWeight": "600"
                 },
                 {

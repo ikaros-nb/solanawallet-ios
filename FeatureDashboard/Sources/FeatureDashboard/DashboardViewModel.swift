@@ -10,6 +10,11 @@ import CoreEntities
 import CoreUI
 import Foundation
 
+enum SendAsset: Hashable {
+    case sol
+    case spl(SPLTokenAccount)
+}
+
 @Observable
 @MainActor
 final class DashboardViewModel {
@@ -29,6 +34,54 @@ final class DashboardViewModel {
 
     var solBalanceDecimal: Decimal? {
         solBalance.map { Decimal($0) / Decimal(SOL.lamportsPerSOL) }
+    }
+
+    var sendableAssets: [SendAsset] {
+        var assets: [SendAsset] = []
+        if let solBalance, solBalance > 0 {
+            assets.append(.sol)
+        }
+        for token in tokens where token.amount > 0 {
+            assets.append(.spl(token))
+        }
+        return assets
+    }
+
+    func availableBalance(for asset: SendAsset) -> Decimal {
+        switch asset {
+        case .sol:
+            solBalanceDecimal ?? 0
+        case let .spl(token):
+            Decimal(token.amount) / pow(Decimal(10), Int(token.decimals))
+        }
+    }
+
+    func decimals(for asset: SendAsset) -> Int {
+        switch asset {
+        case .sol:
+            9
+        case let .spl(token):
+            Int(token.decimals)
+        }
+    }
+
+    func symbol(for asset: SendAsset) -> String {
+        switch asset {
+        case .sol:
+            String(localized: .Dashboard.sendSymbol)
+        case let .spl(token):
+            tokenDisplaySymbol(for: token)
+        }
+    }
+
+    private func tokenDisplaySymbol(for token: SPLTokenAccount) -> String {
+        if let symbol = token.symbol, !symbol.isEmpty {
+            return symbol
+        }
+        if let name = token.name, !name.isEmpty {
+            return name
+        }
+        return String(token.mint.prefix(4)) + "…"
     }
 
     init(
@@ -62,15 +115,28 @@ final class DashboardViewModel {
     }
 
     @discardableResult
-    func send(amount: Decimal, to recipient: Pubkey) async -> Bool {
+    func send(amount: Decimal, to recipient: Pubkey, asset: SendAsset) async -> Bool {
         guard let transactionSender, !isTransacting else { return false }
         isTransacting = true
         transactionError = nil
         defer { isTransacting = false }
 
-        let lamports = NSDecimalNumber(decimal: amount * Decimal(SOL.lamportsPerSOL)).uint64Value
         do {
-            _ = try await transactionSender.sendSOL(from: owner, to: recipient, amount: lamports)
+            switch asset {
+            case .sol:
+                let lamports = NSDecimalNumber(decimal: amount * Decimal(SOL.lamportsPerSOL)).uint64Value
+                _ = try await transactionSender.sendSOL(from: owner, to: recipient, amount: lamports)
+            case let .spl(token):
+                let baseUnits = NSDecimalNumber(
+                    decimal: amount * pow(Decimal(10), Int(token.decimals))
+                ).uint64Value
+                _ = try await transactionSender.sendSPL(
+                    from: owner,
+                    token: token.ref,
+                    to: recipient,
+                    amount: baseUnits
+                )
+            }
             await load()
             toastCenter.show(.success(.Dashboard.sendSuccess))
             return true
@@ -94,6 +160,8 @@ final class DashboardViewModel {
         case let .belowRentExemption(minLamports):
             let minSOL = SOL.toSOL(minLamports).formatted(.number.precision(.fractionLength(2...4)))
             return .Dashboard.sendFailureBelowRentExemption(minSOL)
+        case .insufficientTokens:
+            return .Dashboard.sendFailureInsufficientTokens
         default:
             return .Dashboard.sendFailure
         }

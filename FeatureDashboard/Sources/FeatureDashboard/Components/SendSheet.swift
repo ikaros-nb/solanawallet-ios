@@ -15,11 +15,24 @@ struct SendSheet: View {
 
     @State private var amount: Decimal?
     @State private var destination: String = ""
+    @State private var selectedAsset: SendAsset = .sol
 
     private static let base58Alphabet = Set("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
 
-    private var availableSOL: Decimal {
-        viewModel.solBalanceDecimal ?? 0
+    private var availableBalance: Decimal {
+        viewModel.availableBalance(for: selectedAsset)
+    }
+
+    private var selectedSymbol: String {
+        viewModel.symbol(for: selectedAsset)
+    }
+
+    private var selectedDecimals: Int {
+        viewModel.decimals(for: selectedAsset)
+    }
+
+    private var sendableAssets: [SendAsset] {
+        viewModel.sendableAssets
     }
 
     private var isBusy: Bool {
@@ -38,7 +51,7 @@ struct SendSheet: View {
 
     private var isAmountValid: Bool {
         guard let amount, amount > 0 else { return false }
-        return amount <= availableSOL
+        return amount <= availableBalance
     }
 
     private var isFormValid: Bool {
@@ -46,10 +59,9 @@ struct SendSheet: View {
     }
 
     private var availableAmountText: String {
-        let symbol = String(localized: .Dashboard.sendSymbol)
-        let value = (availableSOL as NSDecimalNumber).doubleValue
+        let value = (availableBalance as NSDecimalNumber).doubleValue
         let formatted = value.formatted(.number.precision(.fractionLength(2...4)))
-        return "\(formatted) \(symbol)"
+        return "\(formatted) \(selectedSymbol)"
     }
 
     var body: some View {
@@ -81,16 +93,14 @@ struct SendSheet: View {
                     TextField(
                         "0.00",
                         value: $amount,
-                        format: .number.precision(.fractionLength(0...9))
+                        format: .number.precision(.fractionLength(0...selectedDecimals))
                     )
                     .keyboardType(.decimalPad)
                     .font(.system(size: 24, weight: .semibold))
                     .foregroundStyle(.white)
                     .tint(Color.solanaGreen)
 
-                    Text(.Dashboard.sendSymbol)
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(Color.tertiaryText)
+                    assetPicker
                 }
                 .padding(16)
                 .cardBackground(cornerRadius: 16, fillOpacity: 0.05, highlight: nil)
@@ -140,11 +150,45 @@ struct SendSheet: View {
         .presentationDetents([.height(460)])
         .presentationDragIndicator(.visible)
         .interactiveDismissDisabled(true)
+        .onChange(of: selectedAsset) { _, _ in
+            amount = nil
+        }
+    }
+
+    @ViewBuilder
+    private var assetPicker: some View {
+        if sendableAssets.count > 1 {
+            Menu {
+                Picker(
+                    selection: $selectedAsset,
+                    label: Text(.Dashboard.sendAssetMenuLabel)
+                ) {
+                    ForEach(sendableAssets, id: \.self) { asset in
+                        Text(viewModel.symbol(for: asset)).tag(asset)
+                    }
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    Text(selectedSymbol)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(Color.tertiaryText)
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(Color.tertiaryText)
+                }
+            }
+            .disabled(isBusy)
+            .accessibilityLabel(Text(.Dashboard.sendAssetMenuLabel))
+        } else {
+            Text(selectedSymbol)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(Color.tertiaryText)
+        }
     }
 
     private func submit(amount: Decimal) async {
         let recipient = trimmedDestination
-        let success = await viewModel.send(amount: amount, to: recipient)
+        let success = await viewModel.send(amount: amount, to: recipient, asset: selectedAsset)
         if success { router.dismissSheet() }
     }
 }
