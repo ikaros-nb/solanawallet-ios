@@ -122,6 +122,39 @@
         }
       }
     },
+    "send.failure.belowRentExemption" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minimum %@ SOL required to create the destination account."
+          }
+        }
+      }
+    },
+    "send.failure.recipientNotWallet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Destination is not a wallet account."
+          }
+        }
+      }
+    },
+    "send.failure.self" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can't send SOL to yourself."
+          }
+        }
+      }
+    },
     "send.success" : {
       "extractionState" : "manual",
       "localizations" : {

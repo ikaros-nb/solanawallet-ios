@@ -76,12 +76,26 @@ final class DashboardViewModel {
             return true
         } catch let error as WalletError {
             transactionError = error
-            toastCenter.show(.error(.Dashboard.sendFailure))
+            toastCenter.show(.error(failureMessage(for: error)))
             return false
         } catch {
             transactionError = .unknown(underlying: "\(error)")
             toastCenter.show(.error(.Dashboard.sendFailure))
             return false
+        }
+    }
+
+    private func failureMessage(for error: WalletError) -> LocalizedStringResource {
+        switch error {
+        case .recipientNotWallet:
+            return .Dashboard.sendFailureRecipientNotWallet
+        case .sendToSelf:
+            return .Dashboard.sendFailureSelf
+        case let .belowRentExemption(minLamports):
+            let minSOL = SOL.toSOL(minLamports).formatted(.number.precision(.fractionLength(2...4)))
+            return .Dashboard.sendFailureBelowRentExemption(minSOL)
+        default:
+            return .Dashboard.sendFailure
         }
     }
 

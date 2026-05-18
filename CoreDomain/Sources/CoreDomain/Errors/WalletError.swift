@@ -19,6 +19,9 @@ public enum WalletError: Error, Equatable, Sendable {
     case walletAlreadyExists
     case vaultError(code: Int, message: String)
     case signingFailed
+    case recipientNotWallet
+    case sendToSelf
+    case belowRentExemption(minLamports: Lamports)
     case unknown(underlying: String)
     indirect case staleCache(Lamports, underlying: WalletError)
     indirect case staleTokenCache([SPLTokenAccount], underlying: WalletError)
