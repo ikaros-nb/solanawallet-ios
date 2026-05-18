@@ -40,13 +40,8 @@ struct AppDependencies {
             )
         )
 
-        guard let endpointURL = URL(string: endpointAddress) else {
-            fatalError("Invalid Solana RPC endpoint: \(endpointAddress)")
-        }
-
         let solanaClient = SolanaClient(
             rpc: apiClient,
-            rpcEndpoint: endpointURL,
             keychain: keychain,
             tokenRepository: tokenRepository
         )

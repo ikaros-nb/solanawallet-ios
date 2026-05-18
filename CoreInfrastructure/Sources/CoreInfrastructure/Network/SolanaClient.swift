@@ -12,7 +12,6 @@ import Foundation
 
 public actor SolanaClient {
     let rpc: SolanaAPIClient
-    let rpcEndpoint: URL
     let keychain: KeychainWalletStore
     let tokenRepository: TokenRepository
     let coder: BorshCoder
@@ -24,13 +23,11 @@ public actor SolanaClient {
 
     public init(
         rpc: SolanaAPIClient,
-        rpcEndpoint: URL,
         keychain: KeychainWalletStore,
         tokenRepository: TokenRepository,
         coder: BorshCoder = BorshCoder()
     ) {
         self.rpc = rpc
-        self.rpcEndpoint = rpcEndpoint
         self.keychain = keychain
         self.tokenRepository = tokenRepository
         self.coder = coder

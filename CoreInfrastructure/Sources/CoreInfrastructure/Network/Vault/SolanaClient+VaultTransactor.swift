@@ -51,7 +51,7 @@ extension SolanaClient: VaultTransactor {
 
         let blockhash: String
         do {
-            blockhash = try await fetchLatestBlockhash(at: rpcEndpoint)
+            blockhash = try await rpc.getLatestBlockhash(commitment: "confirmed")
         } catch {
             throw mapToWalletError(error)
         }
