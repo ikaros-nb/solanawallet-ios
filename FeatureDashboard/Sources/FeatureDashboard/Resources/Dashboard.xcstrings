@@ -23,6 +23,17 @@
         }
       }
     },
+    "load.failure" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to load wallet"
+          }
+        }
+      }
+    },
     "quickActions.label" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -30,6 +41,116 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quick actions"
+          }
+        }
+      }
+    },
+    "send.amount.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Amount"
+          }
+        }
+      }
+    },
+    "send.balance.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Available balance"
+          }
+        }
+      }
+    },
+    "send.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter the amount and destination address."
+          }
+        }
+      }
+    },
+    "send.button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm send"
+          }
+        }
+      }
+    },
+    "send.destination.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Destination address"
+          }
+        }
+      }
+    },
+    "send.destination.placeholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter wallet address..."
+          }
+        }
+      }
+    },
+    "send.failure" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfer failed"
+          }
+        }
+      }
+    },
+    "send.success" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfer sent"
+          }
+        }
+      }
+    },
+    "send.symbol" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SOL"
+          }
+        }
+      }
+    },
+    "send.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send SOL"
           }
         }
       }
@@ -74,17 +195,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vault Savings"
-          }
-        }
-      }
-    },
-    "load.failure" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Failed to load wallet"
           }
         }
       }

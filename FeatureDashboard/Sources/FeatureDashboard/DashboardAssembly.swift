@@ -19,8 +19,10 @@ public enum DashboardAssembly {
 
 private struct DashboardFlowContainer: View {
     private let owner: Pubkey
+    @State private var router = DashboardRouter()
     @Environment(\.walletReader) private var walletReader
     @Environment(\.vaultBalanceReader) private var vaultBalanceReader
+    @Environment(\.transactionSender) private var transactionSender
     @Environment(ToastCenter.self) private var toastCenter
 
     init(owner: Pubkey) {
@@ -28,12 +30,37 @@ private struct DashboardFlowContainer: View {
     }
 
     var body: some View {
-        let viewModel = DashboardViewModel(
-            owner: owner,
-            vaultBalanceReader: vaultBalanceReader,
-            walletReader: walletReader,
-            toastCenter: toastCenter
+        DashboardFlowBody(
+            router: router,
+            initialViewModel: DashboardViewModel(
+                owner: owner,
+                vaultBalanceReader: vaultBalanceReader,
+                walletReader: walletReader,
+                transactionSender: transactionSender,
+                toastCenter: toastCenter
+            )
         )
+    }
+}
+
+// Owns the viewModel via @State so it survives body re-evaluations triggered by
+// `.sheet(item: $router.presentedSheet)`. The container above can't own it because
+// it needs @Environment values for construction — which can't be read in init.
+private struct DashboardFlowBody: View {
+    @State private var viewModel: DashboardViewModel
+    @Bindable private var router: DashboardRouter
+
+    init(router: DashboardRouter, initialViewModel: DashboardViewModel) {
+        self.router = router
+        _viewModel = State(wrappedValue: initialViewModel)
+    }
+
+    var body: some View {
         DashboardView(viewModel: viewModel)
+            .environment(router)
+            .sheet(item: $router.presentedSheet) { route in
+                SendSheet(route: route, viewModel: viewModel)
+                    .environment(router)
+            }
     }
 }

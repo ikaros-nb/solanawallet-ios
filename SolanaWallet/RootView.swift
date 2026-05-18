@@ -21,6 +21,7 @@ struct RootView: View {
             if appState.isOnboarded {
                 MainTabView()
                     .environment(\.tokenBalanceReader, deps.solanaClient)
+                    .environment(\.transactionSender, deps.solanaClient)
                     .environment(\.vaultBalanceReader, deps.solanaClient)
                     .environment(\.vaultHistoryReader, deps.solanaClient)
                     .environment(\.vaultTransactor, deps.solanaClient)

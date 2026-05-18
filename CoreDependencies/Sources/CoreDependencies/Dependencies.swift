@@ -16,4 +16,5 @@ public extension EnvironmentValues {
     @Entry var vaultHistoryReader: (any VaultHistoryReader)?
     @Entry var vaultTransactor: (any VaultTransactor)?
     @Entry var tokenBalanceReader: (any TokenBalanceReader)?
+    @Entry var transactionSender: (any TransactionSender)?
 }

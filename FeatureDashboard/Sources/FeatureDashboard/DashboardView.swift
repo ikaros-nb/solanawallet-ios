@@ -12,6 +12,7 @@ import SwiftUI
 
 struct DashboardView: View {
     @State var viewModel: DashboardViewModel
+    @Environment(DashboardRouter.self) private var router
 
     var body: some View {
         ScrollView(.vertical) {
@@ -98,7 +99,7 @@ struct DashboardView: View {
                 QuickActionButton(
                     icon: Image(systemName: "arrow.up.right"),
                     title: .Dashboard.buttonSendSOL,
-                    action: {}
+                    action: { router.present(.send) }
                 )
 
                 QuickActionButton(
@@ -130,9 +131,11 @@ struct DashboardView: View {
             owner: "PreviewOwner",
             vaultBalanceReader: PreviewVaultReader(),
             walletReader: PreviewWalletReader(),
+            transactionSender: nil,
             toastCenter: ToastCenter()
         )
     )
+    .environment(DashboardRouter())
 }
 
 private struct PreviewVaultReader: VaultBalanceReader {
