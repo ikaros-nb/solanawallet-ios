@@ -13,9 +13,7 @@ public enum BorshCoderError: Error, Equatable, Sendable {
     case invalidDiscriminator(expected: Data, got: Data)
 }
 
-public struct BorshCoder: Sendable {
-    public init() {}
-
+public enum BorshCoder {
     public static func instructionDiscriminator(name: String) -> Data {
         discriminator(prefix: "global", name: name)
     }

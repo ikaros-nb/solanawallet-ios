@@ -14,7 +14,6 @@ public actor SolanaClient {
     let rpc: SolanaAPIClient
     let keychain: KeychainWalletStore
     let tokenRepository: TokenRepository
-    let coder: BorshCoder
 
     var balanceCache: [Pubkey: Lamports] = [:]
     var tokensCache: [Pubkey: [SPLTokenAccount]] = [:]
@@ -24,13 +23,11 @@ public actor SolanaClient {
     public init(
         rpc: SolanaAPIClient,
         keychain: KeychainWalletStore,
-        tokenRepository: TokenRepository,
-        coder: BorshCoder = BorshCoder()
+        tokenRepository: TokenRepository
     ) {
         self.rpc = rpc
         self.keychain = keychain
         self.tokenRepository = tokenRepository
-        self.coder = coder
     }
 
     func invalidateCache() {
