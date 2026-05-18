@@ -24,7 +24,7 @@ extension SolanaClient: VaultHistoryReader {
 
         do {
             let address = vaultStatePDA.base58EncodedString
-            let configs = RequestConfiguration(limit: limit)
+            let configs = RequestConfiguration(commitment: SolanaCommitment.default, limit: limit)
             let infos = try await rpc.getSignaturesForAddress(address: address, configs: configs)
             let successful = infos.filter { $0.err == nil }
 

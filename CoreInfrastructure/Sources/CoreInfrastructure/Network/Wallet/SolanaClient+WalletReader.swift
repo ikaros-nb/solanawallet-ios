@@ -13,7 +13,7 @@ import Foundation
 extension SolanaClient: WalletReader {
     public func fetchBalance(for owner: Pubkey) async throws -> Lamports {
         do {
-            let lamports = try await rpc.getBalance(account: owner, commitment: nil)
+            let lamports = try await rpc.getBalance(account: owner, commitment: SolanaCommitment.default)
             balanceCache[owner] = lamports
             return lamports
         } catch {
@@ -28,7 +28,7 @@ extension SolanaClient: WalletReader {
             let raw = try await rpc.getTokenAccountsByOwner(
                 pubkey: owner,
                 params: .init(mint: nil, programId: TokenProgram.id.base58EncodedString),
-                configs: .init(commitment: "confirmed", encoding: "base64")
+                configs: .init(commitment: SolanaCommitment.default, encoding: "base64")
             )
 
             let mints = raw.map(\.account.data.mint.base58EncodedString)
@@ -53,7 +53,7 @@ extension SolanaClient: WalletReader {
                     group.addTask { [rpc] in
                         let balance = try await rpc.getTokenAccountBalance(
                             pubkey: address,
-                            commitment: nil
+                            commitment: SolanaCommitment.default
                         )
                         return SPLTokenAccount(
                             mint: mint,

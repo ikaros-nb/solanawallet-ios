@@ -22,7 +22,7 @@ extension SolanaClient: VaultBalanceReader {
         do {
             let balance = try await rpc.getTokenAccountBalance(
                 pubkey: tokenAccountPDA.base58EncodedString,
-                commitment: nil
+                commitment: SolanaCommitment.default
             )
             let decimal = try VaultAmount.decode(balance)
             vaultBalanceCache[owner] = decimal

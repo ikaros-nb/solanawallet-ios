@@ -51,7 +51,7 @@ extension SolanaClient: VaultTransactor {
 
         let blockhash: String
         do {
-            blockhash = try await rpc.getLatestBlockhash(commitment: "confirmed")
+            blockhash = try await rpc.getLatestBlockhash(commitment: SolanaCommitment.default)
         } catch {
             throw mapToWalletError(error)
         }
@@ -66,7 +66,7 @@ extension SolanaClient: VaultTransactor {
         guard
             let sendConfig = RequestConfiguration(
                 encoding: "base64",
-                preflightCommitment: "confirmed"
+                preflightCommitment: SolanaCommitment.default
             )
         else {
             throw WalletError.unknown(underlying: "invalid RequestConfiguration")

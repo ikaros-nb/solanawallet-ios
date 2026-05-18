@@ -19,7 +19,7 @@ enum VaultTransactionDecoder {
             guard
                 let info = try await rpc.getTransaction(
                     signature: signatureInfo.signature,
-                    commitment: nil
+                    commitment: SolanaCommitment.default
                 ) else { return nil }
             guard info.meta?.err == nil else { return nil }
             guard let blockTime = info.blockTime ?? signatureInfo.blockTime else { return nil }
