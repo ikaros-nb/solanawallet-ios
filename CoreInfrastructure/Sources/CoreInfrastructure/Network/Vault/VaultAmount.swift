@@ -26,13 +26,9 @@ enum VaultAmount {
     }
 
     static func decode(_ balance: TokenAccountBalance) throws -> Decimal {
-        let uiDecimal = balance.uiAmountString.flatMap { Decimal(string: $0, locale: posix) }
-        if let decimal = uiDecimal { return decimal }
         guard let rawAmount = UInt64(balance.amount), let decimals = balance.decimals else {
             throw WalletError.vaultError(code: 0, message: "invalid token account balance response")
         }
         return Decimal(rawAmount) / pow(10, Int(decimals))
     }
-
-    private static let posix = Locale(identifier: "en_US_POSIX")
 }
