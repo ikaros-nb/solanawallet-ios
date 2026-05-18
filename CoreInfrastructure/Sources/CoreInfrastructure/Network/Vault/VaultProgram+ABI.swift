@@ -11,6 +11,11 @@ import Foundation
 @preconcurrency import SolanaSwift
 
 extension VaultProgram {
+    enum InstructionKind: Equatable {
+        case deposit
+        case withdraw
+    }
+
     struct InstructionAccounts {
         let payer: PublicKey
         let vault: PublicKey
@@ -74,6 +79,39 @@ extension VaultProgram {
         let disc = BorshCoder.instructionDiscriminator(name: name)
         let amountLE = withUnsafeBytes(of: amount.littleEndian) { Data($0) }
         return disc + amountLE
+    }
+
+    static func decodeInstruction(
+        _ data: Data
+    ) throws -> (kind: InstructionKind, amount: UInt64) {
+        let discLen = 8
+        let amountLen = MemoryLayout<UInt64>.size
+        guard data.count >= discLen + amountLen else {
+            throw BorshCoderError.invalidInputData
+        }
+
+        let receivedDisc = data.prefix(discLen)
+        let depositDisc = BorshCoder.instructionDiscriminator(name: "deposit")
+        let withdrawDisc = BorshCoder.instructionDiscriminator(name: "withdraw")
+
+        let kind: InstructionKind
+        if receivedDisc == depositDisc {
+            kind = .deposit
+        } else if receivedDisc == withdrawDisc {
+            kind = .withdraw
+        } else {
+            throw BorshCoderError.invalidDiscriminator(
+                expected: depositDisc,
+                got: Data(receivedDisc)
+            )
+        }
+
+        let amountRange = discLen..<(discLen + amountLen)
+        let amount = data[amountRange].withUnsafeBytes { raw in
+            raw.loadUnaligned(as: UInt64.self)
+        }.littleEndian
+
+        return (kind, amount)
     }
 
     private static func makeInstruction(

@@ -44,8 +44,8 @@ extension SolanaClient: VaultHistoryReader {
     ) async -> [VaultTransaction] {
         await withTaskGroup(of: VaultTransaction?.self) { group in
             for info in signatures {
-                group.addTask { [rpc, coder] in
-                    await VaultTransactionDecoder.decode(signatureInfo: info, rpc: rpc, coder: coder)
+                group.addTask { [rpc] in
+                    await VaultTransactionDecoder.decode(signatureInfo: info, rpc: rpc)
                 }
             }
             var out: [VaultTransaction] = []

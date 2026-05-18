@@ -12,8 +12,7 @@ import Foundation
 enum VaultTransactionDecoder {
     static func decode(
         signatureInfo: SignatureInfo,
-        rpc: SolanaAPIClient,
-        coder: BorshCoder
+        rpc: SolanaAPIClient
     ) async -> VaultTransaction? {
         do {
             guard
@@ -33,12 +32,16 @@ enum VaultTransactionDecoder {
             let bytes = Base58.decode(dataString)
             guard !bytes.isEmpty else { return nil }
 
-            let decoded = try coder.decodeVaultInstruction(from: Data(bytes))
+            let decoded = try VaultProgram.decodeInstruction(Data(bytes))
+            let txKind: VaultTransaction.Kind = switch decoded.kind {
+            case .deposit: .deposit
+            case .withdraw: .withdraw
+            }
             let scaled = Decimal(decoded.amount) / pow(10, Int(VLT.decimals))
 
             return VaultTransaction(
                 signature: signatureInfo.signature,
-                kind: decoded.kind == .deposit ? .deposit : .withdraw,
+                kind: txKind,
                 amount: scaled,
                 timestamp: Date(timeIntervalSince1970: TimeInterval(blockTime)),
                 slot: signatureInfo.slot ?? info.slot ?? 0

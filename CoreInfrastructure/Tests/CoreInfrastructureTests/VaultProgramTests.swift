@@ -63,4 +63,48 @@ struct VaultProgramTests {
             + Data(repeating: 0xFF, count: 8)
         #expect(VaultProgram.encodeAmountInstruction(name: "withdraw", amount: UInt64.max) == expected)
     }
+
+    // MARK: Decode instruction
+
+    @Test
+    func `decodeInstruction round-trips a deposit`() throws {
+        let amount: UInt64 = 5_000_000
+        let data = VaultProgram.encodeAmountInstruction(name: "deposit", amount: amount)
+        let decoded = try VaultProgram.decodeInstruction(data)
+        #expect(decoded.kind == .deposit)
+        #expect(decoded.amount == amount)
+    }
+
+    @Test
+    func `decodeInstruction round-trips a withdraw`() throws {
+        let amount: UInt64 = 12
+        let data = VaultProgram.encodeAmountInstruction(name: "withdraw", amount: amount)
+        let decoded = try VaultProgram.decodeInstruction(data)
+        #expect(decoded.kind == .withdraw)
+        #expect(decoded.amount == amount)
+    }
+
+    @Test
+    func `decodeInstruction round-trips UInt64 max as withdraw`() throws {
+        let data = VaultProgram.encodeAmountInstruction(name: "withdraw", amount: UInt64.max)
+        let decoded = try VaultProgram.decodeInstruction(data)
+        #expect(decoded.kind == .withdraw)
+        #expect(decoded.amount == UInt64.max)
+    }
+
+    @Test
+    func `decodeInstruction rejects unknown discriminator`() {
+        let bogus = Data(repeating: 0xAA, count: 16)
+        #expect(throws: BorshCoderError.self) {
+            try VaultProgram.decodeInstruction(bogus)
+        }
+    }
+
+    @Test
+    func `decodeInstruction rejects payload shorter than 16 bytes`() {
+        let short = Data(repeating: 0x00, count: 10)
+        #expect(throws: BorshCoderError.invalidInputData) {
+            try VaultProgram.decodeInstruction(short)
+        }
+    }
 }
