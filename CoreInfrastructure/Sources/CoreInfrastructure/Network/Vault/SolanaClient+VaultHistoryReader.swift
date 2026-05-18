@@ -39,22 +39,33 @@ extension SolanaClient: VaultHistoryReader {
         }
     }
 
+    private static let maxConcurrentTransactionFetches = 4
+
     private func fetchAndDecode(
         signatures: [SignatureInfo]
     ) async -> [VaultTransaction] {
-        await withTaskGroup(of: VaultTransaction?.self) { group in
-            for signatureInfo in signatures {
-                group.addTask { [rpc] in
-                    let info = try? await rpc.getTransaction(
-                        signature: signatureInfo.signature,
-                        commitment: SolanaCommitment.default
-                    )
-                    return VaultTransactionDecoder.decode(signatureInfo: signatureInfo, info: info)
-                }
+        let fetch: @Sendable (SignatureInfo) async -> VaultTransaction? = { [rpc] signatureInfo in
+            let info = try? await rpc.getTransaction(
+                signature: signatureInfo.signature,
+                commitment: SolanaCommitment.default
+            )
+            return VaultTransactionDecoder.decode(signatureInfo: signatureInfo, info: info)
+        }
+
+        return await withTaskGroup(of: VaultTransaction?.self) { group in
+            var iterator = signatures.makeIterator()
+            var inFlight = 0
+            while inFlight < Self.maxConcurrentTransactionFetches, let next = iterator.next() {
+                group.addTask { await fetch(next) }
+                inFlight += 1
             }
+
             var out: [VaultTransaction] = []
-            for await tx in group {
-                if let tx { out.append(tx) }
+            while let result = await group.next() {
+                if let tx = result { out.append(tx) }
+                if let next = iterator.next() {
+                    group.addTask { await fetch(next) }
+                }
             }
             return out
         }
