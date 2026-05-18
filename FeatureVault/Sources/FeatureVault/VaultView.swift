@@ -116,6 +116,9 @@ struct VaultView: View {
             }
             .scrollBounceBehavior(.basedOnSize, axes: .vertical)
             .scrollIndicators(.hidden)
+            .refreshable {
+                await viewModel.load()
+            }
         }
     }
 }
