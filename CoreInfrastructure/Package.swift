@@ -10,7 +10,7 @@ let swiftSettings: [SwiftSetting] = [
 
 let package = Package(
     name: "CoreInfrastructure",
-    platforms: [.iOS(.v26)],
+    platforms: [.iOS(.v26), .macOS(.v26)],
     products: [
         .library(name: "CoreInfrastructure", targets: ["CoreInfrastructure"])
     ],

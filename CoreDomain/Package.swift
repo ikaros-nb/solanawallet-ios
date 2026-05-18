@@ -10,7 +10,7 @@ let swiftSettings: [SwiftSetting] = [
 
 let package = Package(
     name: "CoreDomain",
-    platforms: [.iOS(.v26)],
+    platforms: [.iOS(.v26), .macOS(.v26)],
     products: [
         .library(name: "CoreDomain", targets: ["CoreDomain"]),
         .library(name: "CoreEntities", targets: ["CoreEntities"])

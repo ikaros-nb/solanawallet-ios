@@ -40,6 +40,17 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CoreInfrastructureTests"
+               BuildableName = "CoreInfrastructureTests"
+               BlueprintName = "CoreInfrastructureTests"
+               ReferencedContainer = "container:CoreInfrastructure">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "E5DC51692F99EAE600A85DA4"
                BuildableName = "SolanaWalletIntegrationTests.xctest"
                BlueprintName = "SolanaWalletIntegrationTests"
