@@ -7,9 +7,11 @@
 
 import CoreDomain
 import Foundation
+@preconcurrency import SolanaSwift
 
 func mapToWalletError(_ error: Error) -> WalletError {
     if let walletError = error as? WalletError { return walletError }
+
     let nsError = error as NSError
     if nsError.domain == NSURLErrorDomain {
         switch nsError.code {
@@ -18,10 +20,64 @@ func mapToWalletError(_ error: Error) -> WalletError {
         default: break
         }
     }
-    // TODO: (S19) ajouter les mappings des erreurs solana-swift
-    // au fur et à mesure qu'elles surfacent lors des vrais appels RPC.
-    // Cible : table ADR-001 D7 (transactionExpired, insufficient*, vaultError, signingFailed)
+
+    if let apiError = error as? APIClientError {
+        return mapAPIClientError(apiError)
+    }
+
+    if
+        let confirmError = error as? TransactionConfirmationError,
+        case .unconfirmed = confirmError {
+        return .transactionExpired
+    }
+
     return .unknown(underlying: "\(error)")
+}
+
+private func mapAPIClientError(_ error: APIClientError) -> WalletError {
+    switch error {
+    case .blockhashNotFound:
+        return .transactionExpired
+    case let .transactionSimulationError(logs):
+        if logs.contains(where: isInsufficientLamportsLog) {
+            return .insufficientSOL
+        }
+        return .vaultError(code: -32002, message: logs.last ?? "simulation failed")
+    case let .responseError(response):
+        return mapResponseError(response)
+    case .couldNotRetrieveAccountInfo:
+        return .vaultError(code: 0, message: "account not found")
+    case .invalidAPIURL:
+        return .unknown(underlying: "RPC URL misconfigured")
+    case .invalidResponse:
+        return .unknown(underlying: "invalid RPC response")
+    }
+}
+
+private func mapResponseError(_ response: ResponseError) -> WalletError {
+    guard let code = response.code else {
+        return .unknown(underlying: response.message ?? "RPC response error")
+    }
+    let message = response.message ?? ""
+    switch code {
+    case -32002:
+        if message.localizedCaseInsensitiveContains("blockhash") {
+            return .transactionExpired
+        }
+        return .vaultError(code: code, message: message)
+    case -32003:
+        return .signingFailed
+    case -32005:
+        return .nodeUnreachable
+    default:
+        return .vaultError(code: code, message: message)
+    }
+}
+
+private func isInsufficientLamportsLog(_ log: String) -> Bool {
+    log.localizedCaseInsensitiveContains("insufficient lamports")
+        || log.localizedCaseInsensitiveContains("insufficientfunds")
+        || log.localizedCaseInsensitiveContains("insufficient funds for instruction")
 }
 
 func mapToStaleCacheError<Value>(
