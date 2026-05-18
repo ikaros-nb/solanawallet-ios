@@ -5,15 +5,12 @@
 //  Created by Nicolas Bouème on 04/05/2026.
 //
 
-import CoreEntities
 import CryptoKit
 import Foundation
-import SolanaSwift
 
 public enum BorshCoderError: Error, Equatable, Sendable {
     case invalidInputData
     case invalidDiscriminator(expected: Data, got: Data)
-    case invalidPublicKeyBytes
 }
 
 public struct DecodedVaultInstruction: Equatable, Sendable {
@@ -68,44 +65,6 @@ public struct BorshCoder: Sendable {
         return DecodedVaultInstruction(kind: kind, amount: amount)
     }
 
-    public func decodeVaultAccount(from data: Data) throws -> VaultAccount {
-        let expectedDiscriminator = Self.accountDiscriminator(name: "VaultState")
-        let discriminatorLength = Self.discriminatorLength
-        let pubkeyLength = Self.pubkeyLength
-
-        let expectedSize = discriminatorLength + pubkeyLength + MemoryLayout<UInt8>.size + pubkeyLength
-        guard data.count >= expectedSize else {
-            throw BorshCoderError.invalidInputData
-        }
-
-        let receivedDiscriminator = data.prefix(discriminatorLength)
-        guard receivedDiscriminator == expectedDiscriminator else {
-            throw BorshCoderError.invalidDiscriminator(
-                expected: expectedDiscriminator,
-                got: Data(receivedDiscriminator)
-            )
-        }
-
-        var offset = discriminatorLength
-
-        let ownerBytes = Data(data[offset..<offset + pubkeyLength])
-        offset += pubkeyLength
-
-        let bump = data[offset]
-        offset += MemoryLayout<UInt8>.size
-
-        let mintBytes = Data(data[offset..<offset + pubkeyLength])
-
-        guard
-            let ownerPubkey: Pubkey = try? PublicKey(data: ownerBytes).base58EncodedString,
-            let mintPubkey: Pubkey = try? PublicKey(data: mintBytes).base58EncodedString
-        else {
-            throw BorshCoderError.invalidPublicKeyBytes
-        }
-
-        return VaultAccount(owner: ownerPubkey, bump: bump, mint: mintPubkey)
-    }
-
     public static func instructionDiscriminator(name: String) -> Data {
         discriminator(prefix: "global", name: name)
     }
@@ -129,5 +88,4 @@ public struct BorshCoder: Sendable {
     }
 
     private static let discriminatorLength = 8
-    private static let pubkeyLength = 32
 }

@@ -5,7 +5,6 @@
 //  Created by Nicolas Bouème on 04/05/2026.
 //
 
-import CoreEntities
 import Foundation
 import Testing
 @testable import CoreInfrastructure
@@ -128,72 +127,5 @@ struct BorshCoderTests {
         #expect(throws: BorshCoderError.invalidInputData) {
             try coder.decodeVaultInstruction(from: short)
         }
-    }
-
-    // MARK: Decode VaultState — round-trip from known bytes
-
-    private static let vaultStateGoldenHex =
-        "e4c452a562d2eb98" // discriminator
-        + "0000000000000000000000000000000000000000000000000000000000000001" // owner
-        + "2a" // bump
-        + "069b8857feab8184fb687f634618c035dac439dc1aeb3b5598a0f00000000001" // mint
-    private static let expectedOwnerBase58: String = "11111111111111111111111111111112"
-    private static let expectedBump: UInt8 = 42
-    private static let expectedMintBase58: String = "So11111111111111111111111111111111111111112"
-
-    @Test
-    func `decodeVaultAccount round-trip from known bytes`() throws {
-        let data = try #require(Data(hexString: Self.vaultStateGoldenHex))
-        let decoded = try coder.decodeVaultAccount(from: data)
-
-        #expect(decoded.owner == Self.expectedOwnerBase58)
-        #expect(decoded.bump == Self.expectedBump)
-        #expect(decoded.mint == Self.expectedMintBase58)
-    }
-
-    // MARK: Decode VaultState — error paths
-
-    @Test
-    func `decodeVaultAccount throws invalidInputData when data is too short`() {
-        let tooShort = Data(repeating: 0x00, count: 10)
-        #expect(throws: BorshCoderError.invalidInputData) {
-            try coder.decodeVaultAccount(from: tooShort)
-        }
-    }
-
-    @Test
-    func `decodeVaultAccount throws invalidDiscriminator when prefix is wrong`() {
-        let wrongDiscriminator = Data(repeating: 0xAA, count: 8)
-        let payload = Data(repeating: 0x00, count: 32 + 1 + 32)
-        let bytes = wrongDiscriminator + payload
-
-        #expect {
-            try coder.decodeVaultAccount(from: bytes)
-        } throws: { error in
-            guard case let BorshCoderError.invalidDiscriminator(expected, got) = error else {
-                return false
-            }
-            return expected == BorshCoder.accountDiscriminator(name: "VaultState")
-                && got == wrongDiscriminator
-        }
-    }
-}
-
-// MARK: - Test helpers
-
-private extension Data {
-    init?(hexString: String) {
-        let cleaned = hexString.filter { !$0.isWhitespace }
-        guard cleaned.count.isMultiple(of: 2) else { return nil }
-        var bytes = [UInt8]()
-        bytes.reserveCapacity(cleaned.count / 2)
-        var index = cleaned.startIndex
-        while index < cleaned.endIndex {
-            let next = cleaned.index(index, offsetBy: 2)
-            guard let byte = UInt8(cleaned[index..<next], radix: 16) else { return nil }
-            bytes.append(byte)
-            index = next
-        }
-        self = Data(bytes)
     }
 }
