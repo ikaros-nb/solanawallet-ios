@@ -33,4 +33,10 @@ struct WalletErrorMappingTests {
             Issue.record("expected .unknown")
         }
     }
+
+    @Test
+    func `wallet error is passed through unchanged`() {
+        let original = WalletError.vaultError(code: 6000, message: "vault closed")
+        #expect(mapToWalletError(original) == original)
+    }
 }

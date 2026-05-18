@@ -9,6 +9,7 @@ import CoreDomain
 import Foundation
 
 func mapToWalletError(_ error: Error) -> WalletError {
+    if let walletError = error as? WalletError { return walletError }
     let nsError = error as NSError
     if nsError.domain == NSURLErrorDomain {
         switch nsError.code {
