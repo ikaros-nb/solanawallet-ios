@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 public struct Toast: Identifiable, Sendable {
     public enum Style: Sendable {
@@ -37,14 +38,10 @@ public struct Toast: Identifiable, Sendable {
     }
 }
 
-public struct ToastView: View {
+private struct ToastView: View {
     let toast: Toast
 
-    public init(toast: Toast) {
-        self.toast = toast
-    }
-
-    public var body: some View {
+    var body: some View {
         HStack(spacing: 12) {
             Image(systemName: iconName)
             Text(toast.message)
@@ -113,18 +110,95 @@ public extension View {
 
 private struct ToastOverlayModifier: ViewModifier {
     let center: ToastCenter
+    @State private var presenter = ToastWindowPresenter()
 
     func body(content: Content) -> some View {
-        content
-            .overlay(alignment: .top) {
-                if let toast = center.current {
-                    ToastView(toast: toast)
-                        .padding(.horizontal, 16)
-                        .padding(.top, 8)
-                        .onTapGesture { center.dismiss() }
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                }
+        content.background {
+            ToastSceneInstaller(center: center, presenter: presenter)
+                .frame(width: 0, height: 0)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+        }
+    }
+}
+
+private struct ToastSceneInstaller: UIViewRepresentable {
+    let center: ToastCenter
+    let presenter: ToastWindowPresenter
+
+    func makeUIView(context _: Context) -> InstallerView {
+        InstallerView(center: center, presenter: presenter)
+    }
+
+    func updateUIView(_: InstallerView, context _: Context) {}
+
+    final class InstallerView: UIView {
+        private let toastCenter: ToastCenter
+        private let presenter: ToastWindowPresenter
+
+        init(center: ToastCenter, presenter: ToastWindowPresenter) {
+            toastCenter = center
+            self.presenter = presenter
+            super.init(frame: .zero)
+            isUserInteractionEnabled = false
+            isHidden = true
+        }
+
+        @available(*, unavailable)
+        required init?(coder _: NSCoder) {
+            fatalError("init(coder:) not supported")
+        }
+
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            guard let scene = window?.windowScene else { return }
+            presenter.install(center: toastCenter, in: scene)
+        }
+    }
+}
+
+@MainActor
+private final class ToastWindowPresenter {
+    private var window: UIWindow?
+
+    func install(center: ToastCenter, in scene: UIWindowScene) {
+        guard window == nil else { return }
+
+        let win = PassthroughWindow(windowScene: scene)
+        win.windowLevel = UIWindow.Level.alert + 1
+        win.backgroundColor = .clear
+
+        let host = UIHostingController(rootView: ToastHost(center: center))
+        host.view.backgroundColor = .clear
+        win.rootViewController = host
+        win.isHidden = false
+
+        window = win
+    }
+}
+
+private final class PassthroughWindow: UIWindow {
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        guard let hit = super.hitTest(point, with: event) else { return nil }
+        return hit === rootViewController?.view ? nil : hit
+    }
+}
+
+private struct ToastHost: View {
+    let center: ToastCenter
+
+    var body: some View {
+        VStack(spacing: 0) {
+            if let toast = center.current {
+                ToastView(toast: toast)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
+                    .onTapGesture { center.dismiss() }
+                    .transition(.move(edge: .top).combined(with: .opacity))
             }
-            .animation(.bouncy, value: center.current?.id)
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(.bouncy, value: center.current?.id)
     }
 }
