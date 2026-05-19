@@ -45,7 +45,7 @@ extension SolanaClient: WalletReader {
                 + token2022.map(\.account.data.mint.base58EncodedString)
             let uniqueMints = Array(Set(allMints))
 
-            async let metadataTask = tokenRepository.get(addresses: allMints)
+            async let metadataTask = tokenRepository.get(addresses: uniqueMints)
             // TokenMintState decodes the 82-byte mint prefix shared by SPL Token and Token-2022,
             // so this single batch covers both programs.
             async let mintDatasTask = rpc.getMultipleMintDatas(

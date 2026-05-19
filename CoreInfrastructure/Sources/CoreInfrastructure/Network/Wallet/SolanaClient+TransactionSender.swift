@@ -15,24 +15,14 @@ extension SolanaClient: TransactionSender {
         to recipient: Pubkey,
         amount: Lamports
     ) async throws -> TransactionSignature {
-        let fromKey: PublicKey
-        let toKey: PublicKey
-        do {
-            fromKey = try PublicKey(string: owner)
-        } catch {
-            throw WalletError.unknown(underlying: "invalid sender pubkey: \(error)")
-        }
-        do {
-            toKey = try PublicKey(string: recipient)
-        } catch {
-            throw WalletError.unknown(underlying: "invalid recipient pubkey: \(error)")
-        }
+        let fromKey = try decodePublicKey(owner, role: "sender")
+        let toKey = try decodePublicKey(recipient, role: "recipient")
 
         guard fromKey.base58EncodedString != toKey.base58EncodedString else {
             throw WalletError.sendToSelf
         }
 
-        let recipientExists = try await ensureRecipientIsWallet(recipient: recipient)
+        let recipientExists = try await recipientWalletExists(recipient: recipient)
         if !recipientExists {
             try await ensureAboveRentMinimum(amount: amount)
         }
@@ -66,7 +56,7 @@ extension SolanaClient: TransactionSender {
             throw WalletError.sendToSelf
         }
 
-        _ = try await ensureRecipientIsWallet(recipient: recipient)
+        try await assertRecipientIsWallet(recipient: recipient)
 
         let sourceATA = try PublicKey.associatedTokenAddress(
             walletAddress: ownerKey,
@@ -87,7 +77,8 @@ extension SolanaClient: TransactionSender {
             programId: programIdKey
         )
 
-        let createATA = try createAssociatedTokenAccountIdempotentInstruction(
+        let createATA = AssociatedTokenProgram.createIdempotentInstruction(
+            associatedAccount: destinationATA,
             mint: mintKey,
             owner: recipientKey,
             payer: ownerKey,
@@ -144,18 +135,33 @@ extension SolanaClient: TransactionSender {
         )
     }
 
-    private func ensureRecipientIsWallet(recipient: Pubkey) async throws -> Bool {
-        do {
-            let info: BufferInfo<EmptyInfo>? = try await rpc.getAccountInfo(account: recipient)
-            guard let info else { return false }
-            guard info.owner == SystemProgram.id.base58EncodedString else {
-                throw WalletError.recipientNotWallet
-            }
-            return true
-        } catch let apiError as APIClientError where apiError == .couldNotRetrieveAccountInfo {
+    /// Returns whether the recipient account exists *and* is a system-owned wallet.
+    /// Throws `recipientNotWallet` if it exists but is owned by some other program.
+    private func recipientWalletExists(recipient: Pubkey) async throws -> Bool {
+        guard let info = try await loadRecipientAccountInfo(recipient) else {
             return false
-        } catch let walletError as WalletError {
-            throw walletError
+        }
+        guard info.owner == SystemProgram.id.base58EncodedString else {
+            throw WalletError.recipientNotWallet
+        }
+        return true
+    }
+
+    /// Throws `recipientNotWallet` if the recipient account exists and is not system-owned.
+    /// Returns silently if the recipient is a system-owned wallet or does not yet exist
+    /// (which is fine for SPL transfers — the idempotent ATA creation handles that case).
+    private func assertRecipientIsWallet(recipient: Pubkey) async throws {
+        guard let info = try await loadRecipientAccountInfo(recipient) else { return }
+        guard info.owner == SystemProgram.id.base58EncodedString else {
+            throw WalletError.recipientNotWallet
+        }
+    }
+
+    private func loadRecipientAccountInfo(_ recipient: Pubkey) async throws -> BufferInfo<EmptyInfo>? {
+        do {
+            return try await rpc.getAccountInfo(account: recipient)
+        } catch let apiError as APIClientError where apiError == .couldNotRetrieveAccountInfo {
+            return nil
         } catch {
             throw mapToWalletError(error)
         }
@@ -183,34 +189,4 @@ private struct TransferAccounts {
     let mint: PublicKey
     let owner: PublicKey
     let programId: PublicKey
-}
-
-/// solana-swift only ships the non-idempotent variant; idempotent has the same accounts
-/// but a `1` discriminator byte, and succeeds whether or not the ATA already exists.
-private func createAssociatedTokenAccountIdempotentInstruction(
-    mint: PublicKey,
-    owner: PublicKey,
-    payer: PublicKey,
-    tokenProgramId: PublicKey
-) throws -> TransactionInstruction {
-    try TransactionInstruction(
-        keys: [
-            .init(publicKey: payer, isSigner: true, isWritable: true),
-            .init(
-                publicKey: PublicKey.associatedTokenAddress(
-                    walletAddress: owner,
-                    tokenMintAddress: mint,
-                    tokenProgramId: tokenProgramId
-                ),
-                isSigner: false,
-                isWritable: true
-            ),
-            .init(publicKey: owner, isSigner: false, isWritable: false),
-            .init(publicKey: mint, isSigner: false, isWritable: false),
-            .init(publicKey: SystemProgram.id, isSigner: false, isWritable: false),
-            .init(publicKey: tokenProgramId, isSigner: false, isWritable: false)
-        ],
-        programId: AssociatedTokenProgram.id,
-        data: [UInt8(1)]
-    )
 }
