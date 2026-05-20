@@ -33,6 +33,16 @@ struct DashboardView: View {
         .task {
             await viewModel.load()
         }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    router.present(.walletMenu)
+                } label: {
+                    WalletPill(seed: viewModel.owner, label: truncatedAddress(viewModel.owner))
+                }
+            }
+            .sharedBackgroundVisibility(.hidden)
+        }
     }
 
     private func balanceSection() -> some View {
@@ -126,16 +136,18 @@ struct DashboardView: View {
 }
 
 #Preview {
-    DashboardView(
-        viewModel: DashboardViewModel(
-            owner: "PreviewOwner",
-            vaultBalanceReader: PreviewVaultReader(),
-            walletReader: PreviewWalletReader(),
-            transactionSender: nil,
-            toastCenter: ToastCenter()
+    NavigationStack {
+        DashboardView(
+            viewModel: DashboardViewModel(
+                owner: "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+                vaultBalanceReader: PreviewVaultReader(),
+                walletReader: PreviewWalletReader(),
+                transactionSender: nil,
+                toastCenter: ToastCenter()
+            )
         )
-    )
-    .environment(DashboardRouter())
+        .environment(DashboardRouter())
+    }
 }
 
 private struct PreviewVaultReader: VaultBalanceReader {

@@ -24,7 +24,7 @@ final class AppState {
 
     init() {}
 
-    func rehydrate(from keychain: KeychainWalletStore) async {
+    func rehydrate(from keychain: KeychainWalletStore) {
         do {
             guard let data = try keychain.loadPublicKey() else {
                 activeWallet = nil

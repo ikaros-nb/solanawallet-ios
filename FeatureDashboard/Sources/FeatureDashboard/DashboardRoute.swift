@@ -8,6 +8,7 @@
 enum DashboardSheetRoute: Identifiable {
     case send
     case receive
+    case walletMenu
 
     var id: Self {
         self

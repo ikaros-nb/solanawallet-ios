@@ -18,7 +18,9 @@ struct MainTabView: View {
         TabView {
             Tab("Home", systemImage: "house") {
                 if let owner = appState.activeWallet?.pubkey {
-                    DashboardAssembly.make(owner: owner)
+                    NavigationStack {
+                        DashboardAssembly.make(owner: owner)
+                    }
                 }
             }
 

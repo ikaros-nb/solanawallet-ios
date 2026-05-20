@@ -18,7 +18,7 @@ enum SendAsset: Hashable {
 @Observable
 @MainActor
 final class DashboardViewModel {
-    private let owner: Pubkey
+    let owner: Pubkey
     private let vaultBalanceReader: (any VaultBalanceReader)?
     private let walletReader: (any WalletReader)?
     private let transactionSender: (any TransactionSender)?

@@ -6,8 +6,10 @@
 //
 
 import CoreDependencies
+import CoreEntities
 import CoreInfrastructure
 import CoreUI
+import FeatureDashboard
 import FeatureWallet
 import SwiftUI
 
@@ -27,6 +29,14 @@ struct RootView: View {
                     .environment(\.vaultHistoryReader, deps.solanaClient)
                     .environment(\.vaultTransactor, deps.solanaClient)
                     .environment(\.walletReader, deps.solanaClient)
+                    .environment(\.walletOnRemove) {
+                        let owner = appState.activeWallet?.pubkey
+                        try deps.keychain.reset()
+                        if let owner {
+                            await deps.solanaClient.invalidateAllCaches(for: owner)
+                        }
+                        appState.activeWallet = nil
+                    }
             } else {
                 WelcomeAssembly.make()
                     .environment(\.biometricAuthenticator, deps.biometricAuthenticator)

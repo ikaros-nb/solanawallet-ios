@@ -69,6 +69,9 @@ private struct DashboardFlowBody: View {
                 case .receive:
                     ReceiveSheet(owner: owner)
                         .environment(router)
+                case .walletMenu:
+                    WalletMenuSheet(owner: owner)
+                        .environment(router)
                 }
             }
     }

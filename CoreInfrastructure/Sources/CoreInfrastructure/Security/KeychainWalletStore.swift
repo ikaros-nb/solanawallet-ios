@@ -169,11 +169,13 @@ public struct KeychainWalletStore: Sendable {
         }
     }
 
-    /// Removes both Keychain items. Best-effort: both deletes are attempted
-    /// even if the first fails, and on throw the store state is undefined.
+    /// Wipes the full wallet stack: both Keychain items AND the Secure Enclave
+    /// encryption key that seals the keypair blob. After this returns
+    /// successfully, no prior keypair ciphertext can ever be decrypted again.
     ///
-    /// Does not destroy the Secure Enclave encryption key — see
-    /// ``SecureEnclaveManager/reset()`` for that.
+    /// Best-effort: both Keychain deletes are attempted even if the first fails.
+    /// Each step (Keychain wipe, then SE key destruction) is independently
+    /// idempotent, so a partial failure is safe to retry.
     public func reset() throws {
         let statuses = [
             SecItemDelete(pubkeyQuery as CFDictionary),
@@ -182,6 +184,7 @@ public struct KeychainWalletStore: Sendable {
         for status in statuses where status != errSecSuccess && status != errSecItemNotFound {
             throw Failure.keychainError(status)
         }
+        try secureEnclave.reset()
     }
 
     // MARK: Private

@@ -35,4 +35,9 @@ public actor SolanaClient {
         vaultBalanceCache.removeValue(forKey: owner)
         vaultHistoryCache.removeValue(forKey: owner)
     }
+
+    public func invalidateAllCaches(for owner: Pubkey) {
+        balanceCache.removeValue(forKey: owner)
+        invalidateVaultCaches(for: owner)
+    }
 }

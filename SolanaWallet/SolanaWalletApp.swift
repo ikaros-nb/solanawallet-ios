@@ -11,16 +11,22 @@ import SwiftUI
 
 @main
 struct SolanaWalletApp: App {
-    @State private var appState = AppState()
+    @State private var appState: AppState
     private let deps: AppDependencies
     private static let logger = AppLog.logger(for: "AppState")
 
     init() {
+        let deps: AppDependencies
         do {
             deps = try AppDependencies.make()
         } catch {
             fatalError("AppDependencies bootstrap failed: \(error)")
         }
+        self.deps = deps
+
+        let state = AppState()
+        state.rehydrate(from: deps.keychain)
+        _appState = State(initialValue: state)
     }
 
     var body: some Scene {
@@ -29,14 +35,11 @@ struct SolanaWalletApp: App {
                 .preferredColorScheme(.dark)
                 .environment(appState)
                 .task {
-                    async let rehydrate: Void = appState.rehydrate(from: deps.keychain)
-                    async let jailbreak = JailbreakDetector(
-                        probe: SystemFilesystemProbe(),
-                        urlOpener: SystemURLOpener()
-                    ).detect()
-
-                    _ = await rehydrate
-                    if case .suspected = await jailbreak {
+                    if
+                        case .suspected = await JailbreakDetector(
+                            probe: SystemFilesystemProbe(),
+                            urlOpener: SystemURLOpener()
+                        ).detect() {
                         Self.logger.info("Jailbreak suspected")
                     }
                 }
