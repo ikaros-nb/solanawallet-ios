@@ -44,6 +44,10 @@ struct ReceiveSheet: View {
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
+
+                QRCode(from: owner)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 8)
             }
             .padding(16)
             .cardBackground(cornerRadius: 16, fillOpacity: 0.05, highlight: nil)
@@ -60,7 +64,7 @@ struct ReceiveSheet: View {
         .padding(.top, 44)
         .padding(.horizontal, 32)
         .presentationBackground(Color.card)
-        .presentationDetents([.height(340)])
+        .presentationDetents([.height(560)])
         .presentationDragIndicator(.visible)
     }
 }
