@@ -7,6 +7,8 @@
 		<key>UIColorName</key>
 		<string>splash_background</string>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>$(CAMERA_USAGE_DESCRIPTION)</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>$(FACEID_USAGE_DESCRIPTION)</string>
 	<key>SolanaRpcEndpoint</key>

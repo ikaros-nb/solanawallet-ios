@@ -100,6 +100,72 @@
         }
       }
     },
+    "scan.invalid.address" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR code is not a valid Solana address"
+          }
+        }
+      }
+    },
+    "scan.permission.denied.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable camera access in Settings to scan QR codes."
+          }
+        }
+      }
+    },
+    "scan.permission.denied.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Camera access needed"
+          }
+        }
+      }
+    },
+    "scan.permission.openSettings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings"
+          }
+        }
+      }
+    },
+    "scan.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scan address"
+          }
+        }
+      }
+    },
+    "scan.unavailable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR scanner is not available on this device"
+          }
+        }
+      }
+    },
     "send.amount.label" : {
       "extractionState" : "manual",
       "localizations" : {

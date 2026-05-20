@@ -16,8 +16,7 @@ struct SendSheet: View {
     @State private var amount: Decimal?
     @State private var destination: String = ""
     @State private var selectedAsset: SendAsset = .sol
-
-    private static let base58Alphabet = Set("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
+    @State private var isScannerPresented: Bool = false
 
     private var availableBalance: Decimal {
         viewModel.availableBalance(for: selectedAsset)
@@ -44,9 +43,7 @@ struct SendSheet: View {
     }
 
     private var isAddressStructurallyValid: Bool {
-        let trimmed = trimmedDestination
-        guard (32...44).contains(trimmed.count) else { return false }
-        return trimmed.allSatisfy(Self.base58Alphabet.contains)
+        SolanaAddressValidator.isStructurallyValid(trimmedDestination)
     }
 
     private var isAmountValid: Bool {
@@ -111,15 +108,26 @@ struct SendSheet: View {
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(Color.tertiaryText)
 
-                TextField(
-                    String(localized: .Dashboard.sendDestinationPlaceholder),
-                    text: $destination
-                )
-                .autocorrectionDisabled()
-                .textInputAutocapitalization(.never)
-                .font(.system(size: 14, weight: .regular, design: .monospaced))
-                .foregroundStyle(.white)
-                .tint(Color.solanaGreen)
+                HStack(spacing: 12) {
+                    TextField(
+                        String(localized: .Dashboard.sendDestinationPlaceholder),
+                        text: $destination
+                    )
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
+                    .font(.system(size: 14, weight: .regular, design: .monospaced))
+                    .foregroundStyle(.white)
+                    .tint(Color.solanaGreen)
+
+                    Button {
+                        isScannerPresented = true
+                    } label: {
+                        Image(systemName: "qrcode.viewfinder")
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundStyle(Color.tertiaryText)
+                    }
+                    .disabled(isBusy)
+                }
                 .padding(16)
                 .cardBackground(cornerRadius: 16, fillOpacity: 0.05, highlight: nil)
             }
@@ -156,6 +164,12 @@ struct SendSheet: View {
         .onAppear(perform: snapSelectedAssetIfNeeded)
         .onChange(of: sendableAssets) { _, _ in
             snapSelectedAssetIfNeeded()
+        }
+        .fullScreenCover(isPresented: $isScannerPresented) {
+            QRScannerSheet { scanned in
+                destination = scanned
+                isScannerPresented = false
+            }
         }
     }
 
