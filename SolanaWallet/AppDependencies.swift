@@ -45,12 +45,13 @@ struct AppDependencies {
             keychain: keychain,
             tokenRepository: tokenRepository
         )
-        let walletCreator = WalletProvisioner(keychain: keychain)
+        let biometricAuthenticator = LocalAuthenticationBiometricAuthenticator()
+        let walletCreator = WalletProvisioner(keychain: keychain, biometric: biometricAuthenticator)
 
         return AppDependencies(
             keychain: keychain,
             walletCreator: walletCreator,
-            biometricAuthenticator: LocalAuthenticationBiometricAuthenticator(),
+            biometricAuthenticator: biometricAuthenticator,
             solanaClient: solanaClient
         )
     }

@@ -48,6 +48,13 @@ struct RootView: View {
         }
         .environment(toastCenter)
         .toastOverlay(toastCenter)
+        .task(id: appState.pendingBiometryChangeWarning) {
+            guard appState.pendingBiometryChangeWarning else { return }
+            toastCenter.show(.warning(
+                "Face ID was reset on this device. Signing will require your passcode."
+            ))
+            appState.pendingBiometryChangeWarning = false
+        }
     }
 }
 

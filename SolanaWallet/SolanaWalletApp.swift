@@ -25,7 +25,7 @@ struct SolanaWalletApp: App {
         self.deps = deps
 
         let state = AppState()
-        state.rehydrate(from: deps.keychain)
+        state.rehydrate(from: deps.keychain, biometric: deps.biometricAuthenticator)
         _appState = State(initialValue: state)
     }
 

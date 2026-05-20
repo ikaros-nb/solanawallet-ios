@@ -36,6 +36,7 @@ public struct KeychainWalletStore: Sendable {
     private let secureEnclave: SecureEnclaveManager
     private static let pubkeyAccount = "solana-pubkey"
     private static let keypairAccount = "solana-keypair"
+    private static let biometryStateAccount = "solana-biometry-state"
 
     /// Both items live under the same `keychainService`; use distinct values
     /// to isolate wallets between environments or tests.
@@ -169,17 +170,78 @@ public struct KeychainWalletStore: Sendable {
         }
     }
 
-    /// Wipes the full wallet stack: both Keychain items AND the Secure Enclave
-    /// encryption key that seals the keypair blob. After this returns
+    /// Stores or replaces the opaque biometric-set hash used by the app to
+    /// detect Face ID / Touch ID re-enrollment between sessions. The hash is
+    /// not a secret — accessibility mirrors the public key item so reads
+    /// never trigger an authentication prompt. Idempotent.
+    public func saveBiometryState(_ data: Data) throws {
+        let mutableAttributes: [String: Any] = [
+            kSecValueData as String: data,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        let addAttributes = biometryStateQuery.merging(mutableAttributes) { _, new in new }
+
+        let status = SecItemAdd(addAttributes as CFDictionary, nil)
+        switch status {
+        case errSecSuccess:
+            return
+        case errSecDuplicateItem:
+            let updateStatus = SecItemUpdate(
+                biometryStateQuery as CFDictionary,
+                mutableAttributes as CFDictionary
+            )
+            guard updateStatus == errSecSuccess else {
+                throw Failure.keychainError(updateStatus)
+            }
+        default:
+            throw Failure.keychainError(status)
+        }
+    }
+
+    /// Returns the stored biometric-set hash, or `nil` if none exists.
+    public func loadBiometryState() throws -> Data? {
+        var query = biometryStateQuery
+        query[kSecReturnData as String] = true
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+
+        switch status {
+        case errSecSuccess:
+            guard let data = result as? Data else {
+                throw Failure.unknown
+            }
+            return data
+        case errSecItemNotFound:
+            return nil
+        default:
+            throw Failure.keychainError(status)
+        }
+    }
+
+    /// Removes the biometric-set hash. Idempotent — succeeds silently if the
+    /// entry is absent. Used when biometry is removed from the device entirely
+    /// so the next launch with re-enrolled biometry captures a fresh baseline.
+    public func clearBiometryState() throws {
+        let status = SecItemDelete(biometryStateQuery as CFDictionary)
+        guard status == errSecSuccess || status == errSecItemNotFound else {
+            throw Failure.keychainError(status)
+        }
+    }
+
+    /// Wipes the full wallet stack: all three Keychain items AND the Secure
+    /// Enclave encryption key that seals the keypair blob. After this returns
     /// successfully, no prior keypair ciphertext can ever be decrypted again.
     ///
-    /// Best-effort: both Keychain deletes are attempted even if the first fails.
+    /// Best-effort: all Keychain deletes are attempted even if the first fails.
     /// Each step (Keychain wipe, then SE key destruction) is independently
     /// idempotent, so a partial failure is safe to retry.
     public func reset() throws {
         let statuses = [
             SecItemDelete(pubkeyQuery as CFDictionary),
-            SecItemDelete(keypairQuery as CFDictionary)
+            SecItemDelete(keypairQuery as CFDictionary),
+            SecItemDelete(biometryStateQuery as CFDictionary)
         ]
         for status in statuses where status != errSecSuccess && status != errSecItemNotFound {
             throw Failure.keychainError(status)
@@ -202,6 +264,14 @@ public struct KeychainWalletStore: Sendable {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: keychainService,
             kSecAttrAccount as String: Self.keypairAccount
+        ]
+    }
+
+    private var biometryStateQuery: [String: Any] {
+        [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
+            kSecAttrAccount as String: Self.biometryStateAccount
         ]
     }
 }

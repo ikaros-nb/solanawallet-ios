@@ -90,4 +90,43 @@ struct KeychainWalletStoreTests {
             try store.withSigningSession(reason: "test") { _ in }
         }
     }
+
+    @Test
+    func `saveBiometryState + loadBiometryState roundtrip returns the same bytes`() throws {
+        let hash = Data([0xAA, 0xBB, 0xCC, 0xDD])
+        try store.saveBiometryState(hash)
+        #expect(try store.loadBiometryState() == hash)
+    }
+
+    @Test
+    func `loadBiometryState returns nil when no entry is stored`() throws {
+        #expect(try store.loadBiometryState() == nil)
+    }
+
+    @Test
+    func `saveBiometryState overwrites an existing entry`() throws {
+        try store.saveBiometryState(Data([0x01]))
+        try store.saveBiometryState(Data([0x02]))
+        #expect(try store.loadBiometryState() == Data([0x02]))
+    }
+
+    @Test
+    func `clearBiometryState removes a stored entry`() throws {
+        try store.saveBiometryState(Data([0x01]))
+        try store.clearBiometryState()
+        #expect(try store.loadBiometryState() == nil)
+    }
+
+    @Test
+    func `clearBiometryState is idempotent`() throws {
+        try store.clearBiometryState()
+        try store.clearBiometryState()
+    }
+
+    @Test
+    func `reset clears the biometry state entry`() throws {
+        try store.saveBiometryState(Data([0x01]))
+        try store.reset()
+        #expect(try store.loadBiometryState() == nil)
+    }
 }

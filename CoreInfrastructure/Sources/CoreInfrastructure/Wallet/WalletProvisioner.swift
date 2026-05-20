@@ -17,9 +17,11 @@ public actor WalletProvisioner: WalletCreator {
     private static let validMnemonicWordCounts: Set<Int> = [12, 15, 18, 21, 24]
 
     private let keychain: KeychainWalletStore
+    private let biometric: any BiometricAuthenticator
 
-    public init(keychain: KeychainWalletStore) {
+    public init(keychain: KeychainWalletStore, biometric: any BiometricAuthenticator) {
         self.keychain = keychain
+        self.biometric = biometric
     }
 
     // `nonisolated` to satisfy the sync protocol requirement; safe because
@@ -92,5 +94,17 @@ public actor WalletProvisioner: WalletCreator {
             throw WalletError.walletAlreadyExists
         }
         try keychain.savePublicKey(keyPair.publicKey.data)
+        captureBiometryBaseline()
+    }
+
+    // Best-effort: persistence failure or absent biometry must not block the
+    // wallet write. The detection path treats a missing baseline as "first run".
+    private func captureBiometryBaseline() {
+        guard let hash = biometric.currentBiometryStateHash() else { return }
+        do {
+            try keychain.saveBiometryState(hash)
+        } catch {
+            Self.logger.error("Biometry baseline persist failed: \(error, privacy: .public)")
+        }
     }
 }
