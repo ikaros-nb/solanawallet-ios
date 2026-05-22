@@ -25,21 +25,20 @@ extension SolanaClient: WalletReader {
 
     public func fetchTokenAccounts(for owner: Pubkey) async throws -> [SPLTokenAccount] {
         do {
+            let classicProgramId = TokenProgram.id.base58EncodedString
+            let token2022ProgramId = Token2022Program.id.base58EncodedString
             async let classicRaw = rpc.getTokenAccountsByOwner(
                 pubkey: owner,
-                params: .init(mint: nil, programId: TokenProgram.id.base58EncodedString),
+                params: .init(mint: nil, programId: classicProgramId),
                 configs: RequestConfiguration(commitment: SolanaCommitment.default, encoding: "base64")
             )
             async let token2022Raw = rpc.getTokenAccountsByOwner(
                 pubkey: owner,
-                params: .init(mint: nil, programId: Token2022Program.id.base58EncodedString),
+                params: .init(mint: nil, programId: token2022ProgramId),
                 configs: RequestConfiguration(commitment: SolanaCommitment.default, encoding: "base64")
             )
             let classic = try await classicRaw
             let token2022 = try await token2022Raw
-
-            let classicProgramId = TokenProgram.id.base58EncodedString
-            let token2022ProgramId = Token2022Program.id.base58EncodedString
 
             let allMints = classic.map(\.account.data.mint.base58EncodedString)
                 + token2022.map(\.account.data.mint.base58EncodedString)
